@@ -82,26 +82,26 @@ static void serverPongPingNonBlock(
   pipe->readDescriptor([pipe, &numRoundTrips, &doneProm, &data, &measurements](
                            const Error& error, Message&& message) {
     TP_THROW_ASSERT_IF(error) << error.what();
-    TP_DCHECK_EQ(message.metadata, data.expectedMetadata);
-    if (data.payloadSize > 0) {
-      TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
-      for (size_t payloadIdx = 0; payloadIdx < data.numPayloads; payloadIdx++) {
-        TP_DCHECK_EQ(
-            message.payloads[payloadIdx].metadata,
-            data.expectedPayloadMetadata[payloadIdx]);
-        TP_DCHECK_EQ(message.payloads[payloadIdx].length, data.payloadSize);
-        message.payloads[payloadIdx].data =
-            data.temporaryPayload[payloadIdx].get();
-      }
-    } else {
-      TP_DCHECK_EQ(message.payloads.size(), 0);
-    }
+//    TP_DCHECK_EQ(message.metadata, data.expectedMetadata);
+//    if (data.payloadSize > 0) {
+//      TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
+//      for (size_t payloadIdx = 0; payloadIdx < data.numPayloads; payloadIdx++) {
+//        TP_DCHECK_EQ(
+//            message.payloads[payloadIdx].metadata,
+//            data.expectedPayloadMetadata[payloadIdx]);
+//        TP_DCHECK_EQ(message.payloads[payloadIdx].length, data.payloadSize);
+//        message.payloads[payloadIdx].data =
+//            data.temporaryPayload[payloadIdx].get();
+//      }
+//    } else {
+//      TP_DCHECK_EQ(message.payloads.size(), 0);
+//    }
     if (data.tensorSize > 0) {
       TP_DCHECK_EQ(message.tensors.size(), data.numTensors);
       for (size_t tensorIdx = 0; tensorIdx < data.numTensors; tensorIdx++) {
-        TP_DCHECK_EQ(
-            message.tensors[tensorIdx].metadata,
-            data.expectedTensorMetadata[tensorIdx]);
+//        TP_DCHECK_EQ(
+//            message.tensors[tensorIdx].metadata,
+//            data.expectedTensorMetadata[tensorIdx]);
         TP_DCHECK_EQ(
             message.tensors[tensorIdx].buffer.cpu.length, data.tensorSize);
         message.tensors[tensorIdx].buffer.cpu.ptr =
@@ -115,22 +115,22 @@ static void serverPongPingNonBlock(
         [pipe, &numRoundTrips, &doneProm, &data, &measurements](
             const Error& error, Message&& message) {
           TP_THROW_ASSERT_IF(error) << error.what();
-          if (data.payloadSize > 0) {
-            TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
-            for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
-                 payloadIdx++) {
-              TP_DCHECK_EQ(
-                  message.payloads[payloadIdx].length, data.payloadSize);
-              TP_DCHECK_EQ(
-                  memcmp(
-                      message.payloads[payloadIdx].data,
-                      data.expectedPayload[payloadIdx].get(),
-                      message.payloads[payloadIdx].length),
-                  0);
-            }
-          } else {
-            TP_DCHECK_EQ(message.tensors.size(), 0);
-          }
+//          if (data.payloadSize > 0) {
+//            TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
+//            for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
+//                 payloadIdx++) {
+//              TP_DCHECK_EQ(
+//                  message.payloads[payloadIdx].length, data.payloadSize);
+//              TP_DCHECK_EQ(
+//                  memcmp(
+//                      message.payloads[payloadIdx].data,
+//                      data.expectedPayload[payloadIdx].get(),
+//                      message.payloads[payloadIdx].length),
+//                  0);
+//            }
+//          } else {
+//            TP_DCHECK_EQ(message.tensors.size(), 0);
+//          }
           if (data.tensorSize > 0) {
             TP_DCHECK_EQ(message.tensors.size(), data.numTensors);
             for (size_t tensorIdx = 0; tensorIdx < data.numTensors;
@@ -228,17 +228,17 @@ static void clientPingPongNonBlock(
     Measurements& measurements) {
   measurements.markStart();
   Message message;
-  message.metadata = data.expectedMetadata;
-  if (data.payloadSize > 0) {
-    for (size_t payloadIdx = 0; payloadIdx < data.numPayloads; payloadIdx++) {
-      Message::Payload payload;
-      payload.data = data.expectedPayload[payloadIdx].get();
-      payload.length = data.payloadSize;
-      message.payloads.push_back(std::move(payload));
-    }
-  } else {
-    TP_DCHECK_EQ(message.tensors.size(), 0);
-  }
+//  message.metadata = data.expectedMetadata;
+//  if (data.payloadSize > 0) {
+//    for (size_t payloadIdx = 0; payloadIdx < data.numPayloads; payloadIdx++) {
+//      Message::Payload payload;
+//      payload.data = data.expectedPayload[payloadIdx].get();
+//      payload.length = data.payloadSize;
+//      message.payloads.push_back(std::move(payload));
+//    }
+//  } else {
+//    TP_DCHECK_EQ(message.tensors.size(), 0);
+//  }
   if (data.tensorSize > 0) {
     for (size_t tensorIdx = 0; tensorIdx < data.numTensors; tensorIdx++) {
       Message::Tensor tensor;
@@ -258,29 +258,29 @@ static void clientPingPongNonBlock(
             [pipe, &numRoundTrips, &doneProm, &data, &measurements](
                 const Error& error, Message&& message) {
               TP_THROW_ASSERT_IF(error) << error.what();
-              TP_DCHECK_EQ(message.metadata, data.expectedMetadata);
-              if (data.payloadSize > 0) {
-                TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
-                for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
-                     payloadIdx++) {
-                  TP_DCHECK_EQ(
-                      message.payloads[payloadIdx].metadata,
-                      data.expectedPayloadMetadata[payloadIdx]);
-                  TP_DCHECK_EQ(
-                      message.payloads[payloadIdx].length, data.payloadSize);
-                  message.payloads[payloadIdx].data =
-                      data.temporaryPayload[payloadIdx].get();
-                }
-              } else {
-                TP_DCHECK_EQ(message.payloads.size(), 0);
-              }
+//              TP_DCHECK_EQ(message.metadata, data.expectedMetadata);
+//              if (data.payloadSize > 0) {
+//                TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
+//                for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
+//                     payloadIdx++) {
+//                  TP_DCHECK_EQ(
+//                      message.payloads[payloadIdx].metadata,
+//                      data.expectedPayloadMetadata[payloadIdx]);
+//                  TP_DCHECK_EQ(
+//                      message.payloads[payloadIdx].length, data.payloadSize);
+//                  message.payloads[payloadIdx].data =
+//                      data.temporaryPayload[payloadIdx].get();
+//                }
+//              } else {
+//                TP_DCHECK_EQ(message.payloads.size(), 0);
+//              }
               if (data.tensorSize > 0) {
                 TP_DCHECK_EQ(message.tensors.size(), data.numTensors);
                 for (size_t tensorIdx = 0; tensorIdx < data.numTensors;
                      tensorIdx++) {
-                  TP_DCHECK_EQ(
-                      message.tensors[tensorIdx].metadata,
-                      data.expectedTensorMetadata[tensorIdx]);
+//                  TP_DCHECK_EQ(
+//                      message.tensors[tensorIdx].metadata,
+//                      data.expectedTensorMetadata[tensorIdx]);
                   TP_DCHECK_EQ(
                       message.tensors[tensorIdx].buffer.cpu.length,
                       data.tensorSize);
@@ -296,20 +296,20 @@ static void clientPingPongNonBlock(
                       const Error& error, Message&& message) {
                     measurements.markStop();
                     TP_THROW_ASSERT_IF(error) << error.what();
-                    if (data.payloadSize > 0) {
-                      TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
-                      for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
-                           payloadIdx++) {
-                        TP_DCHECK_EQ(
-                            memcmp(
-                                message.payloads[payloadIdx].data,
-                                data.expectedPayload[payloadIdx].get(),
-                                message.payloads[payloadIdx].length),
-                            0);
-                      }
-                    } else {
-                      TP_DCHECK_EQ(message.payloads.size(), 0);
-                    }
+//                    if (data.payloadSize > 0) {
+//                      TP_DCHECK_EQ(message.payloads.size(), data.numPayloads);
+//                      for (size_t payloadIdx = 0; payloadIdx < data.numPayloads;
+//                           payloadIdx++) {
+//                        TP_DCHECK_EQ(
+//                            memcmp(
+//                                message.payloads[payloadIdx].data,
+//                                data.expectedPayload[payloadIdx].get(),
+//                                message.payloads[payloadIdx].length),
+//                            0);
+//                      }
+//                    } else {
+//                      TP_DCHECK_EQ(message.payloads.size(), 0);
+//                    }
                     if (data.tensorSize > 0) {
                       TP_DCHECK_EQ(message.tensors.size(), data.numTensors);
                       for (size_t tensorIdx = 0; tensorIdx < data.numTensors;

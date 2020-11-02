@@ -43,7 +43,8 @@ TP_REGISTER_CREATOR(TensorpipeChannelRegistry, mpt, makeMptChannel);
 // XTH
 
 std::shared_ptr<tensorpipe::channel::CpuContext> makeXthChannel() {
-  return std::make_shared<tensorpipe::channel::xth::Context>();
+  return nullptr;
+  //return std::make_shared<tensorpipe::channel::xth::Context>();
 }
 
 TP_REGISTER_CREATOR(TensorpipeChannelRegistry, xth, makeXthChannel);
