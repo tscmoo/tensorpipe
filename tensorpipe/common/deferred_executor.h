@@ -97,7 +97,6 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
     return currentLoop_ == std::this_thread::get_id();
   }
 
-  [[gnu::hot]]
   void deferToLoop(TTask fn) override {
     enqueue(fn.release());
     loop();
@@ -109,42 +108,38 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
 
 protected:
 
-  [[gnu::hot]]
   void enqueue(FunctionPointer ptr) {
     FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
     do {
       ptr->nextAtomic.store(next, std::memory_order_relaxed);
-    } while (unlikely(!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_relaxed)));
+    } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_relaxed));
   }
 
-  [[gnu::hot]]
   void loop() {
     static_assert(std::atomic<std::thread::id>::is_always_lock_free);
     do {
       auto owner = currentLoop_.load(std::memory_order_relaxed);
-      if (likely(owner != std::thread::id())) {
+      if (owner != std::thread::id()) {
         return;
       }
-      if (unlikely(!currentLoop_.compare_exchange_strong(owner, std::this_thread::get_id(), std::memory_order_relaxed))) {
+      if (!currentLoop_.compare_exchange_strong(owner, std::this_thread::get_id(), std::memory_order_relaxed)) {
         return;
       }
       runDeferredFunctions();
       currentLoop_.store(std::thread::id(), std::memory_order_relaxed);
-    } while (unlikely(head_.nextAtomic.load(std::memory_order_relaxed)));
+    } while (head_.nextAtomic.load(std::memory_order_relaxed));
   }
 
 
-  [[gnu::hot]]
   size_t runDeferredFunctions() {
     FunctionPointer ptr = head_.nextAtomic.load(std::memory_order_relaxed);
-    if (unlikely(!ptr)) {
+    if (!ptr) {
       return 0;
     }
     ptr = head_.nextAtomic.exchange(nullptr, std::memory_order_relaxed);
     return unrollEventLoopStack(ptr);
   }
 
-  [[gnu::hot, gnu::noinline]]
   size_t unrollEventLoopStack(FunctionPointer ptr, int depth = 0) {
     std::array<FunctionPointer, 16> stack;
     size_t n = 0;
@@ -164,7 +159,6 @@ protected:
     return n;
   }
 
-  [[gnu::cold, gnu::noinline]]
   size_t unrollEventLoopDynamic(FunctionPointer ptr) {
     std::vector<FunctionPointer> vec;
     do {
@@ -187,7 +181,6 @@ protected:
 
 class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
  public:
-  [[gnu::hot]]
   void deferToLoop(TTask fn) override {
     enqueue(fn.release());
     wakeupEventLoopToDeferFunction();
