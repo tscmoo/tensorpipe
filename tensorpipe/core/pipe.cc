@@ -352,8 +352,8 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
   void init();
 
   void readDescriptor(read_descriptor_callback_fn);
-  void read(Message, read_callback_fn);
-  void write(Message, write_callback_fn);
+  void read(Message&&, read_callback_fn);
+  void write(Message&&, write_callback_fn);
 
   const std::string& getRemoteName();
 
@@ -366,9 +366,9 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
 
   void readDescriptorFromLoop_(read_descriptor_callback_fn);
 
-  void readFromLoop_(Message, read_callback_fn);
+  void readFromLoop_(Message&&, read_callback_fn);
 
-  void writeFromLoop_(Message, write_callback_fn);
+  void writeFromLoop_(Message&&, write_callback_fn);
 
   void closeFromLoop_();
 
@@ -744,11 +744,11 @@ void Pipe::Impl::readDescriptorFromLoop_(read_descriptor_callback_fn fn) {
              << op.sequenceNumber << ")";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadDescriptorCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a readDescriptor callback (#"
                << sequenceNumber << ")";
-    fn(error, std::move(message));
+    fn(error, std::forward<Message>(message));
     TP_VLOG(1) << "Pipe " << id_ << " done calling a readDescriptor callback (#"
                << sequenceNumber << ")";
   };
@@ -758,24 +758,24 @@ void Pipe::Impl::readDescriptorFromLoop_(read_descriptor_callback_fn fn) {
   advanceReadOperation_(op);
 }
 
-void Pipe::read(Message message, read_callback_fn fn) {
-  impl_->read(std::move(message), std::move(fn));
+void Pipe::read(Message&& message, read_callback_fn fn) {
+  impl_->read(std::forward<Message>(message), std::move(fn));
 }
 
-void Pipe::Impl::read(Message message, read_callback_fn fn) {
+void Pipe::Impl::read(Message&& message, read_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
   // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   //auto sharedMessage = std::make_shared<Message>(std::move(message));
   loop_.deferToLoop([this,
                      //sharedMessage{std::move(sharedMessage)},
-                     message = std::move(message),
+                     message = std::forward<Message>(message),
                      fn{std::move(fn)}]() mutable {
     //readFromLoop_(std::move(*sharedMessage), std::move(fn));
-    readFromLoop_(std::move(message), std::move(fn));
+    readFromLoop_(std::forward<Message>(message), std::move(fn));
   });
 }
 
-void Pipe::Impl::readFromLoop_(Message message, read_callback_fn fn) {
+void Pipe::Impl::readFromLoop_(Message&& message, read_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   // This is such a bad logical error on the user's side that it doesn't deserve
@@ -793,7 +793,7 @@ void Pipe::Impl::readFromLoop_(Message message, read_callback_fn fn) {
   checkAllocationCompatibility(op, message);
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a read callback (#"
                << sequenceNumber << ")";
@@ -873,11 +873,11 @@ void Pipe::Impl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
   }
 }
 
-void Pipe::write(Message message, write_callback_fn fn) {
+void Pipe::write(Message&& message, write_callback_fn fn) {
   impl_->write(std::move(message), std::move(fn));
 }
 
-void Pipe::Impl::write(Message message, write_callback_fn fn) {
+void Pipe::Impl::write(Message&& message, write_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
   // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   //auto sharedMessage = std::make_shared<Message>(std::move(message));
@@ -888,7 +888,7 @@ void Pipe::Impl::write(Message message, write_callback_fn fn) {
   });
 }
 
-void Pipe::Impl::writeFromLoop_(Message message, write_callback_fn fn) {
+void Pipe::Impl::writeFromLoop_(Message&& message, write_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   writeOperations_.emplace_back();
@@ -900,7 +900,7 @@ void Pipe::Impl::writeFromLoop_(Message message, write_callback_fn fn) {
              << " payloads and " << message.tensors.size() << " tensors)";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextWriteCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a write callback (#"
                << sequenceNumber << ")";
