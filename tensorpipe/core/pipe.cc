@@ -66,13 +66,13 @@ struct ReadOperation {
   std::vector<Tensor> tensors;
 
   // Buffers allocated by the user.
-  Message message;
+  MessageHandle message;
 };
 
 // Copy the payload and tensors sizes, the tensor descriptors, etc. from the
 // message descriptor that is contained in the nop object to the ReadOperation.
 void parseDescriptorOfMessage(ReadOperation& op, const Packet& nopPacketIn) {
-  Message& message = op.message;
+  Message& message = *op.message;
 
   TP_DCHECK_EQ(nopPacketIn.index(), nopPacketIn.index_of<MessageDescriptor>());
   const MessageDescriptor& nopMessageDescriptor =
@@ -179,7 +179,7 @@ struct WriteOperation {
   Pipe::write_callback_fn writeCallback;
 
   // Buffers provided by the user.
-  Message message;
+  MessageHandle message;
 
   // Tensor descriptors collected from the channels.
   struct Tensor {
@@ -201,11 +201,13 @@ void makeDescriptorForMessage(
   MessageDescriptor& nopMessageDescriptor =
       *nopPacketOut.get<MessageDescriptor>();
 
-  nopMessageDescriptor.metadata = op.message.metadata;
+  const Message& message = *op.message;
 
-  for (int payloadIdx = 0; payloadIdx < op.message.payloads.size();
+  nopMessageDescriptor.metadata = message.metadata;
+
+  for (int payloadIdx = 0; payloadIdx < message.payloads.size();
        ++payloadIdx) {
-    const Message::Payload& payload = op.message.payloads[payloadIdx];
+    const Message::Payload& payload = message.payloads[payloadIdx];
     nopMessageDescriptor.payloadDescriptors.emplace_back();
     MessageDescriptor::PayloadDescriptor& nopPayloadDescriptor =
         nopMessageDescriptor.payloadDescriptors.back();
@@ -213,9 +215,9 @@ void makeDescriptorForMessage(
     nopPayloadDescriptor.metadata = payload.metadata;
   }
 
-  TP_DCHECK_EQ(op.message.tensors.size(), op.tensors.size());
+  TP_DCHECK_EQ(message.tensors.size(), op.tensors.size());
   for (int tensorIdx = 0; tensorIdx < op.tensors.size(); ++tensorIdx) {
-    const Message::Tensor& tensor = op.message.tensors[tensorIdx];
+    const Message::Tensor& tensor = message.tensors[tensorIdx];
     const WriteOperation::Tensor& otherTensor = op.tensors[tensorIdx];
     nopMessageDescriptor.tensorDescriptors.emplace_back();
     MessageDescriptor::TensorDescriptor& nopTensorDescriptor =
@@ -352,8 +354,8 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
   void init();
 
   void readDescriptor(read_descriptor_callback_fn);
-  void read(Message, read_callback_fn);
-  void write(Message, write_callback_fn);
+  void read(MessageHandle, read_callback_fn);
+  void write(MessageHandle, write_callback_fn);
 
   const std::string& getRemoteName();
 
@@ -366,9 +368,9 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
 
   void readDescriptorFromLoop_(read_descriptor_callback_fn);
 
-  void readFromLoop_(Message, read_callback_fn);
+  void readFromLoop_(MessageHandle, read_callback_fn);
 
-  void writeFromLoop_(Message, write_callback_fn);
+  void writeFromLoop_(MessageHandle, write_callback_fn);
 
   void closeFromLoop_();
 
@@ -739,16 +741,17 @@ void Pipe::Impl::readDescriptorFromLoop_(read_descriptor_callback_fn fn) {
   readOperations_.emplace_back();
   ReadOperation& op = readOperations_.back();
   op.sequenceNumber = nextMessageBeingRead_++;
+  op.message = Message();
 
   TP_VLOG(1) << "Pipe " << id_ << " received a readDescriptor request (#"
              << op.sequenceNumber << ")";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, MessageHandle message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadDescriptorCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a readDescriptor callback (#"
                << sequenceNumber << ")";
-    fn(error, std::move(message));
+    fn(error, std::move(*message));
     TP_VLOG(1) << "Pipe " << id_ << " done calling a readDescriptor callback (#"
                << sequenceNumber << ")";
   };
@@ -758,11 +761,11 @@ void Pipe::Impl::readDescriptorFromLoop_(read_descriptor_callback_fn fn) {
   advanceReadOperation_(op);
 }
 
-void Pipe::read(Message message, read_callback_fn fn) {
+void Pipe::read(MessageHandle message, read_callback_fn fn) {
   impl_->read(std::move(message), std::move(fn));
 }
 
-void Pipe::Impl::read(Message message, read_callback_fn fn) {
+void Pipe::Impl::read(MessageHandle message, read_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
   // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   //auto sharedMessage = std::make_shared<Message>(std::move(message));
@@ -775,7 +778,7 @@ void Pipe::Impl::read(Message message, read_callback_fn fn) {
   });
 }
 
-void Pipe::Impl::readFromLoop_(Message message, read_callback_fn fn) {
+void Pipe::Impl::readFromLoop_(MessageHandle message, read_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   // This is such a bad logical error on the user's side that it doesn't deserve
@@ -790,14 +793,14 @@ void Pipe::Impl::readFromLoop_(Message message, read_callback_fn fn) {
   ++nextMessageGettingAllocation_;
   ReadOperation& op = *opPtr;
 
-  checkAllocationCompatibility(op, message);
+  checkAllocationCompatibility(op, *message);
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, MessageHandle message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a read callback (#"
                << sequenceNumber << ")";
-    fn(error, std::move(message));
+    fn(error, std::move(*message));
     TP_VLOG(1) << "Pipe " << id_ << " done calling a read callback (#"
                << sequenceNumber << ")";
   };
@@ -809,8 +812,8 @@ void Pipe::Impl::readFromLoop_(Message message, read_callback_fn fn) {
 
   TP_VLOG(1) << "Pipe " << id_ << " received a read request (#"
              << op.sequenceNumber << ", containing "
-             << op.message.payloads.size() << " payloads and "
-             << op.message.tensors.size() << " tensors)";
+             << op.message->payloads.size() << " payloads and "
+             << op.message->tensors.size() << " tensors)";
 
   advanceReadOperation_(op);
 }
@@ -826,11 +829,13 @@ void Pipe::Impl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
              << " is reading payloads and receiving tensors of message #"
              << op.sequenceNumber;
 
+  const Message& message = *op.message;
+
   TP_DCHECK_EQ(connectionState_, AWAITING_PAYLOADS);
   TP_DCHECK_EQ(messageBeingReadFromConnection_, op.sequenceNumber);
-  for (size_t payloadIdx = 0; payloadIdx < op.message.payloads.size();
+  for (size_t payloadIdx = 0; payloadIdx < message.payloads.size();
        payloadIdx++) {
-    Message::Payload& payload = op.message.payloads[payloadIdx];
+    const Message::Payload& payload = message.payloads[payloadIdx];
     TP_VLOG(3) << "Pipe " << id_ << " is reading payload #" << op.sequenceNumber
                << "." << payloadIdx;
     connection_->read(
@@ -848,11 +853,11 @@ void Pipe::Impl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
   connectionState_ = AWAITING_DESCRIPTOR;
   ++messageBeingReadFromConnection_;
 
-  for (size_t tensorIdx = 0; tensorIdx < op.message.tensors.size();
+  for (size_t tensorIdx = 0; tensorIdx < message.tensors.size();
        tensorIdx++) {
-    Message::Tensor& tensor = op.message.tensors[tensorIdx];
+    const Message::Tensor& tensor = message.tensors[tensorIdx];
     switchOnDeviceType(
-        op.message.tensors[tensorIdx].buffer.type, [&](auto buffer) {
+        message.tensors[tensorIdx].buffer.type, [&](auto buffer) {
           ReadOperation::Tensor& tensorBeingAllocated = op.tensors[tensorIdx];
           std::shared_ptr<channel::Channel<decltype(buffer)>> channel =
               channels_.get<decltype(buffer)>().at(
@@ -873,11 +878,11 @@ void Pipe::Impl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
   }
 }
 
-void Pipe::write(Message message, write_callback_fn fn) {
+void Pipe::write(MessageHandle message, write_callback_fn fn) {
   impl_->write(std::move(message), std::move(fn));
 }
 
-void Pipe::Impl::write(Message message, write_callback_fn fn) {
+void Pipe::Impl::write(MessageHandle message, write_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
   // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   //auto sharedMessage = std::make_shared<Message>(std::move(message));
@@ -888,7 +893,7 @@ void Pipe::Impl::write(Message message, write_callback_fn fn) {
   });
 }
 
-void Pipe::Impl::writeFromLoop_(Message message, write_callback_fn fn) {
+void Pipe::Impl::writeFromLoop_(MessageHandle message, write_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   writeOperations_.emplace_back();
@@ -896,15 +901,15 @@ void Pipe::Impl::writeFromLoop_(Message message, write_callback_fn fn) {
   op.sequenceNumber = nextMessageBeingWritten_++;
 
   TP_VLOG(1) << "Pipe " << id_ << " received a write request (#"
-             << op.sequenceNumber << ", contaning " << message.payloads.size()
-             << " payloads and " << message.tensors.size() << " tensors)";
+             << op.sequenceNumber << ", contaning " << message->payloads.size()
+             << " payloads and " << message->tensors.size() << " tensors)";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, MessageHandle message) {
     TP_DCHECK_EQ(sequenceNumber, nextWriteCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a write callback (#"
                << sequenceNumber << ")";
-    fn(error, std::move(message));
+    fn(error, std::move(*message));
     TP_VLOG(1) << "Pipe " << id_ << " done calling a write callback (#"
                << sequenceNumber << ")";
   };
@@ -931,7 +936,7 @@ void Pipe::Impl::callReadDescriptorCallback_(ReadOperation& op) {
   TP_DCHECK_EQ(op.sequenceNumber, nextMessageAskingForAllocation_);
   ++nextMessageAskingForAllocation_;
 
-  op.readDescriptorCallback(error_, std::move(op.message));
+  op.readDescriptorCallback(error_, std::move(*op.message));
   // Reset callback to release the resources it was holding.
   op.readDescriptorCallback = nullptr;
 }
@@ -945,7 +950,7 @@ void Pipe::Impl::callReadCallback_(ReadOperation& op) {
       op.state == ReadOperation::READING_PAYLOADS_AND_RECEIVING_TENSORS);
   op.state = ReadOperation::FINISHED;
 
-  op.readCallback(error_, std::move(op.message));
+  op.readCallback(error_, std::move(*op.message));
   // Reset callback to release the resources it was holding.
   op.readCallback = nullptr;
 }
@@ -960,7 +965,7 @@ void Pipe::Impl::callWriteCallback_(WriteOperation& op) {
       op.state == WriteOperation::WRITING_PAYLOADS_AND_SENDING_TENSORS);
   op.state = WriteOperation::FINISHED;
 
-  op.writeCallback(error_, std::move(op.message));
+  op.writeCallback(error_, std::move(*op.message));
   // Reset callback to release the resources it was holding.
   op.writeCallback = nullptr;
 }
@@ -1288,8 +1293,10 @@ void Pipe::Impl::sendTensorsOfMessage_(WriteOperation& op) {
   TP_VLOG(2) << "Pipe " << id_ << " is sending tensors of message #"
              << op.sequenceNumber;
 
-  for (int tensorIdx = 0; tensorIdx < op.message.tensors.size(); ++tensorIdx) {
-    const auto& tensor = op.message.tensors[tensorIdx];
+  const Message& message = *op.message;
+
+  for (int tensorIdx = 0; tensorIdx < message.tensors.size(); ++tensorIdx) {
+    const auto& tensor = message.tensors[tensorIdx];
 
     auto t = switchOnDeviceType(tensor.buffer.type, [&](auto buffer) {
       auto& orderedChannels = this->getOrderedChannels_<decltype(buffer)>();
@@ -1358,9 +1365,11 @@ void Pipe::Impl::writeDescriptorAndPayloadsOfMessage_(WriteOperation& op) {
              << op.sequenceNumber << ")";
   connection_->write(holder, std::move(writeCallback));
 
-  for (size_t payloadIdx = 0; payloadIdx < op.message.payloads.size();
+  const Message& message = *op.message;
+
+  for (size_t payloadIdx = 0; payloadIdx < message.payloads.size();
        payloadIdx++) {
-    Message::Payload& payload = op.message.payloads[payloadIdx];
+    const Message::Payload& payload = message.payloads[payloadIdx];
     TP_VLOG(3) << "Pipe " << id_ << " is writing payload #" << op.sequenceNumber
                << "." << payloadIdx;
     connection_->write(
