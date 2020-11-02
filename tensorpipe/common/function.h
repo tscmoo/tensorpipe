@@ -32,9 +32,14 @@ struct alignas(std::max_align_t) Storage {
   }
 };
 
+template<typename T>
+struct ArgType {
+  using type = typename std::conditional_t<std::is_reference_v<T>, T, T&&>;
+};
+
 template<typename R, typename... Args>
 struct Ops : OpsBase {
-  R(*call)(Storage&, Args...) = nullptr;
+  R(*call)(Storage&, Args&&...) = nullptr;
   void(*copyCtor)(Storage&, Storage&) = nullptr;
   void(*copy)(Storage&, Storage&) = nullptr;
   void(*dtor)(Storage&) = nullptr;
@@ -44,7 +49,7 @@ template<typename F, typename R, typename... Args>
 struct OpsConstructor {
   static constexpr Ops<R, Args...> make() {
     Ops<R, Args...> r{sizeof(F)};
-    r.call = [](Storage& s, Args... args) {
+    r.call = [](Storage& s, Args&&... args) {
       //return std::invoke(s.as<F>(), std::forward<Args>(args)...);
       return s.template as<F>()(std::forward<Args>(args)...);
     };
@@ -201,8 +206,8 @@ public:
   }
 
   template<typename F>
-  Function(F f) {
-    *this = std::move(f);
+  Function(F&& f) {
+    *this = std::forward<F>(f);
   }
 
   ~Function() {
@@ -223,20 +228,21 @@ public:
   }
 
   template<typename F>
-  Function& operator=(F f) {
+  Function& operator=(F&& f) {
     if (ops_->dtor) {
       ops_->dtor(*storage_);
     }
+    using FT = std::remove_reference_t<F>;
     static_assert(alignof(F) <= alignof(impl::Storage));
     try {
-      impl::getStorage(storage_, sizeof(F));
-      new (&storage_->template as<F>()) F(std::move(f));
+      impl::getStorage(storage_, sizeof(FT));
+      new (&storage_->template as<FT>()) FT(std::forward<F>(f));
     } catch (...) {
       ops_ = &impl::NullOps<R, Args...>::value;
       *this = nullptr;
       throw;
     }
-    ops_ = &impl::OpsConstructor<F, R, Args...>::value;
+    ops_ = &impl::OpsConstructor<FT, R, Args...>::value;
     storage_->ops_ = ops_;
     return *this;
   }
