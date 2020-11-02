@@ -14,12 +14,6 @@
 
 #include <tensorpipe/core/buffer.h>
 
-#include <atomic>
-
-inline std::atomic<int> messageMoveCount{0};
-
-inline void(*addaddr)() = nullptr;
-
 namespace tensorpipe {
 
 // Messages consist of a primary buffer and zero or more separate
@@ -34,23 +28,8 @@ class Message final {
   Message() = default;
 
   // Messages are movable.
-  Message(Message&& n) {
-    *this = std::move(n);
-  }
-  Message& operator=(Message&& n) {
-    std::swap(metadata, n.metadata);
-    std::swap(payloads, n.payloads);
-    std::swap(tensors, n.tensors);
-    //++messageMoveCount;
-    //addaddr();
-    return *this;
-  };
-
-  void clear() {
-    metadata.clear();
-    payloads.clear();
-    tensors.clear();
-  }
+  Message(Message&&) = default;
+  Message& operator=(Message&&) = default;
 
   // But they are not copyable.
   Message(const Message&) = delete;
@@ -80,95 +59,6 @@ class Message final {
 
   // Holds the tensors that are offered to the side channels.
   std::vector<Tensor> tensors;
-};
-
-namespace impl {
-
-struct LinkedMessage {
-  LinkedMessage* next = nullptr;
-  Message message;
-};
-
-struct MessageFreeList {
-  LinkedMessage* ptr = nullptr;
-  bool dead = false;
-  ~MessageFreeList() {
-    dead = true;
-    while (ptr) {
-      LinkedMessage* next = ptr->next;
-      delete ptr;
-      ptr = next;
-    }
-    ptr = nullptr;
-  }
-  LinkedMessage* allocate() {
-    if (ptr != nullptr) {
-      return std::exchange(ptr, ptr->next);
-    }
-    return new LinkedMessage();
-  }
-  void deallocate(LinkedMessage* obj) {
-    if (!dead) {
-      obj->next = ptr;
-      ptr = obj;
-    } else {
-      delete obj;
-    }
-  }
-};
-
-inline thread_local MessageFreeList messageFreeList;
-
-}
-
-class MessageHandle {
-  impl::LinkedMessage* message_ = nullptr;
-public:
-  MessageHandle() {
-    message_ = impl::messageFreeList.allocate();
-    message_->message.clear();
-  }
-  MessageHandle(Message&& message) {
-    message_ = impl::messageFreeList.allocate();
-    message_->message = std::move(message);
-  }
-  MessageHandle(const MessageHandle&) = delete;
-  MessageHandle(MessageHandle&& n) noexcept {
-    message_ = n.message_;
-    n.message_ = nullptr;
-  }
-  ~MessageHandle() {
-    if (message_) {
-      impl::messageFreeList.deallocate(message_);
-    }
-  }
-
-  MessageHandle& operator=(const MessageHandle&) = delete;
-  MessageHandle& operator=(MessageHandle&& n) noexcept {
-    std::swap(message_, n.message_);
-    return *this;
-  }
-
-  MessageHandle& operator=(Message&& message) noexcept {
-    message_->message = std::move(message);
-//    message_->message.metadata = message.metadata;
-//    message_->message.payloads = message.payloads;
-//    message_->message.tensors = message.tensors;
-    return *this;
-  }
-
-  Message* operator->() noexcept {
-    return &message_->message;
-  }
-  const Message* operator->() const noexcept {
-    return &message_->message;
-  }
-  Message& operator*() noexcept {
-    return message_->message;
-  }
-  const Message& operator*() const noexcept {
-    return message_->message;
-  }
 };
 
 } // namespace tensorpipe
