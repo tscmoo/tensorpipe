@@ -9,6 +9,8 @@
 
 namespace tensorpipe {
 
+namespace function {
+
 namespace impl {
 
 struct OpsBase {
@@ -111,6 +113,7 @@ struct NullOps {
 //  }
 //}
 
+
 template<typename T>
 struct FreeList {
   T* ptr = nullptr;
@@ -126,7 +129,7 @@ struct FreeList {
   }
 };
 
-thread_local inline FreeList<Storage> freeList;
+inline thread_local FreeList<Storage> freeList;
 
 inline Storage* allocStorage(size_t n) {
   void* ptr = std::malloc(sizeof(Storage) + n);
@@ -159,12 +162,12 @@ inline void freeStorage(Storage* s) {
 
 inline void getStorage(Storage*& s, size_t n) {
   if (!s) {
-    s = newStorage(n + 16);
+    s = newStorage(n + 32);
   }
   if (s->allocated_ < n) {
     std::free(s);
     try {
-      s = allocStorage(n + 16);
+      s = allocStorage(n + 32);
     } catch (...) {
       s = nullptr;
       throw;
@@ -302,67 +305,13 @@ public:
     return storage_->as<T>();
   }
 
-//  Function& operator=(const Function& n) {
-//    if (!n.ops_) {
-//      if (ops_ && ops_->dtor) {
-//        ops_->dtor(*storage_);
-//      }
-//      ops_ = nullptr;
-//    } else if (ops_ == n.ops_) {
-//      if (!ops_->dtor) {
-//        std::memcpy(&storage_->template as<char>(), &n.storage_->template as<char>(), ops_->size);
-//      } else {
-//        ops_->copy(*storage_, *n.storage_);
-//      }
-//    } else if (ops_) {
-//      if (ops_->dtor) {
-//        ops_->dtor(*storage_);
-//        ops_ = nullptr;
-//      }
-//      if (!n.ops_->dtor) {
-//        ops_ = n.ops_;
-//        std::memcpy(&storage_->template as<char>(), &n.storage_->template as<char>(), ops_->size);
-//      } else {
-//        ops_->copy(*storage_, *n.storage_);
-//        ops_ = n.ops_;
-//      }
-//    } else {
-//      impl::getStorage(storage_, n.ops_->size);
-//      if (n.ops_->dtor) {
-//        n.ops_->copyCtor(*storage_, *n.storage_);
-//        ops_ = n.ops_;
-//      } else {
-//        ops_ = n.ops_;
-//        std::memcpy(&storage_->template as<char>(), &n.storage_->template as<char>(), ops_->size);
-//      }
-//    }
-//  }
-//  Function& operator=(Function&& n) {
-//    std::swap(ops_, n.ops_);
-//    std::swap(storage_, n.storage_);
-//    return *this;
-//  }
-
-//  Function& operator=(std::nullptr_t) {
-//    if (ops_) {
-//      if (ops_->dtor) {
-//        ops_->dtor(*storage_);
-//      }
-//      ops_ = nullptr;
-//    }
-//    if (storage_) {
-//      impl::freeStorage(storage_);
-//      storage_ = nullptr;
-//    }
-//    return *this;
-//  }
-
-//  explicit operator bool() const {
-//    return ops_ != nullptr;
-//  }
-
 };
 
+}
+
+using FunctionPointer = function::FunctionPointer;
+template<typename T>
+using Function = function::Function<T>;
 
 }
 

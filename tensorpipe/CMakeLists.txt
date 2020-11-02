@@ -11,6 +11,7 @@ add_library(tensorpipe
   common/address.cc
   common/error.cc
   common/fd.cc
+  common/function.cc
   common/socket.cc
   common/system.cc
   core/context.cc
