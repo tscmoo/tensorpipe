@@ -98,70 +98,49 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
   }
 
   void deferToLoop(TTask fn) override {
-    pendingTasks_.push_back(std::move(fn));
+    //pendingTasks_.push_back(std::move(fn));
+    auto* ptr = fn.release();
+    ptr->next = &head_;
+    head_.next = ptr;
     if (currentLoop_ != std::thread::id()) {
       return;
     }
     currentLoop_ = std::this_thread::get_id();
-    while (!pendingTasks_.empty()) {
-      auto f = std::move(pendingTasks_.front());
-      pendingTasks_.pop_front();
-      f();
+    while (head_.next != &head_) {
+      FunctionPointer p = head_.next;
+      fn = p;
+      head_.next = p->next;
+      fn();
     }
     currentLoop_ = std::thread::id();
-//    {
-//      std::unique_lock<std::mutex> lock(mutex_);
-//      pendingTasks_.push_back(std::move(fn));
-//      if (currentLoop_ != std::thread::id()) {
-//        return;
-//      }
-//      currentLoop_ = std::this_thread::get_id();
-//    }
+  }
 
-//    while (true) {
-//      TTask task;
-//      {
-//        std::unique_lock<std::mutex> lock(mutex_);
-//        if (pendingTasks_.empty()) {
-//          currentLoop_ = std::thread::id();
-//          return;
-//        }
-//        task = std::move(pendingTasks_.front());
-//        pendingTasks_.pop_front();
-//      }
-//      task();
-//    }
+  OnDemandDeferredExecutor() {
+    head_.next = &head_;
   }
 
  private:
   //std::mutex mutex_;
-  std::atomic<bool> busy_{false};
+  //std::atomic<bool> busy_{false};
   std::thread::id currentLoop_;
-  std::deque<TTask> pendingTasks_;
+
+  std::remove_pointer_t<FunctionPointer> head_;
 };
 
 class EventLoopDeferredExecutor : public virtual DeferredExecutor {
  public:
   void deferToLoop(TTask fn) override {
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-      if (likely(isThreadConsumingDeferredFunctions_)) {
-        fns_.push_back(std::move(fn));
-        wakeupEventLoopToDeferFunction();
-        return;
-      }
-    }
-    // Must call it without holding the lock, as it could cause a reentrant
-    // call.
-    onDemandLoop_.deferToLoop(std::move(fn));
+    FunctionPointer ptr = fn.release();
+    FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
+    do {
+      ptr->nextAtomic.store(next, std::memory_order_release);
+    } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_relaxed));
+    wakeupEventLoopToDeferFunction();
   };
 
   inline bool inLoop() override {
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-      if (likely(isThreadConsumingDeferredFunctions_)) {
-        return std::this_thread::get_id() == thread_.get_id();
-      }
+    if (std::this_thread::get_id() == thread_.get_id() && isThreadConsumingDeferredFunctions_.load(std::memory_order_relaxed)) {
+      return true;
     }
     return onDemandLoop_.inLoop();
   }
@@ -202,45 +181,78 @@ class EventLoopDeferredExecutor : public virtual DeferredExecutor {
   // method also returns the number of functions it executed, in case the
   // subclass is keeping count.
   size_t runDeferredFunctionsFromEventLoop() {
-    decltype(fns_) fns;
-
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-      std::swap(fns, fns_);
+    FunctionPointer ptr = head_.nextAtomic.load(std::memory_order_relaxed);
+    if (!ptr) {
+      return 0;
     }
+    ptr = head_.nextAtomic.exchange(nullptr, std::memory_order_relaxed);
+    return unrollEventLoopStack(ptr);
+  }
 
-    for (auto& fn : fns) {
-      fn();
-    }
-
-    return fns.size();
+  EventLoopDeferredExecutor() {
+    head_.nextAtomic = nullptr;
   }
 
  private:
+  size_t unrollEventLoopStack(FunctionPointer ptr, int depth = 0) {
+    std::array<FunctionPointer, 16> stack;
+    size_t n = 0;
+    do {
+      FunctionPointer next = ptr->nextAtomic.load(std::memory_order_relaxed);
+      stack[n] = ptr;
+      ++n;
+      ptr = next;
+      if (n >= stack.size()) {
+        n += (depth != 16 ? unrollEventLoopStack(ptr, depth + 1): unrollEventLoopDynamic(ptr));
+      }
+    } while (ptr);
+    size_t index = std::min(n, stack.size());
+    while (index) {
+      --index;
+      Function<void()>{stack[index]}();
+    }
+    return n;
+  }
+  size_t unrollEventLoopDynamic(FunctionPointer ptr) {
+    std::vector<FunctionPointer> vec;
+    do {
+      vec.push_back(ptr);
+      ptr = ptr->nextAtomic.load(std::memory_order_relaxed);
+    } while (ptr);
+    for (size_t i = vec.size(); i;) {
+      --i;
+      Function<void()>{vec[i]}();
+    }
+    return vec.size();
+  }
+
   void loop_(std::string threadName) {
     setThreadName(std::move(threadName));
 
     eventLoop();
 
-    // The loop is winding down and "handing over" control to the on demand
-    // loop. But it can only do so safely once there are no pending deferred
-    // functions, as otherwise those may risk never being executed.
-    while (true) {
-      decltype(fns_) fns;
+    runDeferredFunctionsFromEventLoop();
+    isThreadConsumingDeferredFunctions_ = false;
 
-      {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (fns_.empty()) {
-          isThreadConsumingDeferredFunctions_ = false;
-          break;
-        }
-        std::swap(fns, fns_);
-      }
+//    // The loop is winding down and "handing over" control to the on demand
+//    // loop. But it can only do so safely once there are no pending deferred
+//    // functions, as otherwise those may risk never being executed.
+//    while (true) {
+//      decltype(fns_) fns;
 
-      for (auto& fn : fns) {
-        fn();
-      }
-    }
+//      {
+//        std::unique_lock<std::mutex> lock(mutex_);
+//        if (fns_.empty()) {
+//          isThreadConsumingDeferredFunctions_ = false;
+//          break;
+//        }
+//        std::swap(fns, fns_);
+//      }
+
+//      for (auto& fn : fns) {
+//        fn();
+//      }
+//    }
   }
 
   std::thread thread_;
@@ -256,14 +268,15 @@ class EventLoopDeferredExecutor : public virtual DeferredExecutor {
   // those tasks inline. In order to keep ensuring the single-threadedness
   // assumption of our model (which is what we rely on to be safe from race
   // conditions) we use an on-demand loop.
-  bool isThreadConsumingDeferredFunctions_{true};
+  std::atomic<bool> isThreadConsumingDeferredFunctions_{true};
   OnDemandDeferredExecutor onDemandLoop_;
 
   // Mutex to guard the deferring and the running of functions.
-  std::mutex mutex_;
+  //std::mutex mutex_;
 
   // List of deferred functions to run when the loop is ready.
-  std::vector<Function<void()>> fns_;
+  //std::vector<Function<void()>> fns_;
+  std::remove_pointer_t<FunctionPointer> head_;
 };
 
 } // namespace tensorpipe

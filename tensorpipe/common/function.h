@@ -16,7 +16,12 @@ struct OpsBase {
 };
 
 struct alignas(std::max_align_t) Storage {
-  Storage* next = nullptr;
+  union {
+    Storage* next = nullptr;
+    std::atomic<Storage*> nextAtomic;
+    static_assert(std::is_standard_layout_v<decltype(nextAtomic)>);
+    static_assert(std::is_trivially_destructible_v<decltype(nextAtomic)>);
+  };
   size_t allocated_ = 0;
   const OpsBase* ops_ = nullptr;
   template<typename F>
@@ -169,6 +174,8 @@ inline void getStorage(Storage*& s, size_t n) {
 
 }
 
+using FunctionPointer = impl::Storage*;
+
 template<typename T>
 class Function;
 template<typename R, typename... Args>
@@ -185,6 +192,10 @@ public:
     *this = std::move(n);
   }
   Function(std::nullptr_t) noexcept {}
+  Function(FunctionPointer ptr) noexcept {
+    storage_ = ptr;
+    ops_ = (const impl::Ops<R, Args...>*)ptr->ops_;
+  }
 
   template<typename F>
   Function(F f) {
@@ -193,6 +204,19 @@ public:
 
   ~Function() {
     *this = nullptr;
+  }
+
+  FunctionPointer release() noexcept{
+    auto r = storage_;
+    storage_ = nullptr;
+    ops_ = &impl::NullOps<R, Args...>::value;
+    return r;
+  }
+
+  Function& operator=(FunctionPointer ptr) noexcept {
+    *this = nullptr;
+    storage_ = ptr;
+    ops_ = (const impl::Ops<R, Args...>*)ptr->ops_;
   }
 
   template<typename F>
