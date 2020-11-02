@@ -35,26 +35,26 @@ class Message final {
   Message(const Message&) = delete;
   Message& operator=(const Message&) = delete;
 
-  std::string metadata;
+//  std::string metadata;
 
-  struct Payload {
-    void* data{nullptr};
-    size_t length{0};
+//  struct Payload {
+//    void* data{nullptr};
+//    size_t length{0};
 
-    // Users may include arbitrary metadata in the following fields.
-    // This may contain allocation hints for the receiver, for example.
-    std::string metadata;
-  };
+//    // Users may include arbitrary metadata in the following fields.
+//    // This may contain allocation hints for the receiver, for example.
+//    std::string metadata;
+//  };
 
-  // Holds the payloads that are transferred over the primary connection.
-  std::vector<Payload> payloads;
+//  // Holds the payloads that are transferred over the primary connection.
+//  std::vector<Payload> payloads;
 
   struct Tensor {
     tensorpipe::Buffer buffer;
 
     // Users may include arbitrary metadata in the following field.
     // This may contain allocation hints for the receiver, for example.
-    std::string metadata;
+    //std::string metadata;
   };
 
   // Holds the tensors that are offered to the side channels.

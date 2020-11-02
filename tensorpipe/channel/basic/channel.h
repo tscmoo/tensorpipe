@@ -38,7 +38,7 @@ class Channel : public channel::CpuChannel {
       TSendCallback callback) override;
 
   // Receive memory region from peer.
-  void recv(TDescriptor descriptor, CpuBuffer buffer, TRecvCallback callback)
+  void recv(CpuBuffer buffer, TRecvCallback callback)
       override;
 
   // Tell the channel what its identifier is.

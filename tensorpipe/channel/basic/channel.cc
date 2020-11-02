@@ -39,7 +39,7 @@ class Channel::Impl : public std::enable_shared_from_this<Channel::Impl> {
       TDescriptorCallback descriptorCallback,
       TSendCallback callback);
 
-  void recv(TDescriptor descriptor, CpuBuffer buffer, TRecvCallback callback);
+  void recv(CpuBuffer buffer, TRecvCallback callback);
 
   // Tell the channel what its identifier is.
   void setId(std::string id);
@@ -56,7 +56,6 @@ class Channel::Impl : public std::enable_shared_from_this<Channel::Impl> {
 
   // Receive memory region from peer.
   void recvFromLoop_(
-      TDescriptor descriptor,
       CpuBuffer buffer,
       TRecvCallback callback);
 
@@ -153,11 +152,11 @@ void Channel::Impl::sendFromLoop_(
   descriptorCallback = [this,
                         sequenceNumber,
                         descriptorCallback{std::move(descriptorCallback)}](
-                           const Error& error, TDescriptor descriptor) {
+                           const Error& error) {
     // There is no requirement for the channel to invoke callbacks in order.
     TP_VLOG(4) << "Channel " << id_ << " is calling a descriptor callback (#"
                << sequenceNumber << ")";
-    descriptorCallback(error, std::move(descriptor));
+    descriptorCallback(error);
     TP_VLOG(4) << "Channel " << id_ << " done calling a descriptor callback (#"
                << sequenceNumber << ")";
   };
@@ -173,7 +172,7 @@ void Channel::Impl::sendFromLoop_(
   };
 
   if (error_) {
-    descriptorCallback(error_, std::string());
+    descriptorCallback(error_);
     callback(error_);
     return;
   }
@@ -190,31 +189,27 @@ void Channel::Impl::sendFromLoop_(
             callback(impl.error_);
           }));
 
-  descriptorCallback(Error::kSuccess, std::string());
+  descriptorCallback(Error::kSuccess);
 }
 
 // Receive memory region from peer.
 void Channel::recv(
-    TDescriptor descriptor,
     CpuBuffer buffer,
     TRecvCallback callback) {
-  impl_->recv(std::move(descriptor), buffer, std::move(callback));
+  impl_->recv(buffer, std::move(callback));
 }
 
 void Channel::Impl::recv(
-    TDescriptor descriptor,
     CpuBuffer buffer,
     TRecvCallback callback) {
   loop_.deferToLoop([this,
-                     descriptor{std::move(descriptor)},
                      buffer,
                      callback{std::move(callback)}]() mutable {
-    recvFromLoop_(std::move(descriptor), buffer, std::move(callback));
+    recvFromLoop_(buffer, std::move(callback));
   });
 }
 
 void Channel::Impl::recvFromLoop_(
-    TDescriptor descriptor,
     CpuBuffer buffer,
     TRecvCallback callback) {
   TP_DCHECK(loop_.inLoop());
@@ -238,7 +233,7 @@ void Channel::Impl::recvFromLoop_(
     return;
   }
 
-  TP_DCHECK_EQ(descriptor, std::string());
+  //TP_DCHECK_EQ(descriptor, std::string());
 
   TP_VLOG(6) << "Channel " << id_ << " is reading payload (#" << sequenceNumber
              << ")";

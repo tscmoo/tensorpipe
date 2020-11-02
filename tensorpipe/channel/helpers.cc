@@ -14,27 +14,27 @@
 namespace tensorpipe {
 namespace channel {
 
-TDescriptor saveDescriptor(const AbstractNopHolder& object) {
-  const size_t len = object.getSize();
-  TDescriptor out(len, '\0');
-  NopWriter writer(
-      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(out.data())), len);
+//TDescriptor saveDescriptor(const AbstractNopHolder& object) {
+//  const size_t len = object.getSize();
+//  TDescriptor out(len, '\0');
+//  NopWriter writer(
+//      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(out.data())), len);
 
-  nop::Status<void> status = object.write(writer);
-  TP_THROW_ASSERT_IF(status.has_error())
-      << "Error saving descriptor: " << status.GetErrorMessage();
+//  nop::Status<void> status = object.write(writer);
+//  TP_THROW_ASSERT_IF(status.has_error())
+//      << "Error saving descriptor: " << status.GetErrorMessage();
 
-  return out;
-}
+//  return out;
+//}
 
-void loadDescriptor(AbstractNopHolder& object, const TDescriptor& in) {
-  const size_t len = in.size();
-  NopReader reader(reinterpret_cast<const uint8_t*>(in.data()), len);
+//void loadDescriptor(AbstractNopHolder& object, const TDescriptor& in) {
+//  const size_t len = in.size();
+//  NopReader reader(reinterpret_cast<const uint8_t*>(in.data()), len);
 
-  nop::Status<void> status = object.read(reader);
-  TP_THROW_ASSERT_IF(status.has_error())
-      << "Error loading descriptor: " << status.GetErrorMessage();
-}
+//  nop::Status<void> status = object.read(reader);
+//  TP_THROW_ASSERT_IF(status.has_error())
+//      << "Error loading descriptor: " << status.GetErrorMessage();
+//}
 
 } // namespace channel
 } // namespace tensorpipe
