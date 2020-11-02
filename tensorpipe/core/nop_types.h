@@ -92,29 +92,27 @@ struct MessageDescriptor {
     TensorDescriptor(){};
 
     int64_t sizeInBytes;
-    //std::string metadata;
+    std::string metadata;
 
-    NOP_STRUCTURE(TensorDescriptor, sizeInBytes);
-
-//    DeviceType deviceType;
-//    std::string channelName;
-//    std::string channelDescriptor;
-//    NOP_STRUCTURE(
-//        TensorDescriptor,
-//        sizeInBytes,
-//        metadata,
-//        deviceType,
-//        channelName,
-//        channelDescriptor);
+    DeviceType deviceType;
+    std::string channelName;
+    std::string channelDescriptor;
+    NOP_STRUCTURE(
+        TensorDescriptor,
+        sizeInBytes,
+        metadata,
+        deviceType,
+        channelName,
+        channelDescriptor);
   };
 
-  //std::string metadata;
-  //std::vector<PayloadDescriptor> payloadDescriptors;
+  std::string metadata;
+  std::vector<PayloadDescriptor> payloadDescriptors;
   std::vector<TensorDescriptor> tensorDescriptors;
   NOP_STRUCTURE(
       MessageDescriptor,
-      //metadata,
-      //payloadDescriptors,
+      metadata,
+      payloadDescriptors,
       tensorDescriptors);
 };
 

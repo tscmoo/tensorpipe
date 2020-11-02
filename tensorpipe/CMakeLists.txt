@@ -37,26 +37,26 @@ target_sources(tensorpipe PRIVATE
 
 ### xth
 
-#target_sources(tensorpipe PRIVATE
-#  channel/xth/channel.cc
-#  channel/xth/context.cc)
+target_sources(tensorpipe PRIVATE
+  channel/xth/channel.cc
+  channel/xth/context.cc)
 
 ### cma
 
-#if(TP_ENABLE_CMA)
-#  target_sources(tensorpipe PRIVATE
-#    channel/cma/channel.cc
-#    channel/cma/context.cc)
-#  set(TENSORPIPE_HAS_CMA_CHANNEL 1)
-#else()
-#  set(TENSORPIPE_HAS_CMA_CHANNEL 0)
-#endif()
+if(TP_ENABLE_CMA)
+  target_sources(tensorpipe PRIVATE
+    channel/cma/channel.cc
+    channel/cma/context.cc)
+  set(TENSORPIPE_HAS_CMA_CHANNEL 1)
+else()
+  set(TENSORPIPE_HAS_CMA_CHANNEL 0)
+endif()
 
 ### mpt
 
-#target_sources(tensorpipe PRIVATE
-#  channel/mpt/channel.cc
-#  channel/mpt/context.cc)
+target_sources(tensorpipe PRIVATE
+  channel/mpt/channel.cc
+  channel/mpt/context.cc)
 
 ## CUDA channels
 
