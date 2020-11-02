@@ -22,6 +22,7 @@
 
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/system.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 
@@ -37,7 +38,7 @@ namespace tensorpipe {
 // provide.
 class DeferredExecutor {
  public:
-  using TTask = std::function<void()>;
+  using TTask = Function<void()>;
 
   virtual void deferToLoop(TTask fn) = 0;
 
@@ -56,18 +57,16 @@ class DeferredExecutor {
     if (inLoop()) {
       fn();
     } else {
-      // Must use a copyable wrapper around std::promise because
-      // we use it from a std::function which must be copyable.
-      auto promise = std::make_shared<std::promise<void>>();
-      auto future = promise->get_future();
+      std::promise<void> promise;
+      auto future = promise.get_future();
       // Marked as mutable because the fn might hold some state (e.g., the
       // closure of a lambda) which it might want to modify.
-      deferToLoop([promise, fn{std::forward<F>(fn)}]() mutable {
+      deferToLoop([&promise, fn{std::forward<F>(fn)}]() mutable {
         try {
           fn();
-          promise->set_value();
+          promise.set_value();
         } catch (...) {
-          promise->set_exception(std::current_exception());
+          promise.set_exception(std::current_exception());
         }
       });
       future.get();
@@ -99,33 +98,45 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
   }
 
   void deferToLoop(TTask fn) override {
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-      pendingTasks_.push_back(std::move(fn));
-      if (currentLoop_ != std::thread::id()) {
-        return;
-      }
-      currentLoop_ = std::this_thread::get_id();
+    pendingTasks_.push_back(std::move(fn));
+    if (currentLoop_ != std::thread::id()) {
+      return;
     }
+    currentLoop_ = std::this_thread::get_id();
+    while (!pendingTasks_.empty()) {
+      auto f = std::move(pendingTasks_.front());
+      pendingTasks_.pop_front();
+      f();
+    }
+    currentLoop_ = std::thread::id();
+//    {
+//      std::unique_lock<std::mutex> lock(mutex_);
+//      pendingTasks_.push_back(std::move(fn));
+//      if (currentLoop_ != std::thread::id()) {
+//        return;
+//      }
+//      currentLoop_ = std::this_thread::get_id();
+//    }
 
-    while (true) {
-      TTask task;
-      {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (pendingTasks_.empty()) {
-          currentLoop_ = std::thread::id();
-          return;
-        }
-        task = std::move(pendingTasks_.front());
-        pendingTasks_.pop_front();
-      }
-      task();
-    }
+//    while (true) {
+//      TTask task;
+//      {
+//        std::unique_lock<std::mutex> lock(mutex_);
+//        if (pendingTasks_.empty()) {
+//          currentLoop_ = std::thread::id();
+//          return;
+//        }
+//        task = std::move(pendingTasks_.front());
+//        pendingTasks_.pop_front();
+//      }
+//      task();
+//    }
   }
 
  private:
-  std::mutex mutex_;
-  std::atomic<std::thread::id> currentLoop_{std::thread::id()};
+  //std::mutex mutex_;
+  std::atomic<bool> busy_{false};
+  std::thread::id currentLoop_;
   std::deque<TTask> pendingTasks_;
 };
 
@@ -252,7 +263,7 @@ class EventLoopDeferredExecutor : public virtual DeferredExecutor {
   std::mutex mutex_;
 
   // List of deferred functions to run when the loop is ready.
-  std::vector<std::function<void()>> fns_;
+  std::vector<Function<void()>> fns_;
 };
 
 } // namespace tensorpipe

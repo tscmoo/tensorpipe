@@ -54,7 +54,7 @@ class Context::Impl : public Context::PrivateIface,
 
   bool inLoop() override;
 
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   std::shared_ptr<TCPHandle> createHandle() override;
 
@@ -278,7 +278,7 @@ bool Context::Impl::inLoop() {
   return loop_.inLoop();
 };
 
-void Context::Impl::deferToLoop(std::function<void()> fn) {
+void Context::Impl::deferToLoop(Function<void()> fn) {
   loop_.deferToLoop(std::move(fn));
 };
 

@@ -16,6 +16,7 @@
 #include <tensorpipe/channel/mpt/context.h>
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/transport/context.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 namespace channel {
@@ -26,7 +27,7 @@ class Context::PrivateIface {
   virtual ClosingEmitter& getClosingEmitter() = 0;
 
   using connection_request_callback_fn =
-      std::function<void(const Error&, std::shared_ptr<transport::Connection>)>;
+      Function<void(const Error&, std::shared_ptr<transport::Connection>)>;
 
   virtual const std::vector<std::string>& addresses() const = 0;
 

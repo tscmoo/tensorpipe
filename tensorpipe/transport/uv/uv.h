@@ -82,7 +82,7 @@ class BaseHandle : public BaseResource<T, U> {
   }
 
  public:
-  using TCloseCallback = std::function<void()>;
+  using TCloseCallback = Function<void()>;
 
   explicit BaseHandle(
       typename BaseResource<T, U>::ConstructorToken /* unused */,
@@ -147,7 +147,7 @@ class WriteRequest final : public BaseRequest<WriteRequest, uv_write_t> {
   }
 
  public:
-  using TWriteCallback = std::function<void(int status)>;
+  using TWriteCallback = Function<void(int status)>;
 
   WriteRequest(ConstructorToken /* unused */, Loop& loop, TWriteCallback fn)
       : BaseRequest<WriteRequest, uv_write_t>(ConstructorToken(), loop),
@@ -194,10 +194,10 @@ class StreamHandle : public BaseHandle<T, U> {
   static constexpr int kBacklog = 128;
 
  public:
-  using TConnectionCallback = std::function<void(int status)>;
-  using TAcceptCallback = std::function<void(int status)>;
-  using TAllocCallback = std::function<void(uv_buf_t* buf)>;
-  using TReadCallback = std::function<void(ssize_t nread, const uv_buf_t* buf)>;
+  using TConnectionCallback = Function<void(int status)>;
+  using TAcceptCallback = Function<void(int status)>;
+  using TAllocCallback = Function<void(uv_buf_t* buf)>;
+  using TReadCallback = Function<void(ssize_t nread, const uv_buf_t* buf)>;
 
   using BaseHandle<T, U>::BaseHandle;
 
@@ -281,7 +281,7 @@ class ConnectRequest : public BaseRequest<ConnectRequest, uv_connect_t> {
   }
 
  public:
-  using TConnectCallback = std::function<void(int status)>;
+  using TConnectCallback = Function<void(int status)>;
 
   ConnectRequest(
       BaseResource<ConnectRequest, uv_connect_t>::ConstructorToken /* unused */,

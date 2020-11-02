@@ -50,7 +50,7 @@ class Context::Impl : public Context::PrivateIface,
 
   bool inLoop() override;
 
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   void registerDescriptor(
       int fd,
@@ -189,7 +189,7 @@ bool Context::Impl::inLoop() {
   return reactor_.inLoop();
 };
 
-void Context::Impl::deferToLoop(std::function<void()> fn) {
+void Context::Impl::deferToLoop(Function<void()> fn) {
   reactor_.deferToLoop(std::move(fn));
 };
 

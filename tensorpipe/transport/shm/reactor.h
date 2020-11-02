@@ -21,6 +21,7 @@
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/common/fd.h>
 #include <tensorpipe/common/optional.h>
+#include <tensorpipe/common/function.h>
 #include <tensorpipe/util/ringbuffer/consumer.h>
 #include <tensorpipe/util/ringbuffer/producer.h>
 #include <tensorpipe/util/shm/segment.h>
@@ -42,7 +43,7 @@ class Reactor final : public BusyPollingLoop {
   static constexpr auto kSize = 4 * 1024 * 1024;
 
  public:
-  using TFunction = std::function<void()>;
+  using TFunction = Function<void()>;
   using TToken = uint32_t;
 
   Reactor();

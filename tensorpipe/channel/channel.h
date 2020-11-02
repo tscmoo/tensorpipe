@@ -13,6 +13,7 @@
 
 #include <tensorpipe/channel/context.h>
 #include <tensorpipe/common/error.h>
+#include <tensorpipe/common/function.h>
 
 // Channels are an out of band mechanism to transfer data between
 // processes. Examples include a direct address space to address space
@@ -45,9 +46,9 @@ namespace tensorpipe {
 namespace channel {
 
 using TDescriptor = std::string;
-using TDescriptorCallback = std::function<void(const Error&, TDescriptor)>;
-using TSendCallback = std::function<void(const Error&)>;
-using TRecvCallback = std::function<void(const Error&)>;
+using TDescriptorCallback = Function<void(const Error&, TDescriptor)>;
+using TSendCallback = Function<void(const Error&)>;
+using TRecvCallback = Function<void(const Error&)>;
 
 // Abstract base class for channel classes.
 template <typename TBuffer>

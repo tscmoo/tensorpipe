@@ -22,7 +22,7 @@ class Context::PrivateIface {
  public:
   virtual ClosingEmitter& getClosingEmitter() = 0;
 
-  using copy_request_callback_fn = std::function<void(const Error&)>;
+  using copy_request_callback_fn = Function<void(const Error&)>;
 
   virtual void requestCopy(
       void* remotePtr,

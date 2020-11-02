@@ -13,6 +13,7 @@
 #include <string>
 
 #include <tensorpipe/common/error.h>
+#include <tensorpipe/common/function.h>
 #include <tensorpipe/transport/context.h>
 
 namespace tensorpipe {
@@ -21,7 +22,7 @@ namespace transport {
 class Listener {
  public:
   using accept_callback_fn =
-      std::function<void(const Error& error, std::shared_ptr<Connection>)>;
+      Function<void(const Error& error, std::shared_ptr<Connection>)>;
 
   virtual void accept(accept_callback_fn fn) = 0;
 

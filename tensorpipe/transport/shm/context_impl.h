@@ -32,7 +32,7 @@ class Context::PrivateIface : public DeferredExecutor {
   virtual void unregisterDescriptor(int fd) = 0;
 
   using TToken = uint32_t;
-  using TFunction = std::function<void()>;
+  using TFunction = Function<void()>;
 
   virtual TToken addReaction(TFunction fn) = 0;
 

@@ -21,7 +21,7 @@ namespace tensorpipe {
 
 class Listener::PrivateIface {
  public:
-  using connection_request_callback_fn = std::function<
+  using connection_request_callback_fn = Function<
       void(const Error&, std::string, std::shared_ptr<transport::Connection>)>;
 
   virtual uint64_t registerConnectionRequest(

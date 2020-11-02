@@ -114,19 +114,21 @@ bool Reactor::pollOnce() {
   }
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
-  TFunction fn;
+  functions_[token]();
 
-  // Make copy of std::function so we don't need
-  // to hold the lock while executing it.
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
-    TP_DCHECK_LT(token, functions_.size());
-    fn = functions_[token];
-  }
+//  TFunction fn;
 
-  if (fn) {
-    fn();
-  }
+//  // Make copy of Function so we don't need
+//  // to hold the lock while executing it.
+//  {
+//    std::unique_lock<std::mutex> lock(mutex_);
+//    TP_DCHECK_LT(token, functions_.size());
+//    fn = functions_[token];
+//  }
+
+//  if (fn) {
+//    fn();
+//  }
 
   return true;
 }

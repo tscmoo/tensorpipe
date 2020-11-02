@@ -13,6 +13,7 @@
 
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/nop.h>
+#include <tensorpipe/common/function.h>
 #include <tensorpipe/transport/context.h>
 
 namespace tensorpipe {
@@ -21,13 +22,13 @@ namespace transport {
 class Connection {
  public:
   using read_callback_fn =
-      std::function<void(const Error& error, const void* ptr, size_t len)>;
+      Function<void(const Error& error, const void* ptr, size_t len)>;
 
   virtual void read(read_callback_fn fn) = 0;
 
   virtual void read(void* ptr, size_t length, read_callback_fn fn) = 0;
 
-  using write_callback_fn = std::function<void(const Error& error)>;
+  using write_callback_fn = Function<void(const Error& error)>;
 
   virtual void write(const void* ptr, size_t length, write_callback_fn fn) = 0;
 
@@ -43,7 +44,7 @@ class Connection {
   // temporary buffer and instead instead read directly from its peer's
   // ring buffer. This saves an allocation and a memory copy.
   //
-  using read_nop_callback_fn = std::function<void(const Error& error)>;
+  using read_nop_callback_fn = Function<void(const Error& error)>;
 
   virtual void read(AbstractNopHolder& object, read_nop_callback_fn fn);
 
