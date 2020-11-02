@@ -65,17 +65,17 @@ class Pipe final {
   //
 
   using read_descriptor_callback_fn =
-      Function<void(const Error&, Message&&)>;
+      Function<void(const Error&, Message)>;
 
   void readDescriptor(read_descriptor_callback_fn);
 
-  using read_callback_fn = Function<void(const Error&, Message&&)>;
+  using read_callback_fn = Function<void(const Error&, Message)>;
 
-  void read(MessageHandle, read_callback_fn);
+  void read(Message, read_callback_fn);
 
-  using write_callback_fn = Function<void(const Error&, Message&&)>;
+  using write_callback_fn = Function<void(const Error&, Message)>;
 
-  void write(MessageHandle, write_callback_fn);
+  void write(Message, write_callback_fn);
 
   // Retrieve the user-defined name that was given to the constructor of the
   // context on the remote side, if any (if not, this will be the empty string).
