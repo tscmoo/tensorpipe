@@ -35,6 +35,12 @@ class Message final {
   Message(const Message&) = delete;
   Message& operator=(const Message&) = delete;
 
+  void clear() {
+    metadata.clear();
+    payloads.clear();
+    tensors.clear();
+  }
+
   std::string metadata;
 
   struct Payload {

@@ -9,9 +9,11 @@
 #include <tensorpipe/core/pipe.h>
 
 #include <algorithm>
-#include <deque>
 #include <mutex>
 #include <unordered_map>
+
+#include <tensorpipe/common/circular_vector.h>
+#include <tensorpipe/common/allocator.h>
 
 #include <tensorpipe/channel/channel.h>
 #include <tensorpipe/common/address.h>
@@ -47,6 +49,19 @@ struct ReadOperation {
   bool doneGettingAllocation{false};
   int64_t numPayloadsBeingRead{0};
   int64_t numTensorsBeingReceived{0};
+
+  void clear() {
+    state = UNINITIALIZED;
+    doneReadingDescriptor = false;
+    doneGettingAllocation = false;
+    numPayloadsBeingRead = 0;
+    numTensorsBeingReceived = 0;
+    readDescriptorCallback = nullptr;
+    readCallback = nullptr;
+    payloads.clear();
+    tensors.clear();
+    message.clear();
+  }
 
   // Callbacks.
   Pipe::read_descriptor_callback_fn readDescriptorCallback;
@@ -174,6 +189,16 @@ struct WriteOperation {
   int64_t numPayloadsBeingWritten{0};
   int64_t numTensorDescriptorsBeingCollected{0};
   int64_t numTensorsBeingSent{0};
+
+  void clear() {
+    state = UNINITIALIZED;
+    numPayloadsBeingWritten = 0;
+    numTensorDescriptorsBeingCollected = 0;
+    numTensorsBeingSent = 0;
+    writeCallback = nullptr;
+    message.clear();
+    tensors.clear();
+  }
 
   // Callbacks.
   Pipe::write_callback_fn writeCallback;
@@ -414,8 +439,8 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
 
   ClosingReceiver closingReceiver_;
 
-  std::deque<ReadOperation> readOperations_;
-  std::deque<WriteOperation> writeOperations_;
+  std::deque<ReadOperation*, TestAllocator<ReadOperation*>> readOperations_;
+  std::deque<WriteOperation*, TestAllocator<WriteOperation*>> writeOperations_;
 
   // A sequence number for the calls to read and write.
   uint64_t nextMessageBeingRead_{0};
@@ -736,8 +761,10 @@ void Pipe::Impl::readDescriptor(read_descriptor_callback_fn fn) {
 void Pipe::Impl::readDescriptorFromLoop_(read_descriptor_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
-  readOperations_.emplace_back();
-  ReadOperation& op = readOperations_.back();
+  ReadOperation& op = *TestAllocator<ReadOperation, nullptr, true>().allocate(1);
+  readOperations_.push_back(&op);
+  //readOperations_.emplace_back();
+  //ReadOperation& op = readOperations_.back();
   op.sequenceNumber = nextMessageBeingRead_++;
 
   TP_VLOG(1) << "Pipe " << id_ << " received a readDescriptor request (#"
@@ -891,8 +918,10 @@ void Pipe::Impl::write(Message&& message, write_callback_fn fn) {
 void Pipe::Impl::writeFromLoop_(Message&& message, write_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
-  writeOperations_.emplace_back();
-  WriteOperation& op = writeOperations_.back();
+  WriteOperation& op = *TestAllocator<WriteOperation, nullptr, true>().allocate(1);
+  writeOperations_.push_back(&op);
+  //writeOperations_.emplace_back();
+  //WriteOperation& op = writeOperations_.back();
   op.sequenceNumber = nextMessageBeingWritten_++;
 
   TP_VLOG(1) << "Pipe " << id_ << " received a write request (#"
@@ -1003,10 +1032,10 @@ void Pipe::Impl::handleError_() {
   });
 
   if (!readOperations_.empty()) {
-    advanceReadOperation_(readOperations_.front());
+    advanceReadOperation_(*readOperations_.front());
   }
   if (!writeOperations_.empty()) {
-    advanceWriteOperation_(writeOperations_.front());
+    advanceWriteOperation_(*writeOperations_.front());
   }
 }
 
@@ -1019,7 +1048,7 @@ void Pipe::Impl::startReadingUponEstablishingPipe_() {
   TP_DCHECK_EQ(state_, ESTABLISHED);
 
   if (!readOperations_.empty()) {
-    advanceReadOperation_(readOperations_.front());
+    advanceReadOperation_(*readOperations_.front());
   }
 }
 
@@ -1028,7 +1057,7 @@ void Pipe::Impl::startWritingUponEstablishingPipe_() {
   TP_DCHECK_EQ(state_, ESTABLISHED);
 
   if (!writeOperations_.empty()) {
-    advanceWriteOperation_(writeOperations_.front());
+    advanceWriteOperation_(*writeOperations_.front());
   }
 }
 
@@ -1123,7 +1152,9 @@ bool Pipe::Impl::advanceOneReadOperation_(ReadOperation& op) {
   bool hasAdvanced = op.state != initialState;
 
   if (op.state == ReadOperation::FINISHED) {
-    TP_DCHECK_EQ(readOperations_.front().sequenceNumber, op.sequenceNumber);
+    TP_DCHECK_EQ(readOperations_.front()->sequenceNumber, op.sequenceNumber);
+    readOperations_.front()->clear();
+    TestAllocator<ReadOperation, nullptr, true>().deallocate(readOperations_.front(), 1);
     readOperations_.pop_front();
   }
 
@@ -1215,7 +1246,9 @@ bool Pipe::Impl::advanceOneWriteOperation_(WriteOperation& op) {
   bool hasAdvanced = op.state != initialState;
 
   if (op.state == WriteOperation::FINISHED) {
-    TP_DCHECK_EQ(writeOperations_.front().sequenceNumber, op.sequenceNumber);
+    TP_DCHECK_EQ(writeOperations_.front()->sequenceNumber, op.sequenceNumber);
+    writeOperations_.front()->clear();
+    TestAllocator<WriteOperation, nullptr, true>().deallocate(writeOperations_.front(), 1);
     writeOperations_.pop_front();
   }
 
@@ -1728,11 +1761,11 @@ ReadOperation* Pipe::Impl::findReadOperation(int64_t sequenceNumber) {
   if (readOperations_.empty()) {
     return nullptr;
   }
-  int64_t offset = sequenceNumber - readOperations_.front().sequenceNumber;
+  int64_t offset = sequenceNumber - readOperations_.front()->sequenceNumber;
   if (offset < 0 || offset >= readOperations_.size()) {
     return nullptr;
   }
-  ReadOperation& op = readOperations_[offset];
+  ReadOperation& op = *readOperations_[offset];
   TP_DCHECK_EQ(op.sequenceNumber, sequenceNumber);
   return &op;
 }
@@ -1741,11 +1774,11 @@ WriteOperation* Pipe::Impl::findWriteOperation(int64_t sequenceNumber) {
   if (writeOperations_.empty()) {
     return nullptr;
   }
-  int64_t offset = sequenceNumber - writeOperations_.front().sequenceNumber;
+  int64_t offset = sequenceNumber - writeOperations_.front()->sequenceNumber;
   if (offset < 0 || offset >= writeOperations_.size()) {
     return nullptr;
   }
-  WriteOperation& op = writeOperations_[offset];
+  WriteOperation& op = *writeOperations_[offset];
   TP_DCHECK_EQ(op.sequenceNumber, sequenceNumber);
   return &op;
 }
