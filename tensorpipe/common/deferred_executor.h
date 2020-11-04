@@ -94,7 +94,7 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
     // race and we will detect it correctly. If this is not the case, then this
     // check may race with another thread, but that's nothing to worry about
     // because in either case the outcome will be negative.
-    return currentLoop_ == std::this_thread::get_id();
+    return currentLoop_.load(std::memory_order_relaxed) == std::this_thread::get_id();
   }
 
   void deferToLoop(TTask fn) override {
@@ -112,7 +112,7 @@ protected:
     FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
     do {
       ptr->nextAtomic.store(next, std::memory_order_relaxed);
-    } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_relaxed));
+    } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_acquire));
   }
 
   void loop() {
@@ -126,17 +126,16 @@ protected:
         return;
       }
       runDeferredFunctions();
-      currentLoop_.store(std::thread::id(), std::memory_order_relaxed);
-    } while (head_.nextAtomic.load(std::memory_order_relaxed));
+      currentLoop_.store(std::thread::id(), std::memory_order_release);
+    } while (head_.nextAtomic.load(std::memory_order_acquire));
   }
-
 
   size_t runDeferredFunctions() {
     FunctionPointer ptr = head_.nextAtomic.load(std::memory_order_relaxed);
     if (!ptr) {
       return 0;
     }
-    ptr = head_.nextAtomic.exchange(nullptr, std::memory_order_relaxed);
+    ptr = head_.nextAtomic.exchange(nullptr, std::memory_order_acquire);
     return unrollEventLoopStack(ptr);
   }
 
@@ -150,7 +149,7 @@ protected:
     } while (ptr && n != stack.size());
     size_t index = n;
     if (ptr) {
-      n += depth != 16 ? unrollEventLoopStack(ptr, depth + 1): unrollEventLoopDynamic(ptr);
+      n += depth != 16 ? unrollEventLoopStack(ptr, depth + 1) : unrollEventLoopDynamic(ptr);
     }
     while (index) {
       --index;
@@ -172,8 +171,6 @@ protected:
     return vec.size();
   }
 
-  //std::mutex mutex_;
-  //std::atomic<bool> busy_{false};
   std::atomic<std::thread::id> currentLoop_;
 
   std::remove_pointer_t<FunctionPointer> head_;
@@ -244,26 +241,6 @@ class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
 
     isThreadConsumingDeferredFunctions_ = false;
     loop();
-
-//    // The loop is winding down and "handing over" control to the on demand
-//    // loop. But it can only do so safely once there are no pending deferred
-//    // functions, as otherwise those may risk never being executed.
-//    while (true) {
-//      decltype(fns_) fns;
-
-//      {
-//        std::unique_lock<std::mutex> lock(mutex_);
-//        if (fns_.empty()) {
-//          isThreadConsumingDeferredFunctions_ = false;
-//          break;
-//        }
-//        std::swap(fns, fns_);
-//      }
-
-//      for (auto& fn : fns) {
-//        fn();
-//      }
-//    }
   }
 
   std::thread thread_;
@@ -280,13 +257,6 @@ class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
   // assumption of our model (which is what we rely on to be safe from race
   // conditions) we use an on-demand loop.
   std::atomic<bool> isThreadConsumingDeferredFunctions_{true};
-  //OnDemandDeferredExecutor onDemandLoop_;
-
-  // Mutex to guard the deferring and the running of functions.
-  //std::mutex mutex_;
-
-  // List of deferred functions to run when the loop is ready.
-  //std::vector<Function<void()>> fns_;
 };
 
 } // namespace tensorpipe
