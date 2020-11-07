@@ -108,11 +108,74 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
 
 protected:
 
+  struct Queue {
+    struct Item {
+      std::atomic<Item*> next{nullptr};
+      std::array<FunctionPointer, 16> queue;
+      std::atomic<size_t> rn{0};
+    };
+    Queue* next = nullptr;
+    OnDemandDeferredExecutor* lastExecutor = nullptr;
+    Item* lastItem = nullptr;
+    OnDemandDeferredExecutor* secondLastExecutor = nullptr;
+    Item* secondLastItem = nullptr;
+
+    std::unordered_map<OnDemandDeferredExecutor*, Item> items;
+  };
+
+  Queue& getThreadQueue() {
+    thread_local Queue queue;
+    return queue;
+  }
+
+  std::atomic<Queue::Item*> queue_ = nullptr;
+
+  std::atomic<size_t> queuedFunctionCount_ = 0;
+
   void enqueue(FunctionPointer ptr) {
+    //printf("queue function into %p\n", this);
+//    Queue& tq = getThreadQueue();
+//    Queue::Item* i = tq.lastItem;
+//    if (tq.lastExecutor != this) {
+//      std::swap(tq.lastExecutor, tq.secondLastExecutor);
+//      std::swap(tq.lastItem, tq.secondLastItem);
+//      i = tq.lastItem;
+//      if (tq.lastExecutor != this) {
+//        auto [it, inserted] = tq.items.try_emplace(this);
+//        i = &it->second;
+//        if (inserted) {
+//          Queue::Item* q = queue_.load(std::memory_order_relaxed);
+//          do {
+//            i->next = q;
+//          } while (!queue_.compare_exchange_weak(q, i, std::memory_order_relaxed));
+
+//          //printf("Item %p inserted\n", i);
+//        }
+//        tq.lastExecutor = this;
+//        tq.lastItem = i;
+//      }
+//    }
     FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
     do {
       ptr->nextAtomic.store(next, std::memory_order_relaxed);
     } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_acquire));
+
+//    size_t offset = i->rn.load(std::memory_order_relaxed);
+//    if (offset < i->queue.size()) {
+//      do {
+//        i->queue[offset] = ptr;
+//      } while (!i->rn.compare_exchange_weak(offset, offset + 1));
+//      //printf("function %p queued at offset %d of item %p\n", ptr, offset, i);
+//      //i->wn = offset + 1;
+//    } else {
+//      //printf("global function queued :(\n");
+//      FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
+//      do {
+//        ptr->nextAtomic.store(next, std::memory_order_relaxed);
+//      } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_acquire));
+//    }
+
+//    queuedFunctionCount_.fetch_add(1, std::memory_order_relaxed);
   }
 
   void loop() {
@@ -127,10 +190,30 @@ protected:
       }
       runDeferredFunctions();
       currentLoop_.store(std::thread::id(), std::memory_order_release);
+    //} while (queuedFunctionCount_.load(std::memory_order_relaxed));
     } while (head_.nextAtomic.load(std::memory_order_acquire));
   }
 
   size_t runDeferredFunctions() {
+    //printf("run %p\n", this);
+//    int r = 0;
+//    Queue::Item* q = queue_.load(std::memory_order_relaxed);
+//    while (q) {
+//      size_t n = q->rn.load(std::memory_order_acquire);
+//      if (n) {
+//        //printf("got an n of %d\n", n);
+//        size_t i = 0;
+//        do {
+//          for (; i != n; ++i) {
+//            //printf("execute function %p, number %d of item %p\n", q->queue[i], i, q);
+//            Function<void()>{q->queue[i]}();
+//            ++r;
+//          }
+//          //printf("done executing %d\n", i);
+//        } while (!q->rn.compare_exchange_weak(n, 0));
+//      }
+//      q = q->next.load(std::memory_order_relaxed);
+//    }
     FunctionPointer ptr = head_.nextAtomic.load(std::memory_order_relaxed);
     if (!ptr) {
       return 0;
