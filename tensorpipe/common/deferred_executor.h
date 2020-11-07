@@ -26,6 +26,30 @@
 
 namespace tensorpipe {
 
+class alignas(64) SpinMutex {
+  int lock_;
+public:
+  void lock() {
+    asm volatile (""
+    "movl $1, %%edx\n"
+    "xor %%rax, %%rax\n"
+    "XACQUIRE lock cmpxchgl %%edx, (%0)\n"
+    "jz 2f\n"
+    "1:\n"
+    "rep nop\n"
+    "movl (%0), %%eax\n"
+    "testl %%eax, %%eax\n"
+    "jnz 1b\n"
+    "2:\n"
+    :
+    : "r"(&lock_)
+    : "memory", "cc", "%rax", "%rdx");
+  }
+  void unlock() {
+    asm volatile ("XRELEASE movl $0, (%0)"::"r"(&lock_):"memory");
+  }
+};
+
 // Dealing with thread-safety using per-object mutexes is prone to deadlocks
 // because of reentrant calls (both "upward", when invoking a callback that
 // calls back into a method of the object, and "downward", when passing a
@@ -94,86 +118,75 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
     // race and we will detect it correctly. If this is not the case, then this
     // check may race with another thread, but that's nothing to worry about
     // because in either case the outcome will be negative.
-    return currentLoop_.load(std::memory_order_relaxed) == std::this_thread::get_id();
+    return currentLoop_ == std::this_thread::get_id();
   }
 
   void deferToLoop(TTask fn) override {
-    enqueue(fn.release());
-    loop();
-  }
-
-  OnDemandDeferredExecutor() {
-    head_.nextAtomic = nullptr;
+    std::unique_lock l(mutex);
+    if (queue.empty() && currentLoop_ == std::thread::id()) {
+      currentLoop_ = std::this_thread::get_id(); // exception safety?
+      l.unlock();
+      fn();
+      l.lock();
+      if (!queue.empty()) {
+        unloadQueue(l);
+      }
+      currentLoop_ = std::thread::id();
+    } else {
+      queue.push_back(fn.release());
+      if (currentLoop_ == std::thread::id()) {
+        currentLoop_ = std::this_thread::get_id();
+        unloadQueue(l);
+        currentLoop_ = std::thread::id();
+      }
+    }
   }
 
 protected:
 
+  std::vector<FunctionPointer> queue;
+  SpinMutex mutex;
   void enqueue(FunctionPointer ptr) {
-    FunctionPointer next = head_.nextAtomic.load(std::memory_order_relaxed);
+    std::lock_guard l(mutex);
+    queue.push_back(ptr);
+  }
+
+  size_t unloadQueue(std::unique_lock<SpinMutex>& l) {
+    thread_local std::vector<FunctionPointer> localQueue;
+    auto& lq = localQueue;
+    size_t r = 0;
     do {
-      ptr->nextAtomic.store(next, std::memory_order_relaxed);
-    } while (!head_.nextAtomic.compare_exchange_weak(next, ptr, std::memory_order_acquire));
+      std::swap(queue, lq);
+      l.unlock();
+      for (FunctionPointer f : lq) {
+        Function<void()>{f}();
+      }
+      r += lq.size();
+      lq.clear();
+      l.lock();
+    } while (!queue.empty());
+    return r;
   }
 
   void loop() {
-    static_assert(std::atomic<std::thread::id>::is_always_lock_free);
-    do {
-      auto owner = currentLoop_.load(std::memory_order_relaxed);
-      if (owner != std::thread::id()) {
-        return;
-      }
-      if (!currentLoop_.compare_exchange_strong(owner, std::this_thread::get_id(), std::memory_order_relaxed)) {
-        return;
-      }
-      runDeferredFunctions();
-      currentLoop_.store(std::thread::id(), std::memory_order_release);
-    } while (head_.nextAtomic.load(std::memory_order_acquire));
+    std::unique_lock l(mutex);
+    if (currentLoop_ != std::thread::id()) {
+      return;
+    }
+    currentLoop_ = std::this_thread::get_id();
+    unloadQueue(l);
+    currentLoop_ = std::thread::id();
   }
 
   size_t runDeferredFunctions() {
-    FunctionPointer ptr = head_.nextAtomic.load(std::memory_order_relaxed);
-    if (!ptr) {
+    std::unique_lock l(mutex);
+    if (queue.empty()) {
       return 0;
     }
-    ptr = head_.nextAtomic.exchange(nullptr, std::memory_order_acquire);
-    return unrollEventLoopStack(ptr);
+    return unloadQueue(l);
   }
 
-  size_t unrollEventLoopStack(FunctionPointer ptr, int depth = 0) {
-    std::array<FunctionPointer, 16> stack;
-    size_t n = 0;
-    do {
-      stack[n] = ptr;
-      ++n;
-      ptr = ptr->nextAtomic.load(std::memory_order_relaxed);
-    } while (ptr && n != stack.size());
-    size_t index = n;
-    if (ptr) {
-      n += depth != 16 ? unrollEventLoopStack(ptr, depth + 1) : unrollEventLoopDynamic(ptr);
-    }
-    while (index) {
-      --index;
-      Function<void()>{stack[index]}();
-    }
-    return n;
-  }
-
-  size_t unrollEventLoopDynamic(FunctionPointer ptr) {
-    std::vector<FunctionPointer> vec;
-    do {
-      vec.push_back(ptr);
-      ptr = ptr->nextAtomic.load(std::memory_order_relaxed);
-    } while (ptr);
-    for (size_t i = vec.size(); i;) {
-      --i;
-      Function<void()>{vec[i]}();
-    }
-    return vec.size();
-  }
-
-  std::atomic<std::thread::id> currentLoop_;
-
-  std::remove_pointer_t<FunctionPointer> head_;
+  std::thread::id currentLoop_;
 };
 
 class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
@@ -224,10 +237,6 @@ class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
   // subclass is keeping count.
   size_t runDeferredFunctionsFromEventLoop() {
     return runDeferredFunctions();
-  }
-
-  EventLoopDeferredExecutor() {
-    head_.nextAtomic = nullptr;
   }
 
  private:
