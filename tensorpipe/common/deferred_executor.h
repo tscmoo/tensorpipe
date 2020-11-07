@@ -30,23 +30,24 @@ class alignas(64) SpinMutex {
   int lock_;
 public:
   void lock() {
+    long tmp, tmp2;
     asm volatile (""
     "movl $1, %%edx\n"
     "xor %%rax, %%rax\n"
-    "XACQUIRE lock cmpxchgl %%edx, (%0)\n"
+    "xacquire lock cmpxchgl %%edx, (%2)\n"
     "jz 2f\n"
     "1:\n"
-    "rep nop\n"
-    "movl (%0), %%eax\n"
+    "pause\n"
+    "movl (%2), %%eax\n"
     "testl %%eax, %%eax\n"
     "jnz 1b\n"
     "2:\n"
-    :
+    : "+a"(tmp), "+d"(tmp2)
     : "r"(&lock_)
-    : "memory", "cc", "%rax", "%rdx");
+    : "memory", "cc");
   }
   void unlock() {
-    asm volatile ("XRELEASE movl $0, (%0)"::"r"(&lock_):"memory");
+    asm volatile ("xrelease movl $0, (%0)"::"r"(&lock_):"memory");
   }
 };
 
