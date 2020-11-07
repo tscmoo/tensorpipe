@@ -40,6 +40,7 @@ struct ArgType {
 template<typename R, typename... Args>
 struct Ops : OpsBase {
   R(*call)(Storage&, Args&&...) = nullptr;
+  R(*callAndDtor)(Storage&, Args&&...) = nullptr;
   void(*copyCtor)(Storage&, Storage&) = nullptr;
   void(*copy)(Storage&, Storage&) = nullptr;
   void(*dtor)(Storage&) = nullptr;
@@ -48,10 +49,21 @@ struct Ops : OpsBase {
 template<typename F, typename R, typename... Args>
 struct OpsConstructor {
   static constexpr Ops<R, Args...> make() {
-    Ops<R, Args...> r{sizeof(F)};
+    Ops<R, Args...> r{{sizeof(F)}};
     r.call = [](Storage& s, Args&&... args) {
       //return std::invoke(s.as<F>(), std::forward<Args>(args)...);
       return s.template as<F>()(std::forward<Args>(args)...);
+    };
+    r.callAndDtor = [](Storage& s, Args&&... args) {
+      F& f = s.template as<F>();
+      if constexpr (std::is_same_v<R, void>) {
+        f(std::forward<Args>(args)...);
+        f.~F();
+      } else {
+        auto r = f(std::forward<Args>(args)...);
+        f.~F();
+        return r;
+      }
     };
     if (!std::is_trivially_destructible<F>::value) {
       r.dtor = [](Storage& s) {
@@ -247,10 +259,22 @@ public:
     return *this;
   }
 
-  R operator()(Args... args) const {
+  R operator()(Args... args) const & {
     return ops_->call(*storage_, std::forward<Args>(args)...);
   }
 
+  R operator()(Args... args) && {
+    if constexpr (std::is_same_v<R, void>) {
+      ops_->callAndDtor(*storage_, std::forward<Args>(args)...);
+      ops_ = &impl::NullOps<R, Args...>::value;
+      *this = nullptr;
+    } else {
+      auto r = ops_->callAndDtor(*storage_, std::forward<Args>(args)...);
+      ops_ = &impl::NullOps<R, Args...>::value;
+      *this = nullptr;
+      return r;
+    }
+  }
 
   Function& operator=(const Function& n) {
     if (!n.storage_) {
@@ -283,6 +307,7 @@ public:
         }
       }
     }
+    return *this;
   }
   Function& operator=(Function&& n) noexcept {
     std::swap(ops_, n.ops_);
