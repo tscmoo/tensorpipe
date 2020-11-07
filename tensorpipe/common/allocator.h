@@ -22,14 +22,14 @@ public:
 
   T* allocate(size_t n) {
     if (n == 1) {
-      return allocateImpl<false>(1);
+      return allocateImpl<true>(1);
     } else {
       return allocateImpl<true>(n);
     }
   }
   void deallocate(T* ptr, size_t n) {
     if (n == 1) {
-      deallocateImpl<false>(ptr, 1);
+      deallocateImpl<true>(ptr, 1);
     } else {
       deallocateImpl<true>(ptr, n);
     }
@@ -89,7 +89,7 @@ private:
     } else {
       s = tls.extract();
       if (multi && s->allocated < n) {
-        if (constructObjects) {
+        if constexpr (constructObjects) {
           s->object()->~T();
         }
         std::free(s);
@@ -98,12 +98,14 @@ private:
         construct = constructObjects;
       }
     }
-    if (constructObjects && construct) {
-      try {
-        return new (s->object()) T();
-      } catch (...) {
-        std::free(s);
-        throw;
+    if constexpr (constructObjects) {
+      if (construct) {
+        try {
+          return new (s->object()) T();
+        } catch (...) {
+          std::free(s);
+          throw;
+        }
       }
     }
     return s->object();
