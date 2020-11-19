@@ -16,7 +16,27 @@
 #include <tensorpipe/common/deferred_executor.h>
 #include <tensorpipe/common/system.h>
 
+#include <semaphore.h>
+
 namespace tensorpipe {
+
+class Semaphore {
+  sem_t sem;
+
+ public:
+  Semaphore() {
+    sem_init(&sem, 1, 0);
+  }
+  ~Semaphore() {
+    sem_destroy(&sem);
+  }
+  void post() {
+    sem_post(&sem);
+  }
+  void wait() {
+    sem_wait(&sem);
+  }
+};
 
 class BusyPollingLoop : public EventLoopDeferredExecutor {
  protected:
@@ -24,9 +44,11 @@ class BusyPollingLoop : public EventLoopDeferredExecutor {
 
   virtual bool readyToClose() = 0;
 
+  Semaphore sem;
+
   void stopBusyPolling() {
     closed_ = true;
-    // No need to wake up the thread, since it is busy-waiting.
+    //sem.post();
   }
 
   void eventLoop() override {
@@ -36,14 +58,14 @@ class BusyPollingLoop : public EventLoopDeferredExecutor {
       } else if (deferredFunctionCount_ > 0) {
         deferredFunctionCount_ -= runDeferredFunctionsFromEventLoop();
       } else {
-        std::this_thread::yield();
+        //sem.wait();
       }
     }
   };
 
   void wakeupEventLoopToDeferFunction() override {
     ++deferredFunctionCount_;
-    // No need to wake up the thread, since it is busy-waiting.
+    //sem.post();
   };
 
  private:

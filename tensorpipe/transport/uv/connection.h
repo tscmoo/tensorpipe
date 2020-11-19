@@ -43,6 +43,12 @@ class Connection : public transport::Connection {
       std::string addr,
       std::string id);
 
+  // Obtain the local address.
+  std::string localAddr() const;
+
+  // Obtain the remote address.
+  std::string remoteAddr() const;
+
   // Queue a read operation.
   void read(read_callback_fn fn) override;
   void read(void* ptr, size_t length, read_callback_fn fn) override;

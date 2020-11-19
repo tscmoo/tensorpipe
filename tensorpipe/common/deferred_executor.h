@@ -26,13 +26,14 @@
 
 namespace tensorpipe {
 
+//using SpinMutex = std::mutex;
 class alignas(64) SpinMutex {
-  int lock_;
+  int lock_ = 0;
 public:
   void lock() {
     long tmp, tmp2;
     asm volatile (""
-    "movl $1, %%edx\n"
+    "3:movl $1, %%edx\n"
     "xor %%rax, %%rax\n"
     "xacquire lock cmpxchgl %%edx, (%2)\n"
     "jz 2f\n"
@@ -41,6 +42,7 @@ public:
     "movl (%2), %%eax\n"
     "testl %%eax, %%eax\n"
     "jnz 1b\n"
+    "jmp 3b\n"
     "2:\n"
     : "+a"(tmp), "+d"(tmp2)
     : "r"(&lock_)
@@ -187,7 +189,7 @@ protected:
     return unloadQueue(l);
   }
 
-  std::thread::id currentLoop_;
+  std::atomic<std::thread::id> currentLoop_;
 };
 
 class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {

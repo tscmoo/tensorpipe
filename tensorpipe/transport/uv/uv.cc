@@ -47,6 +47,16 @@ Sockaddr TCPHandle::sockNameFromLoop() {
   return Sockaddr(addr, addrlen);
 }
 
+Sockaddr TCPHandle::peerNameFromLoop() {
+  TP_DCHECK(this->loop_.inLoop());
+  struct sockaddr_storage ss;
+  struct sockaddr* addr = reinterpret_cast<struct sockaddr*>(&ss);
+  int addrlen = sizeof(ss);
+  auto rv = uv_tcp_getpeername(ptr(), addr, &addrlen);
+  TP_THROW_UV_IF(rv < 0, rv);
+  return Sockaddr(addr, addrlen);
+}
+
 void TCPHandle::connectFromLoop(
     const Sockaddr& addr,
     ConnectRequest::TConnectCallback fn) {

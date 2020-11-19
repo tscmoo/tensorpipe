@@ -40,6 +40,12 @@ class Connection::Impl : public std::enable_shared_from_this<Connection::Impl> {
   // Initialize member fields that need `shared_from_this`.
   void init();
 
+  // Obtain the local address.
+  std::string localAddr() const;
+
+  // Obtain the remote address.
+  std::string remoteAddr() const;
+
   // Queue a read operation.
   void read(read_callback_fn fn);
   void read(void* ptr, size_t length, read_callback_fn fn);
@@ -56,6 +62,12 @@ class Connection::Impl : public std::enable_shared_from_this<Connection::Impl> {
  private:
   // Initialize member fields that need `shared_from_this`.
   void initFromLoop();
+
+  // Obtain the local address.
+  std::string localAddrFromLoop() const;
+
+  // Obtain the remote address.
+  std::string remoteAddrFromLoop() const;
 
   // Queue a read operation.
   void readFromLoop(read_callback_fn fn);
@@ -394,8 +406,38 @@ Connection::Connection(
   impl_->init();
 }
 
+std::string Connection::localAddr() const {
+  return impl_->localAddr();
+}
+
+std::string Connection::remoteAddr() const {
+  return impl_->remoteAddr();
+}
+
 void Connection::Impl::init() {
   context_->deferToLoop([impl{shared_from_this()}]() { impl->initFromLoop(); });
+}
+
+std::string Connection::Impl::localAddr() const {
+  std::string addr;
+  context_->runInLoop([this, &addr]() { addr = localAddrFromLoop(); });
+  return addr;
+}
+
+std::string Connection::Impl::remoteAddr() const {
+  std::string addr;
+  context_->runInLoop([this, &addr]() { addr = remoteAddrFromLoop(); });
+  return addr;
+}
+
+std::string Connection::Impl::localAddrFromLoop() const {
+  TP_DCHECK(context_->inLoop());
+  return handle_->sockNameFromLoop().str();
+}
+
+std::string Connection::Impl::remoteAddrFromLoop() const {
+  TP_DCHECK(context_->inLoop());
+  return handle_->peerNameFromLoop().str();
 }
 
 void Connection::read(read_callback_fn fn) {

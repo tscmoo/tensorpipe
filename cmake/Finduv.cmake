@@ -35,7 +35,7 @@ if((NOT TP_BUILD_LIBUV) AND PkgConfig_FOUND)
   endif()
 endif()
 
-if(NOT uv_FOUND)
+if(1)
   set(uv_VERSION "1.38.1")
   set(uv_LIBRARY_DIRS "submodule")
 

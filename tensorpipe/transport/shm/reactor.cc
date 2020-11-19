@@ -22,7 +22,8 @@ void writeToken(util::ringbuffer::Producer& producer, Reactor::TToken token) {
     auto rv = producer.write(&token, sizeof(token));
     if (rv == -EAGAIN) {
       // There's contention on the spin-lock, wait for it by retrying.
-      std::this_thread::yield();
+      //std::terminate();
+      //std::this_thread::yield();
       continue;
     }
     if (rv == -ENOSPC) {
@@ -32,7 +33,8 @@ void writeToken(util::ringbuffer::Producer& producer, Reactor::TToken token) {
       // proceed to consume data from the ringbuffer. This could also happen
       // across multiple processes. This case seems remote enough, and a proper
       // solution rather complicated, that we're going to take that risk...
-      std::this_thread::yield();
+      //std::terminate();
+      //std::this_thread::yield();
       continue;
     }
     TP_DCHECK_EQ(rv, sizeof(token));
@@ -114,21 +116,21 @@ bool Reactor::pollOnce() {
   }
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
-  functions_[token]();
+  //functions_[token]();
 
-//  TFunction fn;
+  TFunction fn;
 
-//  // Make copy of Function so we don't need
-//  // to hold the lock while executing it.
-//  {
-//    std::unique_lock<std::mutex> lock(mutex_);
-//    TP_DCHECK_LT(token, functions_.size());
-//    fn = functions_[token];
-//  }
+  // Make copy of Function so we don't need
+  // to hold the lock while executing it.
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    TP_DCHECK_LT(token, functions_.size());
+    fn = functions_[token];
+  }
 
-//  if (fn) {
-//    fn();
-//  }
+  if (fn) {
+    fn();
+  }
 
   return true;
 }

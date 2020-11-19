@@ -239,26 +239,6 @@ public:
     ops_ = (const impl::Ops<R, Args...>*)ptr->ops_;
   }
 
-  template<typename F>
-  Function& operator=(F&& f) {
-    if (ops_->dtor) {
-      ops_->dtor(*storage_);
-    }
-    using FT = std::remove_reference_t<F>;
-    static_assert(alignof(F) <= alignof(impl::Storage));
-    try {
-      impl::getStorage(storage_, sizeof(FT));
-      new (&storage_->template as<FT>()) FT(std::forward<F>(f));
-    } catch (...) {
-      ops_ = &impl::NullOps<R, Args...>::value;
-      *this = nullptr;
-      throw;
-    }
-    ops_ = &impl::OpsConstructor<FT, R, Args...>::value;
-    storage_->ops_ = ops_;
-    return *this;
-  }
-
   R operator()(Args... args) const & {
     return ops_->call(*storage_, std::forward<Args>(args)...);
   }
@@ -324,6 +304,26 @@ public:
       impl::freeStorage(storage_);
       storage_ = nullptr;
     }
+    return *this;
+  }
+
+  template<typename F, std::enable_if_t<!std::is_same_v<std::remove_reference_t<F>, Function>>* = nullptr>
+  Function& operator=(F&& f) {
+    if (ops_->dtor) {
+      ops_->dtor(*storage_);
+    }
+    using FT = std::remove_reference_t<F>;
+    static_assert(alignof(F) <= alignof(impl::Storage));
+    try {
+      impl::getStorage(storage_, sizeof(FT));
+      new (&storage_->template as<FT>()) FT(std::forward<F>(f));
+    } catch (...) {
+      ops_ = &impl::NullOps<R, Args...>::value;
+      *this = nullptr;
+      throw;
+    }
+    ops_ = &impl::OpsConstructor<FT, R, Args...>::value;
+    storage_->ops_ = ops_;
     return *this;
   }
 

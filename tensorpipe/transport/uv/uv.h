@@ -313,6 +313,7 @@ class TCPHandle : public StreamHandle<TCPHandle, uv_tcp_t> {
   [[nodiscard]] int bindFromLoop(const Sockaddr& addr);
 
   Sockaddr sockNameFromLoop();
+  Sockaddr peerNameFromLoop();
 
   void connectFromLoop(
       const Sockaddr& addr,

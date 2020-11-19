@@ -13,6 +13,7 @@
 #include <deque>
 #include <vector>
 
+#include <tensorpipe/common/allocator.h>
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/epoll_loop.h>
