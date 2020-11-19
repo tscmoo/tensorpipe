@@ -155,8 +155,9 @@ protected:
   }
 
   size_t unloadQueue(std::unique_lock<SpinMutex>& l) {
-    thread_local std::vector<FunctionPointer> localQueue;
-    auto& lq = localQueue;
+    thread_local std::vector<FunctionPointer> localQueue[10];
+    thread_local int index = 0;
+    auto& lq = localQueue[index++];
     size_t r = 0;
     do {
       std::swap(queue, lq);
@@ -168,6 +169,7 @@ protected:
       lq.clear();
       l.lock();
     } while (!queue.empty());
+    --index;
     return r;
   }
 
