@@ -17,6 +17,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/optional.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 
@@ -36,7 +37,7 @@ class StreamReadOperation {
 
  public:
   using read_callback_fn =
-      std::function<void(const Error& error, const void* ptr, size_t len)>;
+      Function<void(const Error& error, const void* ptr, size_t len)>;
 
   explicit inline StreamReadOperation(read_callback_fn fn);
 
@@ -145,7 +146,7 @@ void StreamReadOperation::callbackFromLoop(const Error& error) {
 // must remain valid until the write callback has been called.
 class StreamWriteOperation {
  public:
-  using write_callback_fn = std::function<void(const Error& error)>;
+  using write_callback_fn = Function<void(const Error& error)>;
 
   inline StreamWriteOperation(
       const void* ptr,

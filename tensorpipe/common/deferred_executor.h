@@ -22,6 +22,7 @@
 
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/system.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 
@@ -37,7 +38,7 @@ namespace tensorpipe {
 // provide.
 class DeferredExecutor {
  public:
-  using TTask = std::function<void()>;
+  using TTask = Function<void()>;
 
   virtual void deferToLoop(TTask fn) = 0;
 
@@ -56,18 +57,16 @@ class DeferredExecutor {
     if (inLoop()) {
       fn();
     } else {
-      // Must use a copyable wrapper around std::promise because
-      // we use it from a std::function which must be copyable.
-      auto promise = std::make_shared<std::promise<void>>();
-      auto future = promise->get_future();
+      std::promise<void> promise;
+      auto future = promise.get_future();
       // Marked as mutable because the fn might hold some state (e.g., the
       // closure of a lambda) which it might want to modify.
-      deferToLoop([promise, fn{std::forward<F>(fn)}]() mutable {
+      deferToLoop([&promise, fn{std::forward<F>(fn)}]() mutable {
         try {
           fn();
-          promise->set_value();
+          promise.set_value();
         } catch (...) {
-          promise->set_exception(std::current_exception());
+          promise.set_exception(std::current_exception());
         }
       });
       future.get();
@@ -252,7 +251,7 @@ class EventLoopDeferredExecutor : public virtual DeferredExecutor {
   std::mutex mutex_;
 
   // List of deferred functions to run when the loop is ready.
-  std::vector<std::function<void()>> fns_;
+  std::vector<Function<void()>> fns_;
 };
 
 } // namespace tensorpipe

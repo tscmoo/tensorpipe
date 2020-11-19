@@ -37,7 +37,7 @@ class ContextImpl final
 
   // Implement the DeferredExecutor interface.
   bool inLoop() override;
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   void registerDescriptor(
       int fd,

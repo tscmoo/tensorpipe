@@ -116,7 +116,7 @@ bool Reactor::pollOnce() {
 
   TFunction fn;
 
-  // Make copy of std::function so we don't need
+  // Make copy of Function so we don't need
   // to hold the lock while executing it.
   {
     std::unique_lock<std::mutex> lock(mutex_);
