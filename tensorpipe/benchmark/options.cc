@@ -16,7 +16,7 @@
 #include <tensorpipe/benchmark/channel_registry.h>
 #include <tensorpipe/benchmark/transport_registry.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace benchmark {
 
 void validateTransportContext(std::shared_ptr<transport::Context> context) {

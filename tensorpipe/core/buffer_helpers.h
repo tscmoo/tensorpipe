@@ -13,14 +13,14 @@
 
 #define TP_CPU_DEVICE_FIELD_AND_ACCESSOR(t)          \
   t cpu;                                             \
-  auto& get_(::tensorpipe::CpuBuffer /* unused */) { \
+  auto& get_(::rpc_tensorpipe::CpuBuffer /* unused */) { \
     return cpu;                                      \
   }
 
 #if TENSORPIPE_SUPPORTS_CUDA
 #define TP_CUDA_DEVICE_FIELD_AND_ACCESSOR(t)          \
   t cuda;                                             \
-  auto& get_(::tensorpipe::CudaBuffer /* unused */) { \
+  auto& get_(::rpc_tensorpipe::CudaBuffer /* unused */) { \
     return cuda;                                      \
   }
 #else
@@ -40,7 +40,7 @@
     }                                             \
   }
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 template <typename TVisitor>
 constexpr auto switchOnDeviceType(DeviceType dt, TVisitor visitor) {
@@ -64,4 +64,4 @@ void forEachDeviceType(TVisitor visitor) {
 #endif // TENSORPIPE_SUPPORTS_CUDA
 }
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

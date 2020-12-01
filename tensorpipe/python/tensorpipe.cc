@@ -22,7 +22,7 @@ namespace py = pybind11;
 
 namespace {
 
-using tensorpipe::optional;
+using rpc_tensorpipe::optional;
 
 // RAII wrapper to reliably release every buffer we get.
 class BufferWrapper {
@@ -100,13 +100,13 @@ class OutgoingMessage {
         tensors(tensors) {}
 };
 
-tensorpipe::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
-  tensorpipe::Message tpMessage{
+rpc_tensorpipe::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
+  rpc_tensorpipe::Message tpMessage{
       {reinterpret_cast<char*>(pyMessage->metadata.ptr()),
        pyMessage->metadata.length()}};
   tpMessage.payloads.reserve(pyMessage->payloads.size());
   for (const auto& pyPayload : pyMessage->payloads) {
-    tensorpipe::Message::Payload tpPayload{
+    rpc_tensorpipe::Message::Payload tpPayload{
         pyPayload->buffer.ptr(),
         pyPayload->buffer.length(),
         {reinterpret_cast<char*>(pyPayload->metadata.ptr()),
@@ -115,8 +115,8 @@ tensorpipe::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
   }
   tpMessage.tensors.reserve(pyMessage->tensors.size());
   for (const auto& pyTensor : pyMessage->tensors) {
-    tensorpipe::Message::Tensor tpTensor{
-        tensorpipe::CpuBuffer{pyTensor->buffer.ptr(),
+    rpc_tensorpipe::Message::Tensor tpTensor{
+        rpc_tensorpipe::CpuBuffer{pyTensor->buffer.ptr(),
                               pyTensor->buffer.length()},
         {reinterpret_cast<char*>(pyTensor->metadata.ptr()),
          pyTensor->metadata.length()}};
@@ -177,7 +177,7 @@ class IncomingMessage {
 };
 
 std::shared_ptr<IncomingMessage> prepareToAllocate(
-    const tensorpipe::Message& tpMessage) {
+    const rpc_tensorpipe::Message& tpMessage) {
   std::vector<std::shared_ptr<IncomingPayload>> pyPayloads;
   pyPayloads.reserve(tpMessage.payloads.size());
   for (const auto& tpPayload : tpMessage.payloads) {
@@ -197,19 +197,19 @@ std::shared_ptr<IncomingMessage> prepareToAllocate(
   return pyMessage;
 }
 
-tensorpipe::Message prepareToRead(std::shared_ptr<IncomingMessage> pyMessage) {
-  tensorpipe::Message tpMessage;
+rpc_tensorpipe::Message prepareToRead(std::shared_ptr<IncomingMessage> pyMessage) {
+  rpc_tensorpipe::Message tpMessage;
   tpMessage.payloads.reserve(pyMessage->payloads.size());
   for (const auto& pyPayload : pyMessage->payloads) {
     TP_THROW_ASSERT_IF(!pyPayload->buffer.has_value()) << "No buffer";
-    tensorpipe::Message::Payload tpPayload{pyPayload->buffer.value().ptr(),
+    rpc_tensorpipe::Message::Payload tpPayload{pyPayload->buffer.value().ptr(),
                                            pyPayload->buffer.value().length()};
     tpMessage.payloads.push_back(std::move(tpPayload));
   }
   tpMessage.tensors.reserve(pyMessage->tensors.size());
   for (const auto& pyTensor : pyMessage->tensors) {
     TP_THROW_ASSERT_IF(!pyTensor->buffer.has_value()) << "No buffer";
-    tensorpipe::Message::Tensor tpTensor{tensorpipe::CpuBuffer{
+    rpc_tensorpipe::Message::Tensor tpTensor{rpc_tensorpipe::CpuBuffer{
         pyTensor->buffer.value().ptr(), pyTensor->buffer.value().length()}};
     tpMessage.tensors.push_back(std::move(tpTensor));
   }
@@ -221,11 +221,11 @@ using shared_ptr_class_ = py::class_<T, std::shared_ptr<T>>;
 
 template <typename T>
 using transport_class_ =
-    py::class_<T, tensorpipe::transport::Context, std::shared_ptr<T>>;
+    py::class_<T, rpc_tensorpipe::transport::Context, std::shared_ptr<T>>;
 
 template <typename T>
 using channel_class_ =
-    py::class_<T, tensorpipe::channel::CpuContext, std::shared_ptr<T>>;
+    py::class_<T, rpc_tensorpipe::channel::CpuContext, std::shared_ptr<T>>;
 
 } // namespace
 
@@ -234,9 +234,9 @@ PYBIND11_MODULE(pytensorpipe, module) {
       "These bindings are EXPERIMENTAL, intended to give a PREVIEW of the API, "
       "and, as such, may CHANGE AT ANY TIME.");
 
-  shared_ptr_class_<tensorpipe::Context> context(module, "Context");
-  shared_ptr_class_<tensorpipe::Listener> listener(module, "Listener");
-  shared_ptr_class_<tensorpipe::Pipe> pipe(module, "Pipe");
+  shared_ptr_class_<rpc_tensorpipe::Context> context(module, "Context");
+  shared_ptr_class_<rpc_tensorpipe::Listener> listener(module, "Listener");
+  shared_ptr_class_<rpc_tensorpipe::Pipe> pipe(module, "Pipe");
 
   shared_ptr_class_<OutgoingPayload> outgoingPayload(module, "OutgoingPayload");
   outgoingPayload.def(
@@ -291,31 +291,31 @@ PYBIND11_MODULE(pytensorpipe, module) {
   context.def(py::init<>());
   context.def(
       "listen",
-      [](std::shared_ptr<tensorpipe::Context> context,
+      [](std::shared_ptr<rpc_tensorpipe::Context> context,
          const std::vector<std::string>& urls) {
         return context->listen(urls);
       },
       py::arg("urls"));
   context.def(
       "connect",
-      [](std::shared_ptr<tensorpipe::Context> context, const std::string& url) {
+      [](std::shared_ptr<rpc_tensorpipe::Context> context, const std::string& url) {
         return context->connect(url);
       },
       py::arg("url"));
 
   context.def(
       "join",
-      &tensorpipe::Context::join,
+      &rpc_tensorpipe::Context::join,
       py::call_guard<py::gil_scoped_release>());
 
   // Callback registration.
 
   listener.def(
       "listen",
-      [](std::shared_ptr<tensorpipe::Listener> listener, py::object callback) {
+      [](std::shared_ptr<rpc_tensorpipe::Listener> listener, py::object callback) {
         listener->accept([callback{std::move(callback)}](
-                             const tensorpipe::Error& error,
-                             std::shared_ptr<tensorpipe::Pipe> pipe) mutable {
+                             const rpc_tensorpipe::Error& error,
+                             std::shared_ptr<rpc_tensorpipe::Pipe> pipe) mutable {
           if (error) {
             TP_LOG_ERROR() << error.what();
             return;
@@ -337,10 +337,10 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "read_descriptor",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe, py::object callback) {
+      [](std::shared_ptr<rpc_tensorpipe::Pipe> pipe, py::object callback) {
         pipe->readDescriptor([callback{std::move(callback)}](
-                                 const tensorpipe::Error& error,
-                                 tensorpipe::Message message) mutable {
+                                 const rpc_tensorpipe::Error& error,
+                                 rpc_tensorpipe::Message message) mutable {
           if (error) {
             TP_LOG_ERROR() << error.what();
             return;
@@ -361,15 +361,15 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "read",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe,
+      [](std::shared_ptr<rpc_tensorpipe::Pipe> pipe,
          std::shared_ptr<IncomingMessage> pyMessage,
          py::object callback) {
-        tensorpipe::Message tpMessage = prepareToRead(std::move(pyMessage));
+        rpc_tensorpipe::Message tpMessage = prepareToRead(std::move(pyMessage));
         pipe->read(
             std::move(tpMessage),
             [callback{std::move(callback)}](
-                const tensorpipe::Error& error,
-                tensorpipe::Message tpMessage) mutable {
+                const rpc_tensorpipe::Error& error,
+                rpc_tensorpipe::Message tpMessage) mutable {
               if (error) {
                 TP_LOG_ERROR() << error.what();
                 return;
@@ -390,15 +390,15 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "write",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe,
+      [](std::shared_ptr<rpc_tensorpipe::Pipe> pipe,
          std::shared_ptr<OutgoingMessage> pyMessage,
          py::object callback) {
-        tensorpipe::Message tpMessage = prepareToWrite(std::move(pyMessage));
+        rpc_tensorpipe::Message tpMessage = prepareToWrite(std::move(pyMessage));
         pipe->write(
             std::move(tpMessage),
             [callback{std::move(callback)}](
-                const tensorpipe::Error& error,
-                tensorpipe::Message tpMessage) mutable {
+                const rpc_tensorpipe::Error& error,
+                rpc_tensorpipe::Message tpMessage) mutable {
               if (error) {
                 TP_LOG_ERROR() << error.what();
                 return;
@@ -419,47 +419,47 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   // Transports and channels
 
-  shared_ptr_class_<tensorpipe::transport::Context> abstractTransport(
+  shared_ptr_class_<rpc_tensorpipe::transport::Context> abstractTransport(
       module, "AbstractTransport");
 
-  transport_class_<tensorpipe::transport::uv::Context> uvTransport(
+  transport_class_<rpc_tensorpipe::transport::uv::Context> uvTransport(
       module, "UvTransport");
   uvTransport.def(py::init<>());
 
 #if TENSORPIPE_HAS_SHM_TRANSPORT
-  transport_class_<tensorpipe::transport::shm::Context> shmTransport(
+  transport_class_<rpc_tensorpipe::transport::shm::Context> shmTransport(
       module, "ShmTransport");
   shmTransport.def(py::init<>());
 #endif // TENSORPIPE_HAS_SHM_TRANSPORT
 
   context.def(
       "register_transport",
-      &tensorpipe::Context::registerTransport,
+      &rpc_tensorpipe::Context::registerTransport,
       py::arg("priority"),
       py::arg("name"),
       py::arg("transport"));
 
-  shared_ptr_class_<tensorpipe::channel::CpuContext> abstractChannel(
+  shared_ptr_class_<rpc_tensorpipe::channel::CpuContext> abstractChannel(
       module, "AbstractChannel");
 
-  channel_class_<tensorpipe::channel::basic::Context> basicChannel(
+  channel_class_<rpc_tensorpipe::channel::basic::Context> basicChannel(
       module, "BasicChannel");
   basicChannel.def(py::init<>());
 
 #if TENSORPIPE_HAS_CMA_CHANNEL
-  channel_class_<tensorpipe::channel::cma::Context> cmaChannel(
+  channel_class_<rpc_tensorpipe::channel::cma::Context> cmaChannel(
       module, "CmaChannel");
   cmaChannel.def(py::init<>());
 #endif // TENSORPIPE_HAS_CMA_CHANNEL
 
   context.def(
       "register_channel",
-      &tensorpipe::Context::registerChannel,
+      &rpc_tensorpipe::Context::registerChannel,
       py::arg("priority"),
       py::arg("name"),
       py::arg("channel"));
 
   // Helpers
 
-  listener.def("get_url", &tensorpipe::Listener::url, py::arg("transport"));
+  listener.def("get_url", &rpc_tensorpipe::Listener::url, py::arg("transport"));
 }

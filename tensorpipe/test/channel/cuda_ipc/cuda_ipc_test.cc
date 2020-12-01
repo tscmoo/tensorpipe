@@ -16,11 +16,11 @@
 namespace {
 
 class CudaIpcChannelTestHelper
-    : public ChannelTestHelper<tensorpipe::CudaBuffer> {
+    : public ChannelTestHelper<rpc_tensorpipe::CudaBuffer> {
  public:
-  std::shared_ptr<tensorpipe::channel::CudaContext> makeContext(
+  std::shared_ptr<rpc_tensorpipe::channel::CudaContext> makeContext(
       std::string id) override {
-    auto context = std::make_shared<tensorpipe::channel::cuda_ipc::Context>();
+    auto context = std::make_shared<rpc_tensorpipe::channel::cuda_ipc::Context>();
     context->setId(std::move(id));
     return context;
   }

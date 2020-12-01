@@ -13,7 +13,7 @@
 
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 enum class Endpoint : bool { kConnect, kListen };
@@ -81,4 +81,4 @@ class Context {
 };
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

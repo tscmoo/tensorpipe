@@ -18,7 +18,7 @@
 
 #include <semaphore.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Semaphore {
   sem_t sem;
@@ -74,4 +74,4 @@ class BusyPollingLoop : public EventLoopDeferredExecutor {
   std::atomic<int64_t> deferredFunctionCount_{0};
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

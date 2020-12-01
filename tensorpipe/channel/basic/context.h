@@ -13,7 +13,7 @@
 
 #include <tensorpipe/channel/cpu_context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace basic {
 
@@ -52,4 +52,4 @@ class Context : public channel::CpuContext {
 
 } // namespace basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

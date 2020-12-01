@@ -29,7 +29,7 @@
 #include <tensorpipe/util/ringbuffer/consumer.h>
 #include <tensorpipe/util/ringbuffer/producer.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
@@ -776,6 +776,7 @@ void Connection::Impl::processReadOperationsFromLoop() {
                  << " bytes) on QP " << qp_->qp_num;
       context_->getReactor().postAck(qp_, wr);
       numAcksInFlight_++;
+      printf("numAcksInFlight_ is now %d\n", numAcksInFlight_);
     }
     if (readOperation.completed()) {
       readOperations_.pop_front();
@@ -789,6 +790,12 @@ void Connection::Impl::processWriteOperationsFromLoop() {
   TP_DCHECK(context_->inLoop());
 
   if (state_ != ESTABLISHED) {
+    return;
+  }
+
+  if (numWritesInFlight_ >= 4) {
+    context_->deferToLoopLater(
+        [impl{shared_from_this()}]() { impl->processWriteOperationsFromLoop(); });
     return;
   }
 
@@ -839,11 +846,22 @@ void Connection::Impl::processWriteOperationsFromLoop() {
         wr.wr.rdma.remote_addr = peerInboxPtr_ + peerInboxOffset;
         wr.wr.rdma.rkey = peerInboxKey_;
 
+        //printf("send %d bytes '%.*s'\n", list.length, list.length - 4, (char*)list.addr + 4);
+
+        printf("ibv send %d bytes (%#x)\n", list.length, *(uint32_t*)list.addr);
+
+        if (peerInboxOffset + list.length > kBufferSize) {
+          printf("peerInboxOffset %#x list.length %#x\n", peerInboxOffset, list.length);
+          throw std::runtime_error("bad length");
+        }
+
         TP_VLOG(9) << "Connection " << id_
                    << " is posting a RDMA write request (transmitting "
                    << wr.imm_data << " bytes) on QP " << qp_->qp_num;
         context_->getReactor().postWrite(qp_, wr);
         numWritesInFlight_++;
+
+        printf("numWritesInFlight_ is now %d\n", numWritesInFlight_);
       }
 
       ret = outboxConsumer.cancelTx();
@@ -854,6 +872,8 @@ void Connection::Impl::processWriteOperationsFromLoop() {
     if (writeOperation.completed()) {
       writeOperations_.pop_front();
     } else {
+      context_->deferToLoopLater(
+          [impl{shared_from_this()}]() { impl->processWriteOperationsFromLoop(); });
       break;
     }
   }

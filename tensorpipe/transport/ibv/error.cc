@@ -16,7 +16,7 @@
 
 #include <tensorpipe/common/ibv.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 

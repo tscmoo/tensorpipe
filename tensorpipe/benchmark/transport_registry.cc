@@ -12,13 +12,13 @@
 
 TP_DEFINE_SHARED_REGISTRY(
     TensorpipeTransportRegistry,
-    tensorpipe::transport::Context);
+    rpc_tensorpipe::transport::Context);
 
 // IBV
 
 #if TENSORPIPE_HAS_IBV_TRANSPORT
-std::shared_ptr<tensorpipe::transport::Context> makeIbvContext() {
-  return std::make_shared<tensorpipe::transport::ibv::Context>();
+std::shared_ptr<rpc_tensorpipe::transport::Context> makeIbvContext() {
+  return std::make_shared<rpc_tensorpipe::transport::ibv::Context>();
 }
 
 TP_REGISTER_CREATOR(TensorpipeTransportRegistry, ibv, makeIbvContext);
@@ -27,8 +27,8 @@ TP_REGISTER_CREATOR(TensorpipeTransportRegistry, ibv, makeIbvContext);
 // SHM
 
 #if TENSORPIPE_HAS_SHM_TRANSPORT
-std::shared_ptr<tensorpipe::transport::Context> makeShmContext() {
-  return std::make_shared<tensorpipe::transport::shm::Context>();
+std::shared_ptr<rpc_tensorpipe::transport::Context> makeShmContext() {
+  return std::make_shared<rpc_tensorpipe::transport::shm::Context>();
 }
 
 TP_REGISTER_CREATOR(TensorpipeTransportRegistry, shm, makeShmContext);
@@ -36,8 +36,8 @@ TP_REGISTER_CREATOR(TensorpipeTransportRegistry, shm, makeShmContext);
 
 // UV
 
-std::shared_ptr<tensorpipe::transport::Context> makeUvContext() {
-  return std::make_shared<tensorpipe::transport::uv::Context>();
+std::shared_ptr<rpc_tensorpipe::transport::Context> makeUvContext() {
+  return std::make_shared<rpc_tensorpipe::transport::uv::Context>();
 }
 
 TP_REGISTER_CREATOR(TensorpipeTransportRegistry, uv, makeUvContext);

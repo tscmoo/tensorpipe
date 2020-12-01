@@ -11,11 +11,11 @@
 
 namespace {
 
-class CmaChannelTestHelper : public ChannelTestHelper<tensorpipe::CpuBuffer> {
+class CmaChannelTestHelper : public ChannelTestHelper<rpc_tensorpipe::CpuBuffer> {
  public:
-  std::shared_ptr<tensorpipe::channel::CpuContext> makeContext(
+  std::shared_ptr<rpc_tensorpipe::channel::CpuContext> makeContext(
       std::string id) override {
-    auto context = std::make_shared<tensorpipe::channel::cma::Context>();
+    auto context = std::make_shared<rpc_tensorpipe::channel::cma::Context>();
     context->setId(std::move(id));
     return context;
   }

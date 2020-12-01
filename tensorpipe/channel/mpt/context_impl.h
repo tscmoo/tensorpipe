@@ -18,7 +18,7 @@
 #include <tensorpipe/transport/context.h>
 #include <tensorpipe/common/function.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace mpt {
 
@@ -46,4 +46,4 @@ class Context::PrivateIface {
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

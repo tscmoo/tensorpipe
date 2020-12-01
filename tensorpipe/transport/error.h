@@ -12,14 +12,14 @@
 
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 
 // FIXME There used to be an EOFError specific to transports but it got merged
 // into the global one. We're keeping this alias because PyTorch is explcitly
 // using the one from the transport namespace. However, PyTorch should be fixed
 // and this alias should be removed.
-using EOFError = ::tensorpipe::EOFError;
+using EOFError = ::rpc_tensorpipe::EOFError;
 
 class ListenerClosedError final : public BaseError {
  public:
@@ -36,4 +36,4 @@ class ConnectionClosedError final : public BaseError {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

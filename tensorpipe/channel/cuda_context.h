@@ -11,11 +11,11 @@
 #include <tensorpipe/channel/context.h>
 #include <tensorpipe/common/cuda_buffer.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 using CudaChannel = Channel<CudaBuffer>;
 using CudaContext = Context<CudaBuffer>;
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

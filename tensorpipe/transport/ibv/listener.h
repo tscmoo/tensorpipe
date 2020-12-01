@@ -14,7 +14,7 @@
 #include <tensorpipe/transport/ibv/context.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Sockaddr;
 
@@ -63,4 +63,4 @@ class Listener final : public transport::Listener {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

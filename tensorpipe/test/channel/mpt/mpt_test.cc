@@ -11,19 +11,19 @@
 
 namespace {
 
-class MptChannelTestHelper : public ChannelTestHelper<tensorpipe::CpuBuffer> {
+class MptChannelTestHelper : public ChannelTestHelper<rpc_tensorpipe::CpuBuffer> {
  public:
-  std::shared_ptr<tensorpipe::channel::CpuContext> makeContext(
+  std::shared_ptr<rpc_tensorpipe::channel::CpuContext> makeContext(
       std::string id) override {
-    std::vector<std::shared_ptr<tensorpipe::transport::Context>> contexts = {
-        std::make_shared<tensorpipe::transport::uv::Context>(),
-        std::make_shared<tensorpipe::transport::uv::Context>(),
-        std::make_shared<tensorpipe::transport::uv::Context>()};
-    std::vector<std::shared_ptr<tensorpipe::transport::Listener>> listeners = {
+    std::vector<std::shared_ptr<rpc_tensorpipe::transport::Context>> contexts = {
+        std::make_shared<rpc_tensorpipe::transport::uv::Context>(),
+        std::make_shared<rpc_tensorpipe::transport::uv::Context>(),
+        std::make_shared<rpc_tensorpipe::transport::uv::Context>()};
+    std::vector<std::shared_ptr<rpc_tensorpipe::transport::Listener>> listeners = {
         contexts[0]->listen("127.0.0.1"),
         contexts[1]->listen("127.0.0.1"),
         contexts[2]->listen("127.0.0.1")};
-    auto context = std::make_shared<tensorpipe::channel::mpt::Context>(
+    auto context = std::make_shared<rpc_tensorpipe::channel::mpt::Context>(
         std::move(contexts), std::move(listeners));
     context->setId(std::move(id));
     return context;

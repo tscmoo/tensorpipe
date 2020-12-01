@@ -12,7 +12,7 @@
 #include <tensorpipe/util/ringbuffer/ringbuffer.h>
 #include <tensorpipe/util/shm/segment.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace ringbuffer {
 namespace shm {
@@ -44,4 +44,4 @@ std::tuple<util::shm::Segment, util::shm::Segment, RingBuffer> load(
 } // namespace shm
 } // namespace ringbuffer
 } // namespace util
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

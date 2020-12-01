@@ -11,7 +11,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/transport/ibv/constants.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
@@ -40,9 +40,18 @@ Reactor::Reactor() {
       /*channel=*/nullptr,
       /*comp_vector=*/0);
 
+  IbvLib::device_attr devattr;
+  getIbvLib().query_device(ctx_.get(), &devattr);
+
+  printf("max wr is %d %d\n", devattr.max_qp_wr, devattr.max_srq_wr);
+  printf("max cqe is %d\n", devattr.max_cqe);
+
+  //std::abort();
+
   IbvLib::srq_init_attr srqInitAttr;
   std::memset(&srqInitAttr, 0, sizeof(srqInitAttr));
   srqInitAttr.attr.max_wr = kNumPendingRecvReqs;
+  srqInitAttr.attr.max_sge = 1;
   srq_ = createIbvSharedReceiveQueue(getIbvLib(), pd_, srqInitAttr);
 
   addr_ = makeIbvAddress(getIbvLib(), ctx_, kPortNum, kGlobalIdentifierIndex);
@@ -64,6 +73,7 @@ void Reactor::postRecvRequestsOnSRQ_(int num) {
     for (int i = 0; i < std::min(num, kNumPolledWorkCompletions) - 1; i++) {
       wrs[i].next = &wrs[i + 1];
     }
+    TP_VLOG(9) << "post_srq_recv on SRQ " << srq_.get()->handle;
     int rv = getIbvLib().post_srq_recv(srq_.get(), wrs.data(), &badRecvWr);
     TP_THROW_SYSTEM_IF(rv != 0, errno);
     TP_THROW_ASSERT_IF(badRecvWr != nullptr);
@@ -97,6 +107,13 @@ bool Reactor::pollOnce() {
   std::array<IbvLib::wc, kNumPolledWorkCompletions> wcs;
   auto rv = getIbvLib().poll_cq(cq_.get(), wcs.size(), wcs.data());
 
+  static std::chrono::steady_clock::time_point lp;
+  auto now = std::chrono::steady_clock::now();
+  if (now - lp >= std::chrono::milliseconds(100)) {
+    printf("definitely still polling\n");
+    lp = now;
+  }
+
   if (rv == 0) {
     return false;
   }
@@ -120,6 +137,25 @@ bool Reactor::pollOnce() {
     TP_THROW_ASSERT_IF(iter == queuePairEventHandler_.end())
         << "Got work completion for unknown queue pair " << wc.qp_num;
 
+    switch (wc.opcode) {
+      case IbvLib::WC_RECV_RDMA_WITH_IMM:
+        TP_THROW_ASSERT_IF(!(wc.wc_flags & IbvLib::WC_WITH_IMM));
+        numRecvs++;
+        break;
+      case IbvLib::WC_RECV:
+        TP_THROW_ASSERT_IF(!(wc.wc_flags & IbvLib::WC_WITH_IMM));
+        numRecvs++;
+        break;
+      case IbvLib::WC_RDMA_WRITE:
+        numWrites++;
+        break;
+      case IbvLib::WC_SEND:
+        numAcks++;
+        break;
+      default:
+        TP_THROW_ASSERT() << "Unknown opcode: " << wc.opcode;
+    }
+
     if (wc.status != IbvLib::WC_SUCCESS) {
       iter->second->onError(wc.status, wc.wr_id);
       continue;
@@ -129,20 +165,16 @@ bool Reactor::pollOnce() {
       case IbvLib::WC_RECV_RDMA_WITH_IMM:
         TP_THROW_ASSERT_IF(!(wc.wc_flags & IbvLib::WC_WITH_IMM));
         iter->second->onRemoteProducedData(wc.imm_data);
-        numRecvs++;
         break;
       case IbvLib::WC_RECV:
         TP_THROW_ASSERT_IF(!(wc.wc_flags & IbvLib::WC_WITH_IMM));
         iter->second->onRemoteConsumedData(wc.imm_data);
-        numRecvs++;
         break;
       case IbvLib::WC_RDMA_WRITE:
         iter->second->onWriteCompleted();
-        numWrites++;
         break;
       case IbvLib::WC_SEND:
         iter->second->onAckCompleted();
-        numAcks++;
         break;
       default:
         TP_THROW_ASSERT() << "Unknown opcode: " << wc.opcode;
@@ -190,6 +222,9 @@ void Reactor::postWrite(IbvQueuePair& qp, IbvLib::send_wr& wr) {
     TP_VLOG(9) << "Transport context " << id_ << " posting RDMA write for QP "
                << qp->qp_num;
     TP_CHECK_IBV_INT(getIbvLib().post_send(qp.get(), &wr, &badWr));
+    if (badWr) {
+      perror("post_send");
+    }
     TP_THROW_ASSERT_IF(badWr != nullptr);
     numAvailableWrites_--;
   } else {
@@ -205,6 +240,9 @@ void Reactor::postAck(IbvQueuePair& qp, IbvLib::send_wr& wr) {
     TP_VLOG(9) << "Transport context " << id_ << " posting send for QP "
                << qp->qp_num;
     TP_CHECK_IBV_INT(getIbvLib().post_send(qp.get(), &wr, &badWr));
+    if (badWr) {
+      perror("post_send");
+    }
     TP_THROW_ASSERT_IF(badWr != nullptr);
     numAvailableAcks_--;
   } else {

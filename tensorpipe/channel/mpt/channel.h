@@ -15,7 +15,7 @@
 #include <tensorpipe/channel/cpu_context.h>
 #include <tensorpipe/channel/mpt/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace mpt {
 
@@ -63,4 +63,4 @@ class Channel : public channel::CpuChannel {
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -12,7 +12,7 @@
 
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 EpollLoop::EpollLoop(DeferredExecutor& deferredExecutor)
     : deferredExecutor_(deferredExecutor) {

@@ -84,7 +84,7 @@ class ThreadPeerGroup : public PeerGroup {
   }
 
  private:
-  std::array<tensorpipe::Queue<std::string>, kNumPeers> q_;
+  std::array<rpc_tensorpipe::Queue<std::string>, kNumPeers> q_;
 };
 
 class ProcessPeerGroup : public PeerGroup {

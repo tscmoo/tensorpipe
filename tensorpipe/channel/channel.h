@@ -42,7 +42,7 @@
 //      happen is defered to the channel implementation. We assume the
 //      channel is usable from the moment it is constructed.
 //
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 using TDescriptor = std::string;
@@ -81,4 +81,4 @@ class Channel {
 };
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

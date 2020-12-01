@@ -13,7 +13,7 @@
 
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 const Error Error::kSuccess = Error();
 

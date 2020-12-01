@@ -23,7 +23,7 @@
 #include <tensorpipe/transport/error.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace mpt {
 
@@ -158,9 +158,9 @@ class Channel::Impl : public std::enable_shared_from_this<Channel::Impl> {
 
   // For some odd reason it seems we need to use a qualified name here...
   template <typename T>
-  friend class tensorpipe::LazyCallbackWrapper;
+  friend class rpc_tensorpipe::LazyCallbackWrapper;
   template <typename T>
-  friend class tensorpipe::EagerCallbackWrapper;
+  friend class rpc_tensorpipe::EagerCallbackWrapper;
 };
 
 Channel::Channel(

@@ -13,8 +13,8 @@
 
 class IbvTransportTestHelper : public TransportTestHelper {
  public:
-  std::shared_ptr<tensorpipe::transport::Context> getContext() override {
-    return std::make_shared<tensorpipe::transport::ibv::Context>();
+  std::shared_ptr<rpc_tensorpipe::transport::Context> getContext() override {
+    return std::make_shared<rpc_tensorpipe::transport::ibv::Context>();
   }
 
   std::string defaultAddr() override {

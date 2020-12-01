@@ -20,7 +20,7 @@
 #include <tensorpipe/channel/cuda_context.h>
 #endif // TENSORPIPE_SUPPORTS_CUDA
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Listener;
 class Pipe;
@@ -105,4 +105,4 @@ class Context final {
   friend class Pipe;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

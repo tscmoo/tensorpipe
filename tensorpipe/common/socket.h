@@ -20,7 +20,7 @@
 #include <tensorpipe/common/fd.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 namespace {
 
@@ -248,4 +248,4 @@ class Socket final : public Fd {
   }
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -8,7 +8,7 @@
 
 #include <tensorpipe/transport/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 
 std::string ListenerClosedError::what() const {

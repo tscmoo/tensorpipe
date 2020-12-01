@@ -13,4 +13,4 @@
 
 TP_DECLARE_SHARED_REGISTRY(
     TensorpipeChannelRegistry,
-    tensorpipe::channel::CpuContext);
+    rpc_tensorpipe::channel::CpuContext);

@@ -37,7 +37,7 @@
       << __TP_EXPAND_OPD(a) << " " << cudaGetErrorName(cudaPeekAtLastError()) \
       << " (" << cudaGetErrorString(cudaPeekAtLastError()) << ")"
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cuda_ipc {
 
@@ -268,7 +268,7 @@ class Channel::Impl : public std::enable_shared_from_this<Channel::Impl> {
 
   // For some odd reason it seems we need to use a qualified name here...
   template <typename T>
-  friend class tensorpipe::LazyCallbackWrapper;
+  friend class rpc_tensorpipe::LazyCallbackWrapper;
 };
 
 Channel::Channel(

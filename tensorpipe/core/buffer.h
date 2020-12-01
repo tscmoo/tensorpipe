@@ -15,7 +15,7 @@
 #include <tensorpipe/common/cuda_buffer.h>
 #endif // TENSORPIPE_SUPPORTS_CUDA
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 enum class DeviceType {
   kCpu,
@@ -59,4 +59,4 @@ struct Buffer {
   };
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

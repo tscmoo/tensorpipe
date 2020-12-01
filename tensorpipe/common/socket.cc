@@ -20,7 +20,7 @@
 #define SOCK_NONBLOCK 0
 #endif // SOCK_NONBLOCK
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::tuple<Error, Socket> Socket::createForFamily(sa_family_t ai_family) {
   auto rv = socket(ai_family, SOCK_STREAM | SOCK_NONBLOCK, 0);

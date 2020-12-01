@@ -33,14 +33,14 @@ template <typename TBuffer>
 class DataWrapper {};
 
 template <>
-class DataWrapper<tensorpipe::CpuBuffer> {
+class DataWrapper<rpc_tensorpipe::CpuBuffer> {
  public:
   explicit DataWrapper(size_t length) : vector_(length) {}
 
   explicit DataWrapper(std::vector<uint8_t> v) : vector_(v) {}
 
-  tensorpipe::CpuBuffer buffer() const {
-    return tensorpipe::CpuBuffer{const_cast<uint8_t*>(vector_.data()),
+  rpc_tensorpipe::CpuBuffer buffer() const {
+    return rpc_tensorpipe::CpuBuffer{const_cast<uint8_t*>(vector_.data()),
                                  vector_.size()};
   }
 
@@ -55,7 +55,7 @@ class DataWrapper<tensorpipe::CpuBuffer> {
 #if TENSORPIPE_SUPPORTS_CUDA
 
 template <>
-class DataWrapper<tensorpipe::CudaBuffer> {
+class DataWrapper<rpc_tensorpipe::CudaBuffer> {
  public:
   // Non-copyable.
   DataWrapper(const DataWrapper&) = delete;
@@ -94,8 +94,8 @@ class DataWrapper<tensorpipe::CudaBuffer> {
     return *this;
   }
 
-  tensorpipe::CudaBuffer buffer() const {
-    return tensorpipe::CudaBuffer{cudaPtr_, length_, stream_};
+  rpc_tensorpipe::CudaBuffer buffer() const {
+    return rpc_tensorpipe::CudaBuffer{cudaPtr_, length_, stream_};
   }
 
   std::vector<uint8_t> unwrap() {
@@ -129,7 +129,7 @@ class ChannelTestHelper {
  public:
   virtual ~ChannelTestHelper() = default;
 
-  virtual std::shared_ptr<tensorpipe::channel::Context<TBuffer>> makeContext(
+  virtual std::shared_ptr<rpc_tensorpipe::channel::Context<TBuffer>> makeContext(
       std::string id) = 0;
 
   virtual std::shared_ptr<PeerGroup> makePeerGroup() {
@@ -140,42 +140,42 @@ class ChannelTestHelper {
 template <typename TBuffer>
 [[nodiscard]] std::pair<
     std::future<
-        std::tuple<tensorpipe::Error, tensorpipe::channel::TDescriptor>>,
-    std::future<tensorpipe::Error>>
+        std::tuple<rpc_tensorpipe::Error, rpc_tensorpipe::channel::TDescriptor>>,
+    std::future<rpc_tensorpipe::Error>>
 sendWithFuture(
-    std::shared_ptr<tensorpipe::channel::Channel<TBuffer>> channel,
+    std::shared_ptr<rpc_tensorpipe::channel::Channel<TBuffer>> channel,
     TBuffer buffer) {
   auto descriptorPromise = std::make_shared<
-      std::promise<std::tuple<tensorpipe::Error, std::string>>>();
-  auto promise = std::make_shared<std::promise<tensorpipe::Error>>();
+      std::promise<std::tuple<rpc_tensorpipe::Error, std::string>>>();
+  auto promise = std::make_shared<std::promise<rpc_tensorpipe::Error>>();
   auto descriptorFuture = descriptorPromise->get_future();
   auto future = promise->get_future();
 
   channel->send(
       buffer,
       [descriptorPromise{std::move(descriptorPromise)}](
-          const tensorpipe::Error& error, std::string descriptor) {
+          const rpc_tensorpipe::Error& error, std::string descriptor) {
         descriptorPromise->set_value(
             std::make_tuple(error, std::move(descriptor)));
       },
-      [promise{std::move(promise)}](const tensorpipe::Error& error) {
+      [promise{std::move(promise)}](const rpc_tensorpipe::Error& error) {
         promise->set_value(error);
       });
   return {std::move(descriptorFuture), std::move(future)};
 }
 
 template <typename TBuffer>
-[[nodiscard]] std::future<tensorpipe::Error> recvWithFuture(
-    std::shared_ptr<tensorpipe::channel::Channel<TBuffer>> channel,
-    tensorpipe::channel::TDescriptor descriptor,
+[[nodiscard]] std::future<rpc_tensorpipe::Error> recvWithFuture(
+    std::shared_ptr<rpc_tensorpipe::channel::Channel<TBuffer>> channel,
+    rpc_tensorpipe::channel::TDescriptor descriptor,
     TBuffer buffer) {
-  auto promise = std::make_shared<std::promise<tensorpipe::Error>>();
+  auto promise = std::make_shared<std::promise<rpc_tensorpipe::Error>>();
   auto future = promise->get_future();
 
   channel->recv(
       std::move(descriptor),
       buffer,
-      [promise{std::move(promise)}](const tensorpipe::Error& error) {
+      [promise{std::move(promise)}](const rpc_tensorpipe::Error& error) {
         promise->set_value(error);
       });
   return future;
@@ -199,16 +199,16 @@ class ClientServerChannelTestCase : public ChannelTestCase<TBuffer> {
     peers_ = helper_->makePeerGroup();
     peers_->spawn(
         [&] {
-          auto context = std::make_shared<tensorpipe::transport::uv::Context>();
+          auto context = std::make_shared<rpc_tensorpipe::transport::uv::Context>();
           context->setId("server_harness");
 
           auto listener = context->listen(addr);
 
-          std::promise<std::shared_ptr<tensorpipe::transport::Connection>>
+          std::promise<std::shared_ptr<rpc_tensorpipe::transport::Connection>>
               connectionProm;
           listener->accept(
-              [&](const tensorpipe::Error& error,
-                  std::shared_ptr<tensorpipe::transport::Connection>
+              [&](const rpc_tensorpipe::Error& error,
+                  std::shared_ptr<rpc_tensorpipe::transport::Connection>
                       connection) {
                 ASSERT_FALSE(error) << error.what();
                 connectionProm.set_value(std::move(connection));
@@ -220,7 +220,7 @@ class ClientServerChannelTestCase : public ChannelTestCase<TBuffer> {
           context->join();
         },
         [&] {
-          auto context = std::make_shared<tensorpipe::transport::uv::Context>();
+          auto context = std::make_shared<rpc_tensorpipe::transport::uv::Context>();
           context->setId("client_harness");
 
           auto laddr = peers_->recv(PeerGroup::kClient);
@@ -230,8 +230,8 @@ class ClientServerChannelTestCase : public ChannelTestCase<TBuffer> {
         });
   }
 
-  virtual void server(std::shared_ptr<tensorpipe::transport::Connection>) {}
-  virtual void client(std::shared_ptr<tensorpipe::transport::Connection>) {}
+  virtual void server(std::shared_ptr<rpc_tensorpipe::transport::Connection>) {}
+  virtual void client(std::shared_ptr<rpc_tensorpipe::transport::Connection>) {}
 
  protected:
   ChannelTestHelper<TBuffer>* helper_;
@@ -239,16 +239,16 @@ class ClientServerChannelTestCase : public ChannelTestCase<TBuffer> {
 };
 
 class CpuChannelTestSuite : public ::testing::TestWithParam<
-                                ChannelTestHelper<tensorpipe::CpuBuffer>*> {};
+                                ChannelTestHelper<rpc_tensorpipe::CpuBuffer>*> {};
 
 #if TENSORPIPE_SUPPORTS_CUDA
 class CudaChannelTestSuite : public ::testing::TestWithParam<
-                                 ChannelTestHelper<tensorpipe::CudaBuffer>*> {};
+                                 ChannelTestHelper<rpc_tensorpipe::CudaBuffer>*> {};
 #endif // TENSORPIPE_SUPPORTS_CUDA
 
 #define _CHANNEL_TEST(type, suite, name)    \
   TEST_P(suite, name) {                     \
-    name##Test<tensorpipe::type##Buffer> t; \
+    name##Test<rpc_tensorpipe::type##Buffer> t; \
     t.run(GetParam());                      \
   }
 

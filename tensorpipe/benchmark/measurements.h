@@ -12,7 +12,7 @@
 #include <chrono>
 #include <vector>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace benchmark {
 
 class Measurements {
@@ -58,4 +58,4 @@ class Measurements {
 };
 
 } // namespace benchmark
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

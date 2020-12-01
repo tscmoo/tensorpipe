@@ -15,7 +15,7 @@
 #include <tensorpipe/common/epoll_loop.h>
 #include <tensorpipe/transport/ibv/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
@@ -39,4 +39,4 @@ class Context::PrivateIface : public DeferredExecutor {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

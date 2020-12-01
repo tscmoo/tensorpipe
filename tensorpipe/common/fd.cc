@@ -14,7 +14,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/error_macros.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 ssize_t Fd::read(void* buf, size_t count) {
   ssize_t rv = -1;

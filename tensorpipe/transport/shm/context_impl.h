@@ -16,7 +16,7 @@
 #include <tensorpipe/common/epoll_loop.h>
 #include <tensorpipe/transport/shm/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace shm {
 
@@ -45,4 +45,4 @@ class Context::PrivateIface : public DeferredExecutor {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

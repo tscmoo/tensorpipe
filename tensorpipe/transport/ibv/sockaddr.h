@@ -15,11 +15,11 @@
 
 #include <tensorpipe/common/socket.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
-class Sockaddr final : public tensorpipe::Sockaddr {
+class Sockaddr final : public rpc_tensorpipe::Sockaddr {
  public:
   static Sockaddr createInetSockAddr(const std::string& name);
 
@@ -54,4 +54,4 @@ class Sockaddr final : public tensorpipe::Sockaddr {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

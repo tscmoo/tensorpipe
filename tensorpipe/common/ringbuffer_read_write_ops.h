@@ -21,7 +21,7 @@
 #include <tensorpipe/util/ringbuffer/consumer.h>
 #include <tensorpipe/util/ringbuffer/producer.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 // Reads happen only if the user supplied a callback (and optionally
 // a destination buffer). The callback is run from the event loop
@@ -142,10 +142,20 @@ size_t RingbufferReadOperation::handleRead(util::ringbuffer::Consumer& inbox) {
   ret = inbox.startTx();
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
+  printf("handleRead mode %d\n", mode_);
+
   if (mode_ == READ_LENGTH) {
     uint32_t length;
     ret = inbox.readInTx</*allowPartial=*/false>(&length, sizeof(length));
+    printf("READ_LENGTH ret %d\n", ret);
     if (likely(ret >= 0)) {
+      printf("got length %d\n", length);
+//      if (length > 2 * 1024 * 1024) {
+//        printf("bad length\n");
+//        fflush(stdout);
+//        std::abort();
+//        //std::quick_exit(1);
+//      }
       mode_ = READ_PAYLOAD;
       bytesReadNow += ret;
       if (nopObject_ != nullptr) {
@@ -169,20 +179,25 @@ size_t RingbufferReadOperation::handleRead(util::ringbuffer::Consumer& inbox) {
       ret = inbox.readInTx</*allowPartial=*/true>(
           reinterpret_cast<uint8_t*>(ptr_) + bytesRead_, len_ - bytesRead_);
     }
+    printf("READ_PAYLOAD ret %d\n", ret);
     if (likely(ret >= 0)) {
       bytesRead_ += ret;
       bytesReadNow += ret;
     } else if (unlikely(ret != -ENODATA)) {
       TP_THROW_SYSTEM(-ret);
     }
+    printf("bytesRead_ is %d\n", bytesRead_);
   }
 
   ret = inbox.commitTx();
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
   if (completed()) {
+    printf("COMPLETED!\n");
     fn_(Error::kSuccess, ptr_, len_);
   }
+
+  printf("returning %d  (read %d/%d bytes)\n", bytesReadNow, bytesRead_, len_);
 
   return bytesReadNow;
 }
@@ -237,9 +252,12 @@ size_t RingbufferWriteOperation::handleWrite(
   ret = outbox.startTx();
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
+  printf("handleWrite mode_ %d\n", mode_);
+
   if (mode_ == WRITE_LENGTH) {
     uint32_t length = len_;
     ret = outbox.writeInTx</*allowPartial=*/false>(&length, sizeof(length));
+    printf("WRITE_LENGTH %d\n", ret);
     if (likely(ret >= 0)) {
       mode_ = WRITE_PAYLOAD;
       bytesWrittenNow += ret;
@@ -256,6 +274,7 @@ size_t RingbufferWriteOperation::handleWrite(
           reinterpret_cast<const uint8_t*>(ptr_) + bytesWritten_,
           len_ - bytesWritten_);
     }
+    printf("WRITE_PAYLOAD (written %d)  %d\n", bytesWritten_, ret);
     if (likely(ret >= 0)) {
       bytesWritten_ += ret;
       bytesWrittenNow += ret;
@@ -268,8 +287,11 @@ size_t RingbufferWriteOperation::handleWrite(
   TP_THROW_SYSTEM_IF(ret < 0, -ret);
 
   if (completed()) {
+    printf("WRITE DONE\n");
     fn_(Error::kSuccess);
   }
+
+  printf("returning %d  (%d / %d bytes written)\n", bytesWrittenNow, bytesWritten_, len_);
 
   return bytesWrittenNow;
 }
@@ -302,4 +324,4 @@ void RingbufferWriteOperation::handleError(const Error& error) {
   fn_(error);
 }
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

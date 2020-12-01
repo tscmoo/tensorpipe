@@ -15,7 +15,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
@@ -65,4 +65,4 @@ class Context : public transport::Context {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -17,7 +17,7 @@
 #include <tensorpipe/core/listener.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Listener::PrivateIface {
  public:
@@ -34,4 +34,4 @@ class Listener::PrivateIface {
   virtual ~PrivateIface() = default;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

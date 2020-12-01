@@ -14,7 +14,7 @@
 #include <tensorpipe/transport/connection.h>
 #include <tensorpipe/transport/ibv/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Socket;
 
@@ -75,4 +75,4 @@ class Connection final : public transport::Connection {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

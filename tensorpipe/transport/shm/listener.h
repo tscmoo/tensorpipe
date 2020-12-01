@@ -14,7 +14,7 @@
 #include <tensorpipe/transport/listener.h>
 #include <tensorpipe/transport/shm/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Sockaddr;
 
@@ -63,4 +63,4 @@ class Listener final : public transport::Listener {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

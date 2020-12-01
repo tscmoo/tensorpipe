@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe::transport;
+using namespace rpc_tensorpipe::transport;
 
 namespace {
 

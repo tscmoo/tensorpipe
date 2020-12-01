@@ -20,7 +20,7 @@
 #include <tensorpipe/core/pipe.h>
 
 using namespace tensorpipe;
-using namespace tensorpipe::benchmark;
+using namespace rpc_tensorpipe::benchmark;
 
 Measurements measurements;
 

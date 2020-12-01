@@ -8,7 +8,7 @@
 
 #include <tensorpipe/util/ringbuffer/shm.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace ringbuffer {
 namespace shm {

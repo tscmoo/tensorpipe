@@ -13,7 +13,7 @@
 
 #include <tensorpipe/channel/cuda_context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cuda_ipc {
 
@@ -52,4 +52,4 @@ class Context : public channel::CudaContext {
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

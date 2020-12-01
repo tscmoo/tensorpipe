@@ -25,7 +25,7 @@
 #include <tensorpipe/core/pipe.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 namespace {
 

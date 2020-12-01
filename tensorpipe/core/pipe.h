@@ -18,7 +18,7 @@
 #include <tensorpipe/core/message.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 // The pipe.
 //
@@ -102,4 +102,4 @@ class Pipe final {
   friend class Listener;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

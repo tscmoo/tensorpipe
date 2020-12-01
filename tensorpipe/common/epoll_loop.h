@@ -21,7 +21,7 @@
 #include <tensorpipe/common/deferred_executor.h>
 #include <tensorpipe/common/fd.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class EpollLoop final {
  public:
@@ -137,4 +137,4 @@ class EpollLoop final {
   void handleEpollEventsFromLoop(std::vector<struct epoll_event> epollEvents);
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

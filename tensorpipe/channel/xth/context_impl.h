@@ -14,7 +14,7 @@
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace xth {
 
@@ -35,4 +35,4 @@ class Context::PrivateIface {
 
 } // namespace xth
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

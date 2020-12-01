@@ -14,7 +14,7 @@
 #include <tensorpipe/transport/connection.h>
 #include <tensorpipe/transport/uv/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -85,4 +85,4 @@ class Connection : public transport::Connection {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

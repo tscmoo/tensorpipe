@@ -14,7 +14,7 @@
 #include <tensorpipe/transport/listener.h>
 #include <tensorpipe/transport/uv/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -68,4 +68,4 @@ class Listener : public transport::Listener {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -15,7 +15,7 @@
 #include <tensorpipe/transport/shm/listener.h>
 #include <tensorpipe/transport/shm/reactor.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace shm {
 

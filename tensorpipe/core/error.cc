@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::string LogicError::what() const {
   std::ostringstream ss;

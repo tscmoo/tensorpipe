@@ -26,7 +26,7 @@
 // /dev/shm (Linux only).
 //
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace shm {
 
@@ -183,4 +183,4 @@ class Segment {
 
 } // namespace shm
 } // namespace util
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

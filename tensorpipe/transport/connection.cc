@@ -10,7 +10,7 @@
 
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 
 void Connection::read(AbstractNopHolder& object, read_nop_callback_fn fn) {

@@ -20,7 +20,7 @@
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -58,4 +58,4 @@ class Loop final : public EventLoopDeferredExecutor {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

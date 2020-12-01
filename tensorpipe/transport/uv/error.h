@@ -12,7 +12,7 @@
 
 #include <tensorpipe/transport/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -35,4 +35,4 @@ class NoAddrFoundError final : public BaseError {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

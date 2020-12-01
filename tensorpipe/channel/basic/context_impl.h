@@ -11,7 +11,7 @@
 #include <tensorpipe/channel/basic/context.h>
 #include <tensorpipe/common/callback.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace basic {
 
@@ -24,4 +24,4 @@ class Context::PrivateIface {
 
 } // namespace basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

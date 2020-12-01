@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::tuple<std::string, std::string> splitSchemeOfURL(const std::string&);
 

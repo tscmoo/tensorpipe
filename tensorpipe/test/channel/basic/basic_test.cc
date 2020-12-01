@@ -11,11 +11,11 @@
 
 namespace {
 
-class BasicChannelTestHelper : public ChannelTestHelper<tensorpipe::CpuBuffer> {
+class BasicChannelTestHelper : public ChannelTestHelper<rpc_tensorpipe::CpuBuffer> {
  public:
-  std::shared_ptr<tensorpipe::channel::CpuContext> makeContext(
+  std::shared_ptr<rpc_tensorpipe::channel::CpuContext> makeContext(
       std::string id) override {
-    auto context = std::make_shared<tensorpipe::channel::basic::Context>();
+    auto context = std::make_shared<rpc_tensorpipe::channel::basic::Context>();
     context->setId(std::move(id));
     return context;
   }

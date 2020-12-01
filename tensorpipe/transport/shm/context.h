@@ -13,7 +13,7 @@
 
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace shm {
 
@@ -57,4 +57,4 @@ class Context : public transport::Context {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

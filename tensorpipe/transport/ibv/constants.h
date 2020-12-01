@@ -29,18 +29,18 @@ constexpr uint8_t kGlobalIdentifierIndex = 0;
 // requests that could finish between two reactor loop iterations. And, even if
 // this number ends up being too low, the excess incoming requests will just
 // retry, causing a performance penalty but not a failure.
-constexpr uint32_t kNumPendingRecvReqs = 1024;
+constexpr uint32_t kNumPendingRecvReqs = 8;
 
 // How many RDMA write requests can be pending at the same time across all
 // connections. We need to put a limit on them because they all use the same
 // global completion queue which has a fixed capacity and if it overruns it will
 // enter an unrecoverable error state. This value is also set as the capacity of
 // the send queue of each queue pair.
-constexpr uint32_t kNumPendingWriteReqs = 1024;
+constexpr uint32_t kNumPendingWriteReqs = 8;
 
 // How many send requests (used by the receiver to acknowledge the RDMA writes
 // from the sender) can be pending at the same time across all connections.
-constexpr uint32_t kNumPendingAckReqs = 1024;
+constexpr uint32_t kNumPendingAckReqs = 8;
 
 // How many elements the completion queue should be able to hold. These elements
 // will be either the completed receive requests of the SRQ, or the completed

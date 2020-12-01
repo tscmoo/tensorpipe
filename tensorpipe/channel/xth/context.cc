@@ -24,7 +24,7 @@
 #include <tensorpipe/common/queue.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace xth {
 

@@ -22,7 +22,7 @@
 #include <thread>
 #include <tuple>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace shm {
 

@@ -13,7 +13,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/dl.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 // Master list of all symbols we care about from libibverbs.
 
@@ -37,6 +37,7 @@ namespace tensorpipe {
   _(get_device_list, IbvLib::device**, (int*))                        \
   _(modify_qp, int, (IbvLib::qp*, IbvLib::qp_attr*, int))             \
   _(open_device, IbvLib::context*, (IbvLib::device*))                 \
+  _(query_device, int, (IbvLib::context*, IbvLib::device_attr*))      \
   _(query_gid, int, (IbvLib::context*, uint8_t, int, IbvLib::gid*))   \
   _(query_port, int, (IbvLib::context*, uint8_t, IbvLib::port_attr*)) \
   _(reg_mr, IbvLib::mr*, (IbvLib::pd*, void*, size_t, int))           \
@@ -247,6 +248,12 @@ class IbvLib {
     WR_DRIVER1,
   };
 
+  enum atomic_cap {
+    IBV_ATOMIC_NONE,
+    IBV_ATOMIC_HCA,
+    IBV_ATOMIC_GLOB
+  };
+
   // Structs and unions
 
   // Forward declarations
@@ -265,6 +272,49 @@ class IbvLib {
   struct wq;
 
   // Attributes
+
+  struct device_attr {
+    char fw_ver[64];
+    unsigned char node_guid[8];
+    unsigned char sys_image_guid[8];
+    uint64_t max_mr_size;
+    uint64_t page_size_cap;
+    uint32_t vendor_id;
+    uint32_t vendor_part_id;
+    uint32_t hw_ver;
+    int max_qp;
+    int max_qp_wr;
+    unsigned int device_cap_flags;
+    int max_sge;
+    int max_sge_rd;
+    int max_cq;
+    int max_cqe;
+    int max_mr;
+    int max_pd;
+    int max_qp_rd_atom;
+    int max_ee_rd_atom;
+    int max_res_rd_atom;
+    int max_qp_init_rd_atom;
+    int max_ee_init_rd_atom;
+    enum atomic_cap atomic_cap;
+    int max_ee;
+    int max_rdd;
+    int max_mw;
+    int max_raw_ipv6_qp;
+    int max_raw_ethy_qp;
+    int max_mcast_grp;
+    int max_mcast_qp_attach;
+    int max_total_mcast_qp_attach;
+    int max_ah;
+    int max_fmr;
+    int max_map_per_fmr;
+    int max_srq;
+    int max_srq_wr;
+    int max_srq_sge;
+    uint16_t max_pkeys;
+    uint8_t local_ca_ack_delay;
+    uint8_t phys_port_cnt;
+  };
 
   struct port_attr {
     IbvLib::port_state state;
@@ -683,4 +733,4 @@ class IbvLib {
 
 #undef TP_FORALL_IBV_SYMBOLS
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

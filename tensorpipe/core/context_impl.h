@@ -23,7 +23,7 @@
 #include <tensorpipe/channel/cuda_context.h>
 #endif // TENSORPIPE_SUPPORTS_CUDA
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Listener;
 class Pipe;
@@ -67,4 +67,4 @@ class Context::PrivateIface {
   virtual ~PrivateIface() = default;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -11,7 +11,7 @@
 #include <tensorpipe/channel/cuda_ipc/context.h>
 #include <tensorpipe/common/callback.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cuda_ipc {
 
@@ -24,4 +24,4 @@ class Context::PrivateIface {
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

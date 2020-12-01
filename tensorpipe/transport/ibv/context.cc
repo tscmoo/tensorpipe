@@ -29,7 +29,7 @@
 #include <tensorpipe/transport/ibv/reactor.h>
 #include <tensorpipe/transport/ibv/sockaddr.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace ibv {
 
@@ -129,6 +129,7 @@ class Context::Impl : public Context::PrivateIface,
   bool inLoop() override;
 
   void deferToLoop(Function<void()> fn) override;
+  void deferToLoopLater(Function<void()> fn) override;
 
   void registerDescriptor(
       int fd,
@@ -365,6 +366,10 @@ bool Context::Impl::inLoop() {
 
 void Context::Impl::deferToLoop(Function<void()> fn) {
   reactor_.deferToLoop(std::move(fn));
+};
+
+void Context::Impl::deferToLoopLater(Function<void()> fn) {
+  reactor_.deferToLoopLater(std::move(fn));
 };
 
 void Context::Impl::registerDescriptor(

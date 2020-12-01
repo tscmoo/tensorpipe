@@ -15,7 +15,7 @@
 #include <tensorpipe/channel/cma/context.h>
 #include <tensorpipe/channel/cpu_context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cma {
 
@@ -61,4 +61,4 @@ class Channel : public channel::CpuChannel {
 
 } // namespace cma
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

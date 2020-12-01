@@ -15,7 +15,7 @@
 
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 // Libnop makes heavy use of templates, whereas TensorPipe is designed around
 // polymorphism (abstract interfaces and concrete derived classes). The two
@@ -231,4 +231,4 @@ class NopHolder : public AbstractNopHolder {
   T object_;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

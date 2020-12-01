@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::string ibvWorkCompletionOpcodeToStr(IbvLib::wc_opcode opcode) {
   switch (opcode) {

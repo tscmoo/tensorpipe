@@ -13,7 +13,7 @@
 #include <nop/structure.h>
 
 using namespace tensorpipe;
-using namespace tensorpipe::transport;
+using namespace rpc_tensorpipe::transport;
 
 namespace {
 

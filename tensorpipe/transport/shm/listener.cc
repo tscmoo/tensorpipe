@@ -22,7 +22,7 @@
 #include <tensorpipe/transport/shm/context_impl.h>
 #include <tensorpipe/transport/shm/sockaddr.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace shm {
 

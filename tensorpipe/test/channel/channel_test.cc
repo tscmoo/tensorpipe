@@ -11,7 +11,7 @@
 #include <numeric>
 
 using namespace tensorpipe;
-using namespace tensorpipe::channel;
+using namespace rpc_tensorpipe::channel;
 
 template <typename TBuffer>
 class DomainDescriptorTest : public ChannelTestCase<TBuffer> {

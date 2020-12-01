@@ -29,7 +29,7 @@
 #include <tensorpipe/core/nop_types.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 namespace {
 
@@ -727,6 +727,7 @@ const std::string& Pipe::Impl::getRemoteName() {
 }
 
 Pipe::~Pipe() {
+  printf("%p :: ~Pipe\n", this);
   close();
 }
 

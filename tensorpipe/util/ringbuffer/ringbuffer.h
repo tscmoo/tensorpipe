@@ -40,7 +40,7 @@
 /// write data atomically at ringbuffer's tail.
 ///
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace ringbuffer {
 
@@ -189,4 +189,4 @@ class RingBuffer final {
 
 } // namespace ringbuffer
 } // namespace util
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

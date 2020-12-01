@@ -15,7 +15,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/function.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cma {
 
@@ -37,4 +37,4 @@ class Context::PrivateIface {
 
 } // namespace cma
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

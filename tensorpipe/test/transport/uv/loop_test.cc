@@ -10,7 +10,7 @@
 
 #include <tensorpipe/transport/uv/loop.h>
 
-using namespace tensorpipe::transport::uv;
+using namespace rpc_tensorpipe::transport::uv;
 
 namespace test {
 namespace transport {

@@ -26,7 +26,7 @@
 #include <tensorpipe/transport/error.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace mpt {
 
@@ -128,9 +128,9 @@ class Context::Impl : public Context::PrivateIface,
 
   // For some odd reason it seems we need to use a qualified name here...
   template <typename T>
-  friend class tensorpipe::LazyCallbackWrapper;
+  friend class rpc_tensorpipe::LazyCallbackWrapper;
   template <typename T>
-  friend class tensorpipe::EagerCallbackWrapper;
+  friend class rpc_tensorpipe::EagerCallbackWrapper;
 };
 
 Context::Context(

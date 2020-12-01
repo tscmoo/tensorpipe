@@ -10,7 +10,7 @@
 
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::tuple<std::string, std::string> splitSchemeOfURL(const std::string& url) {
   std::string::size_type endOfScheme = url.find("://");

@@ -104,7 +104,7 @@ inline std::error_code toErrorCode(ssize_t e) {
 //
 // Simple logging to stderr. This macros can be replaced if a more
 // sophisticated logging is used in the future.
-// Currently, tensorpipe is meant be used as shared library and to use
+// Currently, rpc_tensorpipe is meant be used as shared library and to use
 // exceptions for error handling, so the need for logging in
 // the library is reduced.
 //

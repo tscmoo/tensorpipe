@@ -16,7 +16,7 @@
 #include <tensorpipe/common/function.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 
 class Connection {
@@ -70,4 +70,4 @@ class Connection {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

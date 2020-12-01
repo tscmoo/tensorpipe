@@ -25,7 +25,7 @@
 #include <system_error>
 #include <thread>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 std::string tstampToStr(TimeStamp ts) {
   if (ts == kInvalidTimeStamp) {

@@ -29,7 +29,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/common/function.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 namespace cma {
 

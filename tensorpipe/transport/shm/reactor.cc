@@ -11,7 +11,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/util/ringbuffer/shm.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace shm {
 

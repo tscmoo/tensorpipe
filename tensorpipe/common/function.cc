@@ -2,7 +2,7 @@
 #include "function.h"
 
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 namespace function {
 

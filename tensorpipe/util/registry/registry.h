@@ -27,7 +27,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace registry {
 
@@ -133,19 +133,19 @@ class Registerer {
 // issue. Refer to this link for reference:
 // https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use
 #define TP_DEFINE_TYPED_REGISTRY(RegistryName, ObjectType, PtrType, ...)    \
-  tensorpipe::util::registry::Registry<PtrType<ObjectType>, ##__VA_ARGS__>& \
+  rpc_tensorpipe::util::registry::Registry<PtrType<ObjectType>, ##__VA_ARGS__>& \
   RegistryName() {                                                          \
-    static tensorpipe::util::registry::                                     \
+    static rpc_tensorpipe::util::registry::                                     \
         Registry<PtrType<ObjectType>, ##__VA_ARGS__>* registry =            \
-            new tensorpipe::util::registry::                                \
+            new rpc_tensorpipe::util::registry::                                \
                 Registry<PtrType<ObjectType>, ##__VA_ARGS__>();             \
     return *registry;                                                       \
   }
 
 #define TP_DECLARE_TYPED_REGISTRY(RegistryName, ObjectType, PtrType, ...)   \
-  tensorpipe::util::registry::Registry<PtrType<ObjectType>, ##__VA_ARGS__>& \
+  rpc_tensorpipe::util::registry::Registry<PtrType<ObjectType>, ##__VA_ARGS__>& \
   RegistryName();                                                           \
-  typedef tensorpipe::util::registry::                                      \
+  typedef rpc_tensorpipe::util::registry::                                      \
       Registerer<PtrType<ObjectType>, ##__VA_ARGS__>                        \
           Registerer##RegistryName
 
@@ -166,4 +166,4 @@ class Registerer {
 
 } // namespace registry
 } // namespace util
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

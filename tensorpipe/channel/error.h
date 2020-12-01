@@ -12,7 +12,7 @@
 
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 class ContextClosedError final : public BaseError {
@@ -30,4 +30,4 @@ class ChannelClosedError final : public BaseError {
 };
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -17,7 +17,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/error_macros.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class DlError final : public BaseError {
  public:
@@ -67,4 +67,4 @@ inline std::tuple<Error, void*> loadSymbol(
   return std::make_tuple(Error::kSuccess, ptr);
 }
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

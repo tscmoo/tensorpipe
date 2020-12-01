@@ -22,7 +22,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 // Given an object (actually, something that can produce a shared_ptr of that
 // object) and a callable that takes a reference to such an object as its first
@@ -308,4 +308,4 @@ class ClosingReceiver {
   std::shared_ptr<ClosingEmitter> emitter_;
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

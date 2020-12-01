@@ -15,7 +15,7 @@
 #include <tensorpipe/common/error_macros.h>
 #include <tensorpipe/transport/uv/macros.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 

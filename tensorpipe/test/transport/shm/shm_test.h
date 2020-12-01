@@ -15,8 +15,8 @@
 
 class SHMTransportTestHelper : public TransportTestHelper {
  public:
-  std::shared_ptr<tensorpipe::transport::Context> getContext() override {
-    return std::make_shared<tensorpipe::transport::shm::Context>();
+  std::shared_ptr<rpc_tensorpipe::transport::Context> getContext() override {
+    return std::make_shared<rpc_tensorpipe::transport::shm::Context>();
   }
 
   std::string defaultAddr() override {
@@ -24,7 +24,7 @@ class SHMTransportTestHelper : public TransportTestHelper {
         ::testing::UnitTest::GetInstance()->current_test_info();
     std::ostringstream ss;
     // Once we upgrade googletest, also use test_info->test_suite_name() here.
-    ss << "tensorpipe_test_" << test_info->name() << "_" << getpid();
+    ss << "rpc_tensorpipe_test_" << test_info->name() << "_" << getpid();
     return ss.str();
   }
 };

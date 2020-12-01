@@ -24,7 +24,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/common/function.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 //using SpinMutex = std::mutex;
 class alignas(64) SpinMutex {
@@ -68,6 +68,9 @@ class DeferredExecutor {
   using TTask = Function<void()>;
 
   virtual void deferToLoop(TTask fn) = 0;
+  virtual void deferToLoopLater(TTask fn) {
+    throw std::runtime_error("base deferToLoopLater called");
+  }
 
   virtual bool inLoop() = 0;
 
@@ -144,6 +147,9 @@ class OnDemandDeferredExecutor : public DeferredExecutor {
       }
     }
   }
+  void deferToLoopLater(TTask fn) override {
+    throw std::runtime_error("OnDemandDeferredExecutor deferToLoopLater called");
+  }
 
 protected:
 
@@ -204,6 +210,11 @@ class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
       loop();
     }
   };
+
+  void deferToLoopLater(TTask fn) override {
+    enqueue(fn.release());
+    wakeupEventLoopToDeferFunction();
+  }
 
  protected:
   // This is the actual long-running event loop, which is implemented by
@@ -273,4 +284,4 @@ class EventLoopDeferredExecutor : public virtual OnDemandDeferredExecutor {
   std::atomic<bool> isThreadConsumingDeferredFunctions_{true};
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

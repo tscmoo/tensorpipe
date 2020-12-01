@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(tensorpipe LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

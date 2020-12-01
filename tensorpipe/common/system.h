@@ -18,7 +18,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 //
 // TimeStamp is a 64 bit value representing
@@ -90,4 +90,4 @@ optional<std::string> getBootID();
 // Set the name of the current thread, if possible. Use only for debugging.
 void setThreadName(std::string name);
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

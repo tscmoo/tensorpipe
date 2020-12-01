@@ -24,7 +24,7 @@
 #include <tensorpipe/transport/connection.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Listener::Impl : public Listener::PrivateIface,
                        public std::enable_shared_from_this<Listener::Impl> {

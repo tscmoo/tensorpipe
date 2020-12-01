@@ -19,7 +19,7 @@
 #include <tensorpipe/transport/uv/macros.h>
 #include <tensorpipe/transport/uv/sockaddr.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -186,6 +186,7 @@ class StreamHandle : public BaseHandle<T, U> {
       uv_stream_t* server,
       ssize_t nread,
       const uv_buf_t* buf) {
+    printf("%p::uv__read_cb %d\n", server, nread);
     T& ref = *reinterpret_cast<T*>(server->data);
     TP_DCHECK(ref.readCallback_.has_value());
     ref.readCallback_.value()(nread, buf);
@@ -238,6 +239,7 @@ class StreamHandle : public BaseHandle<T, U> {
   }
 
   void readStartFromLoop() {
+    printf("%p::readStartFromLoop()\n", this->ptr());
     TP_DCHECK(this->loop_.inLoop());
     TP_THROW_ASSERT_IF(!allocCallback_.has_value());
     TP_THROW_ASSERT_IF(!readCallback_.has_value());
@@ -247,6 +249,7 @@ class StreamHandle : public BaseHandle<T, U> {
   }
 
   void readStopFromLoop() {
+    printf("%p::readStopFromLoop()\n", this->ptr());
     TP_DCHECK(this->loop_.inLoop());
     auto rv = uv_read_stop(reinterpret_cast<uv_stream_t*>(this->ptr()));
     TP_THROW_UV_IF(rv < 0, rv);
@@ -256,6 +259,7 @@ class StreamHandle : public BaseHandle<T, U> {
       const uv_buf_t bufs[],
       unsigned int nbufs,
       WriteRequest::TWriteCallback fn) {
+    printf("%p::writeFromLoop()\n", this->ptr());
     TP_DCHECK(this->loop_.inLoop());
     auto request = WriteRequest::create(this->loop_, std::move(fn));
     auto rv = uv_write(
@@ -353,4 +357,4 @@ std::string formatUvError(int status);
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

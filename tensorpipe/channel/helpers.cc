@@ -11,7 +11,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/nop.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 TDescriptor saveDescriptor(const AbstractNopHolder& object) {

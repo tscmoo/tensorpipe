@@ -14,7 +14,7 @@
 
 #include <tensorpipe/common/defs.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class MmappedPtr {
  public:
@@ -56,4 +56,4 @@ class MmappedPtr {
   std::unique_ptr<uint8_t[], Deleter> ptr_{nullptr, Deleter{}};
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

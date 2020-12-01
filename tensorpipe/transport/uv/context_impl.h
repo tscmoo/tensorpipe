@@ -14,7 +14,7 @@
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/transport/uv/context.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 
@@ -31,4 +31,4 @@ class Context::PrivateIface : public DeferredExecutor {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

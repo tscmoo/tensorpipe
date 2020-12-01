@@ -13,4 +13,4 @@
 
 TP_DECLARE_SHARED_REGISTRY(
     TensorpipeTransportRegistry,
-    tensorpipe::transport::Context);
+    rpc_tensorpipe::transport::Context);

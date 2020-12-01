@@ -18,7 +18,7 @@
 
 #include <tensorpipe/core/buffer.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 struct SpontaneousConnection {
   std::string contextName;
@@ -123,4 +123,4 @@ using Packet = nop::Variant<
     BrochureAnswer,
     MessageDescriptor>;
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

@@ -7,7 +7,7 @@
 #include <cstring>
 #include <atomic>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 namespace function {
 

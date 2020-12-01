@@ -15,7 +15,7 @@
 
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 
 class Fd {
  public:
@@ -112,4 +112,4 @@ class Fd {
   int fd_{-1};
 };
 
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

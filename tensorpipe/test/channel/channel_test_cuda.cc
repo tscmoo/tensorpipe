@@ -13,7 +13,7 @@
 #include <tensorpipe/test/channel/kernel.cuh>
 
 using namespace tensorpipe;
-using namespace tensorpipe::channel;
+using namespace rpc_tensorpipe::channel;
 
 class ReceiverWaitsForStartEventTest
     : public ClientServerChannelTestCase<CudaBuffer> {
@@ -37,8 +37,8 @@ class ReceiverWaitsForStartEventTest
 
     // Perform send and wait for completion.
     auto descriptorPromise = std::make_shared<
-        std::promise<std::tuple<tensorpipe::Error, std::string>>>();
-    auto sendPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+        std::promise<std::tuple<rpc_tensorpipe::Error, std::string>>>();
+    auto sendPromise = std::make_shared<std::promise<rpc_tensorpipe::Error>>();
     auto descriptorFuture = descriptorPromise->get_future();
     auto sendFuture = sendPromise->get_future();
 
@@ -49,11 +49,11 @@ class ReceiverWaitsForStartEventTest
             .stream = sendStream,
         },
         [descriptorPromise{std::move(descriptorPromise)}](
-            const tensorpipe::Error& error, std::string descriptor) {
+            const rpc_tensorpipe::Error& error, std::string descriptor) {
           descriptorPromise->set_value(
               std::make_tuple(error, std::move(descriptor)));
         },
-        [sendPromise{std::move(sendPromise)}](const tensorpipe::Error& error) {
+        [sendPromise{std::move(sendPromise)}](const rpc_tensorpipe::Error& error) {
           sendPromise->set_value(error);
         });
 
@@ -86,7 +86,7 @@ class ReceiverWaitsForStartEventTest
     auto descriptor = this->peers_->recv(PeerGroup::kClient);
 
     // Perform recv and wait for completion.
-    auto recvPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+    auto recvPromise = std::make_shared<std::promise<rpc_tensorpipe::Error>>();
     auto recvFuture = recvPromise->get_future();
 
     channel->recv(
@@ -96,7 +96,7 @@ class ReceiverWaitsForStartEventTest
             .length = kSize,
             .stream = recvStream,
         },
-        [recvPromise{std::move(recvPromise)}](const tensorpipe::Error& error) {
+        [recvPromise{std::move(recvPromise)}](const rpc_tensorpipe::Error& error) {
           recvPromise->set_value(error);
         });
 

@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 
 class Connection;
@@ -61,4 +61,4 @@ class Context {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe

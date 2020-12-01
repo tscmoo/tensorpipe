@@ -11,7 +11,7 @@
 #include <cstring>
 #include <sstream>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace channel {
 
 std::string ContextClosedError::what() const {

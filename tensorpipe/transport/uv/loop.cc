@@ -12,7 +12,7 @@
 #include <tensorpipe/transport/uv/macros.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace transport {
 namespace uv {
 

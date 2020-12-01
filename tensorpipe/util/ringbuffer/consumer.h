@@ -10,7 +10,7 @@
 
 #include <tensorpipe/util/ringbuffer/ringbuffer.h>
 
-namespace tensorpipe {
+namespace rpc_tensorpipe {
 namespace util {
 namespace ringbuffer {
 
@@ -124,6 +124,8 @@ class Consumer {
       return {0, result};
     }
 
+    printf("CONSUMER head %#x tail %#x avail %#x\n", head, tail, avail);
+
     size = std::min(size, avail);
 
     const uint64_t start = (tail + tx_size_) & header_.kDataModMask;
@@ -211,4 +213,4 @@ class Consumer {
 
 } // namespace ringbuffer
 } // namespace util
-} // namespace tensorpipe
+} // namespace rpc_tensorpipe
