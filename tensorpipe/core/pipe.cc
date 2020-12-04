@@ -727,7 +727,6 @@ const std::string& Pipe::Impl::getRemoteName() {
 }
 
 Pipe::~Pipe() {
-  printf("%p :: ~Pipe\n", this);
   close();
 }
 

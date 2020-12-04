@@ -124,7 +124,7 @@ class Consumer {
       return {0, result};
     }
 
-    printf("CONSUMER head %#x tail %#x avail %#x\n", head, tail, avail);
+    //printf("CONSUMER head %#x tail %#x avail %#x\n", head, tail, avail);
 
     size = std::min(size, avail);
 

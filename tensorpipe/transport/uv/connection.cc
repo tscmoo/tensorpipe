@@ -282,7 +282,7 @@ void Connection::Impl::setIdFromLoop_(std::string id) {
 }
 
 void Connection::Impl::close() {
-  printf("close connection\n");
+  //printf("close connection\n");
   context_->deferToLoop(
       [impl{shared_from_this()}]() { impl->closeFromLoop(); });
 }
@@ -373,7 +373,7 @@ void Connection::Impl::handleError_() {
   TP_DCHECK(context_->inLoop());
   TP_VLOG(8) << "Connection " << id_ << " is handling error " << error_.what();
 
-  printf("handle error %s\n", id_.c_str());
+  //printf("handle error %s\n", id_.c_str());
 
   for (auto& readOperation : readOperations_) {
     readOperation.callbackFromLoop(error_);
@@ -484,12 +484,12 @@ void Connection::setId(std::string id) {
 }
 
 void Connection::close() {
-  printf("close %p\n", this);
+  //printf("close %p\n", this);
   impl_->close();
 }
 
 Connection::~Connection() {
-  printf("~Connection %p\n", this);
+  //printf("~Connection %p\n", this);
   close();
 }
 

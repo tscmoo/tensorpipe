@@ -126,7 +126,7 @@ class Producer {
       return {0, result};
     }
 
-    printf("PRODUCER head %#x tail %#x avail %#x\n", head, tail, avail);
+    //printf("PRODUCER head %#x tail %#x avail %#x\n", head, tail, avail);
 
     size = std::min(size, avail);
 
