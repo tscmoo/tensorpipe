@@ -73,7 +73,7 @@ auto cb_apply(F&& f, T&& t) {
 // unarmed are stashed and will be delayed until a callback is provided again.
 template <typename... Args>
 class RearmableCallback {
-  using TFn = std::function<void(Args...)>;
+  using TFn = Function<void(Args...)>;
   using TStoredArgs = std::tuple<typename std::remove_reference<Args>::type...>;
 
  public:
@@ -100,7 +100,7 @@ class RearmableCallback {
   // This method is intended for "flushing" the callback, for example when an
   // error condition is reached which means that no more callbacks will be
   // processed but the current ones still must be honored.
-  void triggerAll(std::function<std::tuple<Args...>()> generator) {
+  void triggerAll(Function<std::tuple<Args...>()> generator) {
     while (!callbacks_.empty()) {
       TFn fn{std::move(callbacks_.front())};
       callbacks_.pop_front();
@@ -242,7 +242,7 @@ class EagerCallbackWrapper {
 // This class goes hand in hand with the one following it.
 class ClosingEmitter {
  public:
-  void subscribe(uintptr_t token, std::function<void()> fn) {
+  void subscribe(uintptr_t token, Function<void()> fn) {
     loop_.deferToLoop([this, token, fn{std::move(fn)}]() mutable {
       subscribeFromLoop(token, std::move(fn));
     });
@@ -259,9 +259,9 @@ class ClosingEmitter {
  private:
   // FIXME We should share the on-demand loop with the object owning the emitter
   OnDemandDeferredExecutor loop_;
-  std::unordered_map<uintptr_t, std::function<void()>> receivers_;
+  std::unordered_map<uintptr_t, Function<void()>> receivers_;
 
-  void subscribeFromLoop(uintptr_t token, std::function<void()> fn) {
+  void subscribeFromLoop(uintptr_t token, Function<void()> fn) {
     receivers_.emplace(token, std::move(fn));
   }
 

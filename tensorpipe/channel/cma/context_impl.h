@@ -13,6 +13,7 @@
 #include <tensorpipe/channel/cma/context.h>
 #include <tensorpipe/common/callback.h>
 #include <tensorpipe/common/error.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 namespace channel {
@@ -22,7 +23,7 @@ class Context::PrivateIface {
  public:
   virtual ClosingEmitter& getClosingEmitter() = 0;
 
-  using copy_request_callback_fn = std::function<void(const Error&)>;
+  using copy_request_callback_fn = Function<void(const Error&)>;
 
   virtual void requestCopy(
       pid_t remotePid,

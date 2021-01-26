@@ -193,10 +193,10 @@ struct WriteOperation {
 // Produce a nop object containing a message descriptor using the information
 // contained in the WriteOperation: number and sizes of payloads and tensors,
 // tensor descriptors, ...
-std::shared_ptr<NopHolder<Packet>> makeDescriptorForMessage(
+void makeDescriptorForMessage(
+    NopHolder<Packet>& nopHolderOut,
     const WriteOperation& op) {
-  auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
-  Packet& nopPacketOut = nopHolderOut->getObject();
+  Packet& nopPacketOut = nopHolderOut.getObject();
   nopPacketOut.Become(nopPacketOut.index_of<MessageDescriptor>());
   MessageDescriptor& nopMessageDescriptor =
       *nopPacketOut.get<MessageDescriptor>();
@@ -239,8 +239,6 @@ std::shared_ptr<NopHolder<Packet>> makeDescriptorForMessage(
         TP_THROW_ASSERT() << "Unknown device type.";
     };
   }
-
-  return nopHolderOut;
 }
 
 template <typename TBuffer>
@@ -354,8 +352,8 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
   void init();
 
   void readDescriptor(read_descriptor_callback_fn);
-  void read(Message, read_callback_fn);
-  void write(Message, write_callback_fn);
+  void read(Message&&, read_callback_fn);
+  void write(Message&&, write_callback_fn);
 
   const std::string& getRemoteName();
 
@@ -368,9 +366,9 @@ class Pipe::Impl : public std::enable_shared_from_this<Pipe::Impl> {
 
   void readDescriptorFromLoop(read_descriptor_callback_fn);
 
-  void readFromLoop(Message, read_callback_fn);
+  void readFromLoop(Message&&, read_callback_fn);
 
-  void writeFromLoop(Message, write_callback_fn);
+  void writeFromLoop(Message&&, write_callback_fn);
 
   void closeFromLoop();
 
@@ -746,7 +744,7 @@ void Pipe::Impl::readDescriptorFromLoop(read_descriptor_callback_fn fn) {
              << op.sequenceNumber << ")";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadDescriptorCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a readDescriptor callback (#"
                << sequenceNumber << ")";
@@ -760,22 +758,22 @@ void Pipe::Impl::readDescriptorFromLoop(read_descriptor_callback_fn fn) {
   advanceReadOperation(op);
 }
 
-void Pipe::read(Message message, read_callback_fn fn) {
-  impl_->read(std::move(message), std::move(fn));
+void Pipe::read(Message&& message, read_callback_fn fn) {
+  impl_->read(std::forward<Message>(message), std::move(fn));
 }
 
-void Pipe::Impl::read(Message message, read_callback_fn fn) {
+void Pipe::Impl::read(Message&& message, read_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
-  // wrapped in a std::function. Therefore we wrap Messages in shared_ptrs.
-  auto sharedMessage = std::make_shared<Message>(std::move(message));
+  // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   loop_.deferToLoop([this,
-                     sharedMessage{std::move(sharedMessage)},
+                     //sharedMessage{std::move(sharedMessage)},
+                     message = std::move(message),
                      fn{std::move(fn)}]() mutable {
-    readFromLoop(std::move(*sharedMessage), std::move(fn));
+    readFromLoop(std::move(message), std::move(fn));
   });
 }
 
-void Pipe::Impl::readFromLoop(Message message, read_callback_fn fn) {
+void Pipe::Impl::readFromLoop(Message&& message, read_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   // This is such a bad logical error on the user's side that it doesn't deserve
@@ -793,7 +791,7 @@ void Pipe::Impl::readFromLoop(Message message, read_callback_fn fn) {
   checkAllocationCompatibility(op, message);
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextReadCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a read callback (#"
                << sequenceNumber << ")";
@@ -873,22 +871,22 @@ void Pipe::Impl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
   }
 }
 
-void Pipe::write(Message message, write_callback_fn fn) {
+void Pipe::write(Message&& message, write_callback_fn fn) {
   impl_->write(std::move(message), std::move(fn));
 }
 
-void Pipe::Impl::write(Message message, write_callback_fn fn) {
+void Pipe::Impl::write(Message&& message, write_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
-  // wrapped in a std::function. Therefore we wrap Messages in shared_ptrs.
-  auto sharedMessage = std::make_shared<Message>(std::move(message));
+  // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
+  //auto sharedMessage = std::make_shared<Message>(std::move(message));
   loop_.deferToLoop([this,
-                     sharedMessage{std::move(sharedMessage)},
+                     message = std::move(message),
                      fn{std::move(fn)}]() mutable {
-    writeFromLoop(std::move(*sharedMessage), std::move(fn));
+    writeFromLoop(std::move(message), std::move(fn));
   });
 }
 
-void Pipe::Impl::writeFromLoop(Message message, write_callback_fn fn) {
+void Pipe::Impl::writeFromLoop(Message&& message, write_callback_fn fn) {
   TP_DCHECK(loop_.inLoop());
 
   writeOperations_.emplace_back();
@@ -900,7 +898,7 @@ void Pipe::Impl::writeFromLoop(Message message, write_callback_fn fn) {
              << " payloads and " << message.tensors.size() << " tensors)";
 
   fn = [this, sequenceNumber{op.sequenceNumber}, fn{std::move(fn)}](
-           const Error& error, Message message) {
+           const Error& error, Message&& message) {
     TP_DCHECK_EQ(sequenceNumber, nextWriteCallbackToCall_++);
     TP_VLOG(1) << "Pipe " << id_ << " is calling a write callback (#"
                << sequenceNumber << ")";
@@ -1222,6 +1220,29 @@ bool Pipe::Impl::advanceOneWriteOperation(WriteOperation& op) {
   return hasAdvanced;
 }
 
+template<typename F, typename T>
+struct FunctionWithData {
+  F f;
+  T data;
+  FunctionWithData(F f) : f(std::move(f)) {}
+
+  FunctionWithData(const FunctionWithData&) = delete;
+  FunctionWithData(FunctionWithData&&) = default;
+  FunctionWithData& operator=(const FunctionWithData&) = delete;
+  FunctionWithData& operator=(FunctionWithData&&) = default;
+
+  template<typename... Args>
+  auto operator()(Args&&... args) {
+    return f(std::forward<Args>(args)..., data);
+  }
+};
+
+template<typename S, typename T, typename F>
+std::tuple<Function<S>, T&> makeFunctionWithData(F f) {
+  Function<S> sf = FunctionWithData<F, T>(std::move(f));
+  return {std::move(sf), sf.template as<FunctionWithData<F, T>>().data};
+}
+
 void Pipe::Impl::readDescriptorOfMessage(ReadOperation& op) {
   TP_DCHECK(loop_.inLoop());
   TP_DCHECK_EQ(state_, ESTABLISHED);
@@ -1234,16 +1255,16 @@ void Pipe::Impl::readDescriptorOfMessage(ReadOperation& op) {
 
   TP_DCHECK_EQ(connectionState_, AWAITING_DESCRIPTOR);
   TP_DCHECK_EQ(messageBeingReadFromConnection_, op.sequenceNumber);
-  auto nopHolderIn = std::make_shared<NopHolder<Packet>>();
   TP_VLOG(3) << "Pipe " << id_ << " is reading nop object (message descriptor #"
              << op.sequenceNumber << ")";
-  connection_->read(
-      *nopHolderIn, lazyCallbackWrapper_([&op, nopHolderIn](Impl& impl) {
-        TP_VLOG(3) << "Pipe " << impl.id_
-                   << " done reading nop object (message descriptor #"
-                   << op.sequenceNumber << ")";
-        impl.onReadOfMessageDescriptor(op, nopHolderIn->getObject());
-      }));
+  auto&& [f, nopHolderIn] = makeFunctionWithData<void(const Error&), NopHolder<Packet>>(lazyCallbackWrapper_([&op](Impl& impl, NopHolder<Packet>& nopHolderIn) {
+    TP_VLOG(3) << "Pipe " << impl.id_
+               << " done reading nop object (message descriptor #"
+               << op.sequenceNumber << ")";
+    impl.onReadOfMessageDescriptor(op, nopHolderIn.getObject());
+  }));
+
+  connection_->read(nopHolderIn, std::move(f));
   connectionState_ = AWAITING_PAYLOADS;
 }
 
@@ -1314,18 +1335,18 @@ void Pipe::Impl::writeDescriptorAndPayloadsOfMessage(WriteOperation& op) {
              << " is writing descriptor and payloads of message #"
              << op.sequenceNumber;
 
-  std::shared_ptr<NopHolder<Packet>> holder = makeDescriptorForMessage(op);
+  //std::shared_ptr<NopHolder<Packet>> holder = makeDescriptorForMessage(op);
+  auto&& [writeCallback, holder] = makeFunctionWithData<void(const Error&), NopHolder<Packet>>(lazyCallbackWrapper_(
+      [sequenceNumber{op.sequenceNumber}](Impl& impl, NopHolder<Packet>&) {
+        TP_VLOG(3) << "Pipe " << impl.id_
+                   << " done writing nop object (message descriptor #"
+                   << sequenceNumber << ")";
+      }));
+  makeDescriptorForMessage(holder, op);
 
   TP_VLOG(3) << "Pipe " << id_ << " is writing nop object (message descriptor #"
              << op.sequenceNumber << ")";
-  connection_->write(
-      *holder,
-      lazyCallbackWrapper_(
-          [sequenceNumber{op.sequenceNumber}, holder](Impl& impl) {
-            TP_VLOG(3) << "Pipe " << impl.id_
-                       << " done writing nop object (message descriptor #"
-                       << sequenceNumber << ")";
-          }));
+  connection_->write(holder, std::move(writeCallback));
 
   for (size_t payloadIdx = 0; payloadIdx < op.message.payloads.size();
        payloadIdx++) {
@@ -1351,8 +1372,14 @@ void Pipe::Impl::onReadWhileServerWaitingForBrochure(
   TP_DCHECK_EQ(nopPacketIn.index(), nopPacketIn.index_of<Brochure>());
   const Brochure& nopBrochure = *nopPacketIn.get<Brochure>();
 
-  auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
-  Packet& nopPacketOut = nopHolderOut->getObject();
+  //auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
+
+  auto&& [writeCallback, nopHolderOut] = makeFunctionWithData<void(const Error&), NopHolder<Packet>>(lazyCallbackWrapper_([](Impl& impl, NopHolder<Packet>&) {
+    TP_VLOG(3) << "Pipe " << impl.id_
+               << " done writing nop object (brochure answer)";
+  }));
+
+  Packet& nopPacketOut = nopHolderOut.getObject();
   nopPacketOut.Become(nopPacketOut.index_of<BrochureAnswer>());
   BrochureAnswer& nopBrochureAnswer = *nopPacketOut.get<BrochureAnswer>();
   bool needToWaitForConnections = false;
@@ -1461,11 +1488,7 @@ void Pipe::Impl::onReadWhileServerWaitingForBrochure(
   });
 
   TP_VLOG(3) << "Pipe " << id_ << " is writing nop object (brochure answer)";
-  connection_->write(
-      *nopHolderOut, lazyCallbackWrapper_([nopHolderOut](Impl& impl) {
-        TP_VLOG(3) << "Pipe " << impl.id_
-                   << " done writing nop object (brochure answer)";
-      }));
+  connection_->write(nopHolderOut, std::move(writeCallback));
 
   if (!needToWaitForConnections) {
     state_ = ESTABLISHED;
@@ -1507,8 +1530,12 @@ void Pipe::Impl::onReadWhileClientWaitingForBrochureAnswer(
     std::shared_ptr<transport::Connection> connection =
         transportContext->connect(address);
     connection->setId(id_ + ".tr_" + transport);
-    auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
-    Packet& nopPacketOut = nopHolderOut->getObject();
+    //auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
+    auto&& [writeCallback, nopHolderOut] = makeFunctionWithData<void(const Error&), NopHolder<Packet>>(lazyCallbackWrapper_([](Impl& impl, NopHolder<Packet>&) {
+      TP_VLOG(3) << "Pipe " << impl.id_
+                 << " done writing nop object (requested connection)";
+    }));
+    Packet& nopPacketOut = nopHolderOut.getObject();
     nopPacketOut.Become(nopPacketOut.index_of<RequestedConnection>());
     RequestedConnection& nopRequestedConnection =
         *nopPacketOut.get<RequestedConnection>();
@@ -1516,11 +1543,7 @@ void Pipe::Impl::onReadWhileClientWaitingForBrochureAnswer(
     nopRequestedConnection.registrationId = token;
     TP_VLOG(3) << "Pipe " << id_
                << " is writing nop object (requested connection)";
-    connection->write(
-        *nopHolderOut, lazyCallbackWrapper_([nopHolderOut](Impl& impl) {
-          TP_VLOG(3) << "Pipe " << impl.id_
-                     << " done writing nop object (requested connection)";
-        }));
+    connection->write(nopHolderOut, std::move(writeCallback));
 
     transport_ = transport;
     connection_ = std::move(connection);
@@ -1542,8 +1565,12 @@ void Pipe::Impl::onReadWhileClientWaitingForBrochureAnswer(
           transportContext->connect(address);
       connection->setId(id_ + ".ch_" + channelName);
 
-      auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
-      Packet& nopPacketOut = nopHolderOut->getObject();
+      //auto nopHolderOut = std::make_shared<NopHolder<Packet>>();
+      auto&& [writeCallback, nopHolderOut] = makeFunctionWithData<void(const Error&), NopHolder<Packet>>(lazyCallbackWrapper_([](Impl& impl, NopHolder<Packet>&) {
+        TP_VLOG(3) << "Pipe " << impl.id_
+                   << " done writing nop object (requested connection)";
+      }));
+      Packet& nopPacketOut = nopHolderOut.getObject();
       nopPacketOut.Become(nopPacketOut.index_of<RequestedConnection>());
       RequestedConnection& nopRequestedConnection =
           *nopPacketOut.get<RequestedConnection>();
@@ -1551,11 +1578,7 @@ void Pipe::Impl::onReadWhileClientWaitingForBrochureAnswer(
       nopRequestedConnection.registrationId = token;
       TP_VLOG(3) << "Pipe " << id_
                  << " is writing nop object (requested connection)";
-      connection->write(
-          *nopHolderOut, lazyCallbackWrapper_([nopHolderOut](Impl& impl) {
-            TP_VLOG(3) << "Pipe " << impl.id_
-                       << " done writing nop object (requested connection)";
-          }));
+      connection->write(nopHolderOut, std::move(writeCallback));
 
       std::shared_ptr<channel::Channel<decltype(buffer)>> channel =
           channelContext->createChannel(

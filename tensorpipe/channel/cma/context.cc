@@ -27,6 +27,7 @@
 #include <tensorpipe/common/optional.h>
 #include <tensorpipe/common/queue.h>
 #include <tensorpipe/common/system.h>
+#include <tensorpipe/common/function.h>
 
 namespace tensorpipe {
 namespace channel {
@@ -75,7 +76,7 @@ class Context::Impl : public Context::PrivateIface,
 
   ClosingEmitter& getClosingEmitter() override;
 
-  using copy_request_callback_fn = std::function<void(const Error&)>;
+  using copy_request_callback_fn = Function<void(const Error&)>;
 
   void requestCopy(
       pid_t remotePid,
@@ -212,7 +213,7 @@ void Context::Impl::requestCopy(
     void* remotePtr,
     void* localPtr,
     size_t length,
-    std::function<void(const Error&)> fn) {
+    Function<void(const Error&)> fn) {
   uint64_t requestId = nextRequestId_++;
   TP_VLOG(4) << "Channel context " << id_ << " received a copy request (#"
              << requestId << ")";
