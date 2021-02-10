@@ -38,7 +38,7 @@ class RingbufferReadOperation {
 
  public:
   using read_callback_fn =
-      std::function<void(const Error& error, const void* ptr, size_t len)>;
+      Function<void(const Error& error, const void* ptr, size_t len)>;
   // Read into a user-provided buffer of known length.
   inline RingbufferReadOperation(void* ptr, size_t len, read_callback_fn fn);
   // Read into an auto-allocated buffer, whose length is read from the wire.
@@ -87,7 +87,7 @@ class RingbufferWriteOperation {
   };
 
  public:
-  using write_callback_fn = std::function<void(const Error& error)>;
+  using write_callback_fn = Function<void(const Error& error)>;
   // Write from a user-provided buffer of known length.
   inline RingbufferWriteOperation(
       const void* ptr,

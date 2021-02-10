@@ -59,12 +59,12 @@ class IbvNic {
   void postSend(
       IbvQueuePair& qp,
       IbvLib::send_wr& wr,
-      std::function<void(const Error&)> cb);
+      Function<void(const Error&)> cb);
 
   void postRecv(
       IbvQueuePair& qp,
       IbvLib::recv_wr& wr,
-      std::function<void(const Error&)> cb);
+      Function<void(const Error&)> cb);
 
   bool pollOnce();
 
@@ -92,14 +92,14 @@ class IbvNic {
   std::deque<std::tuple<
       IbvQueuePair&,
       IbvLib::recv_wr&,
-      std::function<void(const Error&)>>>
+      Function<void(const Error&)>>>
       recvsWaitingForSlots_;
 
   size_t numAvailableSendSlots_ = kNumSends;
   std::deque<std::tuple<
       IbvQueuePair&,
       IbvLib::send_wr&,
-      std::function<void(const Error&)>>>
+      Function<void(const Error&)>>>
       sendsWaitingForSlots_;
 
   // We need one common map for both send and recv requests because in principle
@@ -107,7 +107,7 @@ class IbvNic {
   // match it to its callback. However, we could group them by QP number or, in
   // fact, we could have the QP store these requests and we just wake it up when
   // a completion occurs.
-  std::unordered_map<uint64_t, std::function<void(const Error&)>>
+  std::unordered_map<uint64_t, Function<void(const Error&)>>
       requestsInFlight_;
   uint64_t nextRequestId_ = 0;
 
@@ -148,7 +148,7 @@ class ContextImpl final
 
   void waitForCudaEvent(
       const CudaEvent& event,
-      std::function<void(const Error&)> cb);
+      Function<void(const Error&)> cb);
 
  protected:
   // Implement BusyPollingLoop hooks.
@@ -167,14 +167,14 @@ class ContextImpl final
   std::vector<IbvNic> ibvNics_;
   const std::vector<size_t> gpuToNic_;
 
-  std::list<std::tuple<const CudaEvent&, std::function<void(const Error&)>>>
+  std::list<std::tuple<const CudaEvent&, Function<void(const Error&)>>>
       pendingCudaEvents_;
 
   bool pollCudaOnce();
 
   void waitForCudaEventFromLoop(
       const CudaEvent& event,
-      std::function<void(const Error&)> cb);
+      Function<void(const Error&)> cb);
 };
 
 } // namespace cuda_gdr

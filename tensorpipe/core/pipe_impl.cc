@@ -481,7 +481,7 @@ void PipeImpl::readDescriptorFromLoop(read_descriptor_callback_fn fn) {
 
 void PipeImpl::read(Message message, read_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
-  // wrapped in a std::function. Therefore we wrap Messages in shared_ptrs.
+  // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   auto sharedMessage = std::make_shared<Message>(std::move(message));
   context_->deferToLoop([impl{this->shared_from_this()},
                          sharedMessage{std::move(sharedMessage)},
@@ -590,7 +590,7 @@ void PipeImpl::readPayloadsAndReceiveTensorsOfMessage(ReadOperation& op) {
 
 void PipeImpl::write(Message message, write_callback_fn fn) {
   // Messages aren't copyable and thus if a lambda captures them it cannot be
-  // wrapped in a std::function. Therefore we wrap Messages in shared_ptrs.
+  // wrapped in a Function. Therefore we wrap Messages in shared_ptrs.
   auto sharedMessage = std::make_shared<Message>(std::move(message));
   context_->deferToLoop([impl{this->shared_from_this()},
                          sharedMessage{std::move(sharedMessage)},

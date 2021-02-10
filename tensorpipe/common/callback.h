@@ -47,7 +47,7 @@ auto cbApply(F&& f, T&& t) {
 // unarmed are stashed and will be delayed until a callback is provided again.
 template <typename... Args>
 class RearmableCallback {
-  using TFn = std::function<void(Args...)>;
+  using TFn = Function<void(Args...)>;
   using TStoredArgs = std::tuple<typename std::remove_reference<Args>::type...>;
 
  public:
@@ -74,7 +74,7 @@ class RearmableCallback {
   // This method is intended for "flushing" the callback, for example when an
   // error condition is reached which means that no more callbacks will be
   // processed but the current ones still must be honored.
-  void triggerAll(std::function<std::tuple<Args...>()> generator) {
+  void triggerAll(Function<std::tuple<Args...>()> generator) {
     while (!callbacks_.empty()) {
       TFn fn{std::move(callbacks_.front())};
       callbacks_.pop_front();

@@ -21,7 +21,7 @@ using namespace tensorpipe::transport::shm;
 
 namespace {
 
-void run(std::function<void(int)> fn1, std::function<void(int)> fn2) {
+void run(Function<void(int)> fn1, Function<void(int)> fn2) {
   int fds[2];
 
   {

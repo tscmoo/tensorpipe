@@ -45,9 +45,9 @@ namespace tensorpipe {
 namespace channel {
 
 using TDescriptor = std::string;
-using TDescriptorCallback = std::function<void(const Error&, TDescriptor)>;
-using TSendCallback = std::function<void(const Error&)>;
-using TRecvCallback = std::function<void(const Error&)>;
+using TDescriptorCallback = Function<void(const Error&, TDescriptor)>;
+using TSendCallback = Function<void(const Error&)>;
+using TRecvCallback = Function<void(const Error&)>;
 
 // Abstract base class for channel classes.
 template <typename TBuffer>

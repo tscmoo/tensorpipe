@@ -249,7 +249,7 @@ bool ContextImpl::inLoop() const {
   return loop_.inLoop();
 };
 
-void ContextImpl::deferToLoop(std::function<void()> fn) {
+void ContextImpl::deferToLoop(Function<void()> fn) {
   loop_.deferToLoop(std::move(fn));
 };
 
@@ -258,7 +258,7 @@ void ContextImpl::requestCopy(
     void* remotePtr,
     void* localPtr,
     size_t length,
-    std::function<void(const Error&)> fn) {
+    Function<void(const Error&)> fn) {
   uint64_t requestId = nextRequestId_++;
   TP_VLOG(4) << "Channel context " << id_ << " received a copy request (#"
              << requestId << ")";

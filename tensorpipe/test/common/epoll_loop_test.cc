@@ -51,7 +51,7 @@ class FunctionEventHandler
     : public EpollLoop::EventHandler,
       public std::enable_shared_from_this<FunctionEventHandler> {
  public:
-  using TFunction = std::function<void(FunctionEventHandler&)>;
+  using TFunction = Function<void(FunctionEventHandler&)>;
 
   FunctionEventHandler(
       DeferredExecutor& deferredExecutor,
@@ -124,7 +124,7 @@ std::shared_ptr<FunctionEventHandler> createMonitor(
     std::shared_ptr<T> shared,
     int fd,
     int event,
-    std::function<void(T&, FunctionEventHandler&)> fn) {
+    Function<void(T&, FunctionEventHandler&)> fn) {
   auto handler = std::make_shared<FunctionEventHandler>(
       reactor,
       loop,

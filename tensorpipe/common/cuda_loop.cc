@@ -17,9 +17,9 @@ namespace {
 
 struct CudaCallback {
   CudaLoop& loop;
-  std::function<void(const Error&)> callback;
+  Function<void(const Error&)> callback;
 
-  CudaCallback(CudaLoop& loop, std::function<void(const Error&)> callback)
+  CudaCallback(CudaLoop& loop, Function<void(const Error&)> callback)
       : loop(loop), callback(std::move(callback)) {}
 };
 
@@ -86,7 +86,7 @@ void CudaLoop::processCallbacks() {
 void CudaLoop::addCallback(
     int device,
     cudaStream_t stream,
-    std::function<void(const Error&)> callback) {
+    Function<void(const Error&)> callback) {
   {
     std::unique_lock<std::mutex> lock(mutex_);
     if (closed_) {

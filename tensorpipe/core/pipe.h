@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/core/message.h>
 #include <tensorpipe/transport/context.h>
@@ -60,15 +61,15 @@ class Pipe final {
   //
 
   using read_descriptor_callback_fn =
-      std::function<void(const Error&, Message)>;
+      Function<void(const Error&, Message)>;
 
   void readDescriptor(read_descriptor_callback_fn fn);
 
-  using read_callback_fn = std::function<void(const Error&, Message)>;
+  using read_callback_fn = Function<void(const Error&, Message)>;
 
   void read(Message message, read_callback_fn fn);
 
-  using write_callback_fn = std::function<void(const Error&, Message)>;
+  using write_callback_fn = Function<void(const Error&, Message)>;
 
   void write(Message message, write_callback_fn fn);
 

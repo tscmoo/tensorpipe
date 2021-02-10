@@ -50,9 +50,9 @@ class TransportTest : public ::testing::TestWithParam<TransportTestHelper*> {
   TransportTest() : peers_(GetParam()->makePeerGroup()) {}
 
   void testConnection(
-      std::function<void(std::shared_ptr<tensorpipe::transport::Connection>)>
+      Function<void(std::shared_ptr<tensorpipe::transport::Connection>)>
           listeningFn,
-      std::function<void(std::shared_ptr<tensorpipe::transport::Connection>)>
+      Function<void(std::shared_ptr<tensorpipe::transport::Connection>)>
           connectingFn) {
     using namespace tensorpipe::transport;
 

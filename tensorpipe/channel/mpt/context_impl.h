@@ -51,10 +51,10 @@ class ContextImpl final
 
   // Implement the DeferredExecutor interface.
   bool inLoop() const override;
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   using connection_request_callback_fn =
-      std::function<void(const Error&, std::shared_ptr<transport::Connection>)>;
+      Function<void(const Error&, std::shared_ptr<transport::Connection>)>;
 
   const std::vector<std::string>& addresses() const;
 

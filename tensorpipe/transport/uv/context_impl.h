@@ -34,7 +34,7 @@ class ContextImpl final
 
   // Implement the DeferredExecutor interface.
   bool inLoop() const override;
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   std::unique_ptr<TCPHandle> createHandle();
 

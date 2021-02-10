@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error.h>
 
 namespace tensorpipe {
@@ -50,7 +51,7 @@ class Listener final {
   //
 
   using accept_callback_fn =
-      std::function<void(const Error&, std::shared_ptr<Pipe>)>;
+      Function<void(const Error&, std::shared_ptr<Pipe>)>;
 
   void accept(accept_callback_fn fn);
 

@@ -34,7 +34,7 @@ class ContextImpl final
 
   // Implement the DeferredExecutor interface.
   bool inLoop() const override;
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
   void registerDescriptor(
       int fd,
@@ -44,7 +44,7 @@ class ContextImpl final
   void unregisterDescriptor(int fd);
 
   using TToken = uint32_t;
-  using TFunction = std::function<void()>;
+  using TFunction = Function<void()>;
 
   TToken addReaction(TFunction fn);
 

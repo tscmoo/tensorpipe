@@ -211,7 +211,7 @@ bool IbvNic::pollOnce() {
     TP_THROW_ASSERT_IF(iter == requestsInFlight_.end())
         << "Got work completion with unknown ID " << wc.wr_id;
 
-    std::function<void(const Error&)> cb = std::move(iter->second);
+    Function<void(const Error&)> cb = std::move(iter->second);
     requestsInFlight_.erase(iter);
 
     if (wc.status != IbvLib::WC_SUCCESS) {
@@ -252,7 +252,7 @@ bool IbvNic::pollOnce() {
 void IbvNic::postSend(
     IbvQueuePair& qp,
     IbvLib::send_wr& wr,
-    std::function<void(const Error&)> cb) {
+    Function<void(const Error&)> cb) {
   TP_DCHECK_EQ(wr.wr_id, 0);
   if (numAvailableSendSlots_ > 0) {
     wr.wr_id = nextRequestId_++;
@@ -273,7 +273,7 @@ void IbvNic::postSend(
 void IbvNic::postRecv(
     IbvQueuePair& qp,
     IbvLib::recv_wr& wr,
-    std::function<void(const Error&)> cb) {
+    Function<void(const Error&)> cb) {
   TP_DCHECK_EQ(wr.wr_id, 0);
   if (numAvailableRecvSlots_ > 0) {
     wr.wr_id = nextRequestId_++;
@@ -487,7 +487,7 @@ bool ContextImpl::pollCudaOnce() {
     const CudaEvent& event = std::get<0>(*iter);
 
     if (event.query()) {
-      std::function<void(const Error&)> cb = std::move(std::get<1>(*iter));
+      Function<void(const Error&)> cb = std::move(std::get<1>(*iter));
       cb(Error::kSuccess);
       iter = pendingCudaEvents_.erase(iter);
       any = true;
@@ -498,7 +498,7 @@ bool ContextImpl::pollCudaOnce() {
 
 void ContextImpl::waitForCudaEvent(
     const CudaEvent& event,
-    std::function<void(const Error&)> cb) {
+    Function<void(const Error&)> cb) {
   deferToLoop([this, &event, cb{std::move(cb)}]() mutable {
     waitForCudaEventFromLoop(event, std::move(cb));
   });
@@ -506,7 +506,7 @@ void ContextImpl::waitForCudaEvent(
 
 void ContextImpl::waitForCudaEventFromLoop(
     const CudaEvent& event,
-    std::function<void(const Error&)> cb) {
+    Function<void(const Error&)> cb) {
   TP_DCHECK(inLoop());
 
   pendingCudaEvents_.emplace_back(event, std::move(cb));

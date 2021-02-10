@@ -90,7 +90,7 @@ bool ContextImpl::inLoop() const {
   return reactor_.inLoop();
 };
 
-void ContextImpl::deferToLoop(std::function<void()> fn) {
+void ContextImpl::deferToLoop(Function<void()> fn) {
   reactor_.deferToLoop(std::move(fn));
 };
 

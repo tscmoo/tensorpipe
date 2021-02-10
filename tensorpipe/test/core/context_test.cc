@@ -437,7 +437,7 @@ TEST(Context, ServerPingPongTwice) {
 static void pipeRead(
     std::shared_ptr<Pipe>& pipe,
     std::vector<std::unique_ptr<uint8_t[]>>& buffers,
-    std::function<void(const Error&, Message)> fn) {
+    Function<void(const Error&, Message)> fn) {
   pipe->readDescriptor([&pipe, &buffers, fn{std::move(fn)}](
                            const Error& error, Message message) mutable {
     ASSERT_FALSE(error);

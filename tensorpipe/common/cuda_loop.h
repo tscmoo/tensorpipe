@@ -25,7 +25,7 @@ namespace tensorpipe {
 
 class CudaLoop {
   struct Operation {
-    std::function<void(const Error&)> callback;
+    Function<void(const Error&)> callback;
     Error error;
   };
 
@@ -40,7 +40,7 @@ class CudaLoop {
   void addCallback(
       int device,
       cudaStream_t stream,
-      std::function<void(const Error&)> callback);
+      Function<void(const Error&)> callback);
 
  private:
   std::thread thread_;

@@ -39,9 +39,9 @@ class ContextImpl final
 
   // Implement the DeferredExecutor interface.
   bool inLoop() const override;
-  void deferToLoop(std::function<void()> fn) override;
+  void deferToLoop(Function<void()> fn) override;
 
-  using copy_request_callback_fn = std::function<void(const Error&)>;
+  using copy_request_callback_fn = Function<void(const Error&)>;
 
   void requestCopy(
       void* remotePtr,

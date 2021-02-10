@@ -34,7 +34,7 @@ class PeerGroup {
   virtual std::string recv(int receiverId) = 0;
 
   // Spawn two peers each running one of the provided functions.
-  virtual void spawn(std::function<void()>, std::function<void()>) = 0;
+  virtual void spawn(Function<void()>, Function<void()>) = 0;
 
   // Signal other peers that this peer is done.
   void done(int selfId) {
@@ -71,8 +71,8 @@ class ThreadPeerGroup : public PeerGroup {
     return q_[receiverId].pop();
   }
 
-  void spawn(std::function<void()> f1, std::function<void()> f2) override {
-    std::array<std::function<void()>, kNumPeers> fns = {
+  void spawn(Function<void()> f1, Function<void()> f2) override {
+    std::array<Function<void()>, kNumPeers> fns = {
         std::move(f1), std::move(f2)};
     std::array<std::thread, kNumPeers> ts;
 
@@ -91,7 +91,7 @@ class ThreadPeerGroup : public PeerGroup {
 
 class ForkedThreadPeerGroup : public ThreadPeerGroup {
  public:
-  void spawn(std::function<void()> f1, std::function<void()> f2) override {
+  void spawn(Function<void()> f1, Function<void()> f2) override {
     // Some tests modify the global state of the process (such as initializing
     // the CUDA context), which would cause other tests running as sub-processes
     // to fail. Here, we run all thread-based tests in a sub-process to avoid
@@ -148,8 +148,8 @@ class ProcessPeerGroup : public PeerGroup {
     return str;
   }
 
-  void spawn(std::function<void()> f1, std::function<void()> f2) override {
-    std::array<std::function<void()>, kNumPeers> fns = {
+  void spawn(Function<void()> f1, Function<void()> f2) override {
+    std::array<Function<void()>, kNumPeers> fns = {
         std::move(f1), std::move(f2)};
     std::array<pid_t, kNumPeers> pids = {-1, -1};
 

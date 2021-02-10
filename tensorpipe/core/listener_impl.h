@@ -49,7 +49,7 @@ class ListenerImpl final : public std::enable_shared_from_this<ListenerImpl> {
 
   std::string url(const std::string& transport) const;
 
-  using connection_request_callback_fn = std::function<
+  using connection_request_callback_fn = Function<
       void(const Error&, std::string, std::shared_ptr<transport::Connection>)>;
 
   uint64_t registerConnectionRequest(connection_request_callback_fn fn);

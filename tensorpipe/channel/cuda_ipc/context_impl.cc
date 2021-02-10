@@ -367,7 +367,7 @@ bool ContextImpl::inLoop() const {
   return loop_.inLoop();
 };
 
-void ContextImpl::deferToLoop(std::function<void()> fn) {
+void ContextImpl::deferToLoop(Function<void()> fn) {
   loop_.deferToLoop(std::move(fn));
 };
 
