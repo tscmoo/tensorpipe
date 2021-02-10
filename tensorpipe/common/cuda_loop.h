@@ -18,6 +18,7 @@
 
 #include <cuda_runtime.h>
 
+#include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error_macros.h>
 
 namespace tensorpipe {

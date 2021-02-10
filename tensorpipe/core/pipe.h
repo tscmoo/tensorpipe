@@ -72,6 +72,9 @@ class Pipe final {
 
   void write(Message message, write_callback_fn fn);
 
+  std::string localAddr();
+  std::string remoteAddr();
+
   // Retrieve the user-defined name that was given to the constructor of the
   // context on the remote side, if any (if not, this will be the empty string).
   // This is intended to help in logging and debugging only.

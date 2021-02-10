@@ -45,6 +45,9 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
       std::string id,
       std::string addr);
 
+  std::string localAddr();
+  std::string remoteAddr();
+
  protected:
   // Implement the entry points called by ConnectionImplBoilerplate.
   void initImplFromLoop() override;

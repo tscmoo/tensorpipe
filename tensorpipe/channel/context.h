@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include <tensorpipe/common/defs.h>
 #include <tensorpipe/transport/context.h>
 
 namespace tensorpipe {

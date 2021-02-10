@@ -76,6 +76,13 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
   void onAckCompleted() override;
   void onError(IbvLib::wc_status status, uint64_t wrId) override;
 
+  std::string localAddr() {
+    return "";
+  }
+  std::string remoteAddr() {
+    return "";
+  }
+
  protected:
   // Implement the entry points called by ConnectionImplBoilerplate.
   void initImplFromLoop() override;

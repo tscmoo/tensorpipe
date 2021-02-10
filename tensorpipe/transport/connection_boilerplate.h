@@ -50,6 +50,9 @@ class ConnectionBoilerplate : public Connection {
   // Tell the connection what its identifier is.
   void setId(std::string id) override;
 
+  virtual std::string localAddr() override;
+  virtual std::string remoteAddr() override;
+
   // Shut down the connection and its resources.
   void close() override;
 
@@ -129,6 +132,16 @@ void ConnectionBoilerplate<TCtx, TList, TConn>::write(
 template <typename TCtx, typename TList, typename TConn>
 void ConnectionBoilerplate<TCtx, TList, TConn>::setId(std::string id) {
   impl_->setId(std::move(id));
+}
+
+template<typename TCtx, typename TList, typename TConn>
+std::string ConnectionBoilerplate<TCtx, TList, TConn>::localAddr() {
+  return impl_->localAddr();
+}
+
+template<typename TCtx, typename TList, typename TConn>
+std::string ConnectionBoilerplate<TCtx, TList, TConn>::remoteAddr() {
+  return impl_->remoteAddr();
 }
 
 template <typename TCtx, typename TList, typename TConn>

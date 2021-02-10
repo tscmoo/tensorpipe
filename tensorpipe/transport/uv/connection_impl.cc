@@ -49,6 +49,28 @@ ConnectionImpl::ConnectionImpl(
       handle_(context_->createHandle()),
       sockaddr_(Sockaddr::createInetSockAddr(addr)) {}
 
+std::string ConnectionImpl::localAddr() {
+  std::string r;
+  context_->runInLoop([&]{
+    auto addr = handle_->sockNameFromLoop();
+    if (addr.addr()->sa_family != 0) {
+      r = addr.str();
+    }
+  });
+  return r;
+}
+
+std::string ConnectionImpl::remoteAddr() {
+  std::string r;
+  context_->runInLoop([&]{
+    auto addr = handle_->peerNameFromLoop();
+    if (addr.addr()->sa_family != 0) {
+      r = addr.str();
+    }
+  });
+  return r;
+}
+
 void ConnectionImpl::initImplFromLoop() {
   context_->enroll(*this);
 

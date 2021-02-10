@@ -285,6 +285,22 @@ class TCPHandle : public StreamHandle<TCPHandle, uv_tcp_t> {
     struct sockaddr* addr = reinterpret_cast<struct sockaddr*>(&ss);
     int addrlen = sizeof(ss);
     auto rv = uv_tcp_getsockname(ptr(), addr, &addrlen);
+    if (rv < 0) {
+      memset(&ss, 0, sizeof(ss));
+    }
+    TP_THROW_UV_IF(rv < 0, rv);
+    return Sockaddr(addr, addrlen);
+  }
+
+  Sockaddr peerNameFromLoop() {
+    TP_DCHECK(this->loop_.inLoop());
+    struct sockaddr_storage ss;
+    struct sockaddr* addr = reinterpret_cast<struct sockaddr*>(&ss);
+    int addrlen = sizeof(ss);
+    auto rv = uv_tcp_getpeername(ptr(), addr, &addrlen);
+    if (rv < 0) {
+      memset(&ss, 0, sizeof(ss));
+    }
     TP_THROW_UV_IF(rv < 0, rv);
     return Sockaddr(addr, addrlen);
   }

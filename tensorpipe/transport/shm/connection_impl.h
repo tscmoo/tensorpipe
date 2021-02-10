@@ -66,6 +66,13 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
   // Implementation of EventHandler.
   void handleEventsFromLoop(int events) override;
 
+  std::string localAddr() {
+    return "";
+  }
+  std::string remoteAddr() {
+    return "";
+  }
+
  protected:
   // Implement the entry points called by ConnectionImplBoilerplate.
   void initImplFromLoop() override;

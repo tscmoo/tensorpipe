@@ -412,6 +412,22 @@ void PipeImpl::initFromLoop() {
   }
 }
 
+std::string PipeImpl::localAddr() {
+  if (connection_) {
+    return connection_->localAddr();
+  } else {
+    return "";
+  }
+}
+
+std::string PipeImpl::remoteAddr() {
+  if (connection_) {
+    return connection_->remoteAddr();
+  } else {
+    return "";
+  }
+}
+
 const std::string& PipeImpl::getRemoteName() {
   return remoteName_;
 }

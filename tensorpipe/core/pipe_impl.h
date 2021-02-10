@@ -129,6 +129,9 @@ class PipeImpl final : public std::enable_shared_from_this<PipeImpl> {
   void read(Message message, read_callback_fn fn);
   void write(Message message, write_callback_fn fn);
 
+  std::string localAddr();
+  std::string remoteAddr();
+
   const std::string& getRemoteName();
 
   void close();

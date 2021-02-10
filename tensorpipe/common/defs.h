@@ -21,6 +21,13 @@
 #include <string>
 #include <system_error>
 
+#include "../../src/function.h"
+
+namespace tensorpipe {
+template<typename T>
+using Function = rpc::Function<T>;
+}
+
 // Branch hint macros. C++20 will include them as part of language.
 #define likely(x) __builtin_expect((x) ? 1 : 0, 1)
 #define unlikely(x) __builtin_expect((x) ? 1 : 0, 0)

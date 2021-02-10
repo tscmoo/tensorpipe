@@ -63,6 +63,9 @@ class Connection {
   // channels. It will only used for logging and debugging purposes.
   virtual void setId(std::string id) = 0;
 
+  virtual std::string localAddr() = 0;
+  virtual std::string remoteAddr() = 0;
+
   virtual void close() = 0;
 
   virtual ~Connection() = default;

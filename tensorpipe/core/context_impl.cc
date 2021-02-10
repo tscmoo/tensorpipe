@@ -32,7 +32,7 @@ namespace tensorpipe {
 
 namespace {
 
-uint64_t contextCouter{0};
+std::atomic_uint64_t contextCouter{0};
 
 std::string createContextId() {
   // Should we use argv[0] instead of the PID? It may be more semantically

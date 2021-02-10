@@ -57,4 +57,12 @@ void Pipe::write(Message message, write_callback_fn fn) {
   impl_->write(std::move(message), std::move(fn));
 }
 
+std::string Pipe::localAddr() {
+  return impl_->localAddr();
+}
+
+std::string Pipe::remoteAddr() {
+  return impl_->remoteAddr();
+}
+
 } // namespace tensorpipe
