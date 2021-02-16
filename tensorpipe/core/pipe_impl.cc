@@ -1233,7 +1233,11 @@ void PipeImpl::onReadWhileClientWaitingForBrochureAnswer(
 
   const BrochureAnswer& nopBrochureAnswer = *nopPacketIn.get<BrochureAnswer>();
   const std::string& transport = nopBrochureAnswer.transport;
-  std::string address = nopBrochureAnswer.address;
+  //std::string address = nopBrochureAnswer.address;
+  std::string address = remoteAddr();
+  if (address.empty()) {
+    address = nopBrochureAnswer.address;
+  }
   std::shared_ptr<transport::Context> transportContext =
       context_->getTransport(transport);
   TP_DCHECK(transportContext->canCommunicateWithRemote(
