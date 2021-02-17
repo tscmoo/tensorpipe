@@ -119,4 +119,11 @@ Error Socket::connect(const Sockaddr& addr) {
   return Error::kSuccess;
 }
 
+Error Socket::peerName(sockaddr* addr, socklen_t* addrlen) {
+  if (::getpeername(fd_, (struct sockaddr*)addr, addrlen)) {
+    return TP_CREATE_ERROR(SystemError, "getpeername", errno);
+  }
+  return Error::kSuccess;
+}
+
 } // namespace tensorpipe

@@ -497,6 +497,18 @@ void ConnectionImpl::onError(IbvLib::wc_status status, uint64_t wrId) {
   }
 }
 
+std::string ConnectionImpl::remoteAddr() {
+  std::string r;
+  context_->runInLoop([&]{
+    ::sockaddr_storage addr;
+    socklen_t addrlen = sizeof(addr);
+    if (socket_.peerName((sockaddr*)&addr, &addrlen) == Error::kSuccess) {
+      r = Sockaddr((sockaddr*)&addr, addrlen).str();
+    }
+  });
+  return r;
+}
+
 void ConnectionImpl::handleErrorImpl() {
   for (auto& readOperation : readOperations_) {
     readOperation.handleError(error_);

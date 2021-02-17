@@ -215,6 +215,8 @@ class Socket final : public Fd {
   // Connect to address.
   [[nodiscard]] Error connect(const Sockaddr& addr);
 
+  [[nodiscard]] Error peerName(sockaddr* addr, socklen_t* addrlen);
+
   // Send file descriptor.
   template <typename... Fds>
   [[nodiscard]] Error sendFds(const Fds&... fds) {

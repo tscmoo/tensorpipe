@@ -79,9 +79,7 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
   std::string localAddr() {
     return "";
   }
-  std::string remoteAddr() {
-    return "";
-  }
+  std::string remoteAddr();
 
  protected:
   // Implement the entry points called by ConnectionImplBoilerplate.
