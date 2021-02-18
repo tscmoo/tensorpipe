@@ -81,8 +81,6 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
   }
   std::string remoteAddr();
 
-  std::atomic_int recurrentCheck = 0;
-
  protected:
   // Implement the entry points called by ConnectionImplBoilerplate.
   void initImplFromLoop() override;

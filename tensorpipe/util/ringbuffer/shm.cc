@@ -42,7 +42,6 @@ std::tuple<Error, util::shm::Segment, util::shm::Segment, RingBuffer> create(
         util::shm::Segment(),
         RingBuffer());
   }
-  memset(data, 0xff, header->kDataPoolByteSize);
 
   // Note: cannot use implicit construction from initializer list on GCC 5.5:
   // "converting to XYZ from initializer list would use explicit constructor".

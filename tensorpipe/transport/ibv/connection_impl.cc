@@ -163,12 +163,6 @@ void ConnectionImpl::initImplFromLoop() {
   // We're sending address first, so wait for writability.
   state_ = SEND_ADDR;
   context_->registerDescriptor(socket_.fd(), EPOLLOUT, shared_from_this());
-
-  *(uint32_t*)inboxRb_.getData() = 0x11223344;
-
-  printf("INIT %p\n", this);
-  printf("inboxRb_.getData() is %p\n", inboxRb_.getData());
-  printf("*(uint32_t*)inboxRb_.getData() is %#x\n", *(uint32_t*)inboxRb_.getData());
 }
 
 void ConnectionImpl::readImplFromLoop(read_callback_fn fn) {
@@ -386,13 +380,6 @@ void ConnectionImpl::processWriteOperationsFromLoop() {
     return;
   }
 
-  if (recurrentCheck.fetch_add(1) != 0) {
-    printf("RECURRENT!!!\n");
-    std::abort();
-  }
-
-  printf(" %p :: processWriteOperationsFromLoop\n", this);
-
   util::ringbuffer::Producer outboxProducer(outboxRb_);
   while (!writeOperations_.empty()) {
     RingbufferWriteOperation& writeOperation = writeOperations_.front();
@@ -427,10 +414,6 @@ void ConnectionImpl::processWriteOperationsFromLoop() {
         list.length = buffers[bufferIdx].len;
         list.lkey = outboxMr_->lkey;
 
-        printf("RDMA WRITE of len %d at %#x\n", buffers[0].len, buffers[0].ptr - outboxConsumer.data_);
-        printf("*(uint32_t*)outboxConsumer.data_ is %#x\n", *(uint32_t*)outboxConsumer.data_);
-        printf("*(uint32_t*)buffers[bufferIdx].ptr is %#x\n", *(uint32_t*)buffers[bufferIdx].ptr);
-
         uint64_t peerInboxOffset = peerInboxHead_ & (kBufferSize - 1);
         peerInboxHead_ += buffers[bufferIdx].len;
 
@@ -444,17 +427,11 @@ void ConnectionImpl::processWriteOperationsFromLoop() {
         wr.wr.rdma.remote_addr = peerInboxPtr_ + peerInboxOffset;
         wr.wr.rdma.rkey = peerInboxKey_;
 
-        printf("peerInboxPtr_ %p, peerInboxOffset %d, remote_addr %p\n", peerInboxPtr_, peerInboxOffset, wr.wr.rdma.remote_addr);
-
-        //std::this_thread::sleep_for(std::chrono::seconds(10));
-
         TP_VLOG(9) << "Connection " << id_
                    << " is posting a RDMA write request (transmitting "
                    << wr.imm_data << " bytes) on QP " << qp_->qp_num;
         context_->getReactor().postWrite(qp_, wr);
         numWritesInFlight_++;
-
-        //std::this_thread::sleep_for(std::chrono::seconds(10));
       }
 
       ret = outboxConsumer.cancelTx();
@@ -468,16 +445,12 @@ void ConnectionImpl::processWriteOperationsFromLoop() {
       break;
     }
   }
-
-  --recurrentCheck;
 }
 
 void ConnectionImpl::onRemoteProducedData(uint32_t length) {
   TP_DCHECK(context_->inLoop());
   TP_VLOG(9) << "Connection " << id_ << " was signalled that " << length
              << " bytes were written to its inbox on QP " << qp_->qp_num;
-  printf("inboxRb_.getData() is %p\n", inboxRb_.getData());
-  printf("*(uint32_t*)inboxRb_.getData() is %#x\n", *(uint32_t*)inboxRb_.getData());
   // We could start a transaction and use the proper methods for this, but as
   // this method is the only producer for the inbox ringbuffer we can cut it
   // short and directly increase the head.
