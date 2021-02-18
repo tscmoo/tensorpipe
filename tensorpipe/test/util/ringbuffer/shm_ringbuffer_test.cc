@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::util::ringbuffer;
-using namespace tensorpipe::util::shm;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::util::ringbuffer;
+using namespace tensorpipe_moorpc::util::shm;
 
 // Same process produces and consumes share memory through different mappings.
 TEST(ShmRingBuffer, SameProducerConsumer) {

@@ -14,7 +14,7 @@
 #include <tensorpipe/channel/cuda_context.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_gdr {
 
@@ -23,4 +23,4 @@ std::shared_ptr<CudaContext> create(
 
 } // namespace cuda_gdr
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

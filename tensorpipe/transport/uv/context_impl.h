@@ -18,7 +18,7 @@
 #include <tensorpipe/transport/uv/loop.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -49,4 +49,4 @@ class ContextImpl final
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

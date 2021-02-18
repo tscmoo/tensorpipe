@@ -21,7 +21,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error_macros.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class CudaLoop {
   struct Operation {
@@ -62,4 +62,4 @@ class CudaLoop {
       void* callbackPtr);
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

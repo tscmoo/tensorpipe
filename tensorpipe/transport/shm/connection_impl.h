@@ -23,7 +23,7 @@
 #include <tensorpipe/util/ringbuffer/ringbuffer.h>
 #include <tensorpipe/util/shm/segment.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -153,4 +153,4 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

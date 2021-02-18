@@ -13,7 +13,7 @@
 #include <tensorpipe/transport/uv/sockaddr.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -137,4 +137,4 @@ std::tuple<Error, std::string> lookupAddrForHostname() {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

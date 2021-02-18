@@ -29,7 +29,7 @@
 #include <tensorpipe/core/pipe.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class ContextImpl;
 class ListenerImpl;
@@ -314,4 +314,4 @@ class PipeImpl final : public std::enable_shared_from_this<PipeImpl> {
   friend ListenerImpl;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

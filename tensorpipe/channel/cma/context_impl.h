@@ -20,7 +20,7 @@
 #include <tensorpipe/common/optional.h>
 #include <tensorpipe/common/queue.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cma {
 
@@ -79,4 +79,4 @@ class ContextImpl final
 
 } // namespace cma
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -29,7 +29,7 @@
 #include <tensorpipe/transport/connection.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 ListenerImpl::ListenerImpl(
     std::shared_ptr<ContextImpl> context,
@@ -335,4 +335,4 @@ void ListenerImpl::onConnectionHelloRead(
   }
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

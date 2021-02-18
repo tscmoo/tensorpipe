@@ -18,7 +18,7 @@
 #include <tensorpipe/common/cuda_buffer.h>
 #include <tensorpipe/common/cuda_loop.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_basic {
 
@@ -74,4 +74,4 @@ class ChannelImpl final
 
 } // namespace cuda_basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

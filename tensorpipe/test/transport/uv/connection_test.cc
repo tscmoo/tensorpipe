@@ -18,8 +18,8 @@ UVTransportTestHelper helper;
 
 } // namespace
 
-using namespace tensorpipe;
-using namespace tensorpipe::transport;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::transport;
 
 TEST_P(UVTransportConnectionTest, LargeWrite) {
   constexpr int kMsgSize = 16 * 1024 * 1024;

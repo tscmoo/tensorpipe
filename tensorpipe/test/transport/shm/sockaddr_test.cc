@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe::transport;
+using namespace tensorpipe_moorpc::transport;
 
 TEST(ShmSockaddr, FromToString) {
   auto addr = shm::Sockaddr::createAbstractUnixAddr("foo");

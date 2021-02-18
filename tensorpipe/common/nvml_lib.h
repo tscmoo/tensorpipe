@@ -25,7 +25,7 @@
     }                                                             \
   } while (false)
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Master list of all symbols we care about from libnvidia-ml.
 
@@ -133,4 +133,4 @@ class NvmlLib {
 
 #undef TP_FORALL_NVML_SYMBOLS
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

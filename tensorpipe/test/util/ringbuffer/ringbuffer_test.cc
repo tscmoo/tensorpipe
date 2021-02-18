@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe::util::ringbuffer;
+using namespace tensorpipe_moorpc::util::ringbuffer;
 
 struct TestData {
   uint16_t a;

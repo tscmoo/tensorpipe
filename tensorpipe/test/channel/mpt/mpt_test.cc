@@ -11,19 +11,19 @@
 
 namespace {
 
-class MptChannelTestHelper : public ChannelTestHelper<tensorpipe::CpuBuffer> {
+class MptChannelTestHelper : public ChannelTestHelper<tensorpipe_moorpc::CpuBuffer> {
  protected:
-  std::shared_ptr<tensorpipe::channel::CpuContext> makeContextInternal(
+  std::shared_ptr<tensorpipe_moorpc::channel::CpuContext> makeContextInternal(
       std::string id) override {
-    std::vector<std::shared_ptr<tensorpipe::transport::Context>> contexts = {
-        tensorpipe::transport::uv::create(),
-        tensorpipe::transport::uv::create(),
-        tensorpipe::transport::uv::create()};
-    std::vector<std::shared_ptr<tensorpipe::transport::Listener>> listeners = {
+    std::vector<std::shared_ptr<tensorpipe_moorpc::transport::Context>> contexts = {
+        tensorpipe_moorpc::transport::uv::create(),
+        tensorpipe_moorpc::transport::uv::create(),
+        tensorpipe_moorpc::transport::uv::create()};
+    std::vector<std::shared_ptr<tensorpipe_moorpc::transport::Listener>> listeners = {
         contexts[0]->listen("127.0.0.1"),
         contexts[1]->listen("127.0.0.1"),
         contexts[2]->listen("127.0.0.1")};
-    auto context = tensorpipe::channel::mpt::create(
+    auto context = tensorpipe_moorpc::channel::mpt::create(
         std::move(contexts), std::move(listeners));
     context->setId(std::move(id));
     return context;

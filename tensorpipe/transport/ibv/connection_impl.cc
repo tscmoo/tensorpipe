@@ -29,7 +29,7 @@
 #include <tensorpipe/util/ringbuffer/consumer.h>
 #include <tensorpipe/util/ringbuffer/producer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -574,4 +574,4 @@ void ConnectionImpl::cleanup() {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

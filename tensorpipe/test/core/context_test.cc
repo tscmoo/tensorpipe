@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe;
+using namespace tensorpipe_moorpc;
 
 namespace {
 

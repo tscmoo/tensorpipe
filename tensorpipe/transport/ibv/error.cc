@@ -14,7 +14,7 @@
 
 #include <tensorpipe/common/ibv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -34,4 +34,4 @@ std::string NoAddrFoundError::what() const {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

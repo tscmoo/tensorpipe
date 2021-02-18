@@ -11,7 +11,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/util/ringbuffer/shm.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -155,4 +155,4 @@ void Reactor::Trigger::run(TToken token) {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -18,7 +18,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // The read operation captures all state associated with reading a
 // fixed length chunk of data from the underlying connection. All
@@ -193,4 +193,4 @@ void StreamWriteOperation::callbackFromLoop(const Error& error) {
   fn_(error);
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

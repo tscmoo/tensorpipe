@@ -19,7 +19,7 @@
 #include <tensorpipe/common/cpu_buffer.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace mpt {
 
@@ -115,4 +115,4 @@ class ChannelImpl final
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

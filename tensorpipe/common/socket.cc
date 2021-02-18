@@ -20,7 +20,7 @@
 #define SOCK_NONBLOCK 0
 #endif // SOCK_NONBLOCK
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 std::tuple<Error, Socket> Socket::createForFamily(sa_family_t aiFamily) {
   auto rv = socket(aiFamily, SOCK_STREAM | SOCK_NONBLOCK, 0);
@@ -126,4 +126,4 @@ Error Socket::peerName(sockaddr* addr, socklen_t* addrlen) {
   return Error::kSuccess;
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

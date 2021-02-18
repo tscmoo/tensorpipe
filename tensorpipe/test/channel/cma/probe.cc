@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
   rv = ::close(fd);
   TP_THROW_SYSTEM_IF(rv < 0, errno);
 
-  auto ctx = tensorpipe::channel::cma::create();
+  auto ctx = tensorpipe_moorpc::channel::cma::create();
   TP_LOG_INFO() << "The CMA context's viability is: " << std::boolalpha
                 << ctx->isViable();
   TP_LOG_INFO() << "Its descriptor is: " << ctx->domainDescriptor();

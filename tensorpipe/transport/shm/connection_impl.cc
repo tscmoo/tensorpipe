@@ -26,7 +26,7 @@
 #include <tensorpipe/util/ringbuffer/producer.h>
 #include <tensorpipe/util/ringbuffer/shm.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -366,4 +366,4 @@ void ConnectionImpl::handleErrorImpl() {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

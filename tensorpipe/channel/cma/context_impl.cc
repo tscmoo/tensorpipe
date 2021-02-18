@@ -24,7 +24,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cma {
 
@@ -306,4 +306,4 @@ void ContextImpl::handleCopyRequests() {
 
 } // namespace cma
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

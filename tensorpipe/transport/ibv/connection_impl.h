@@ -25,7 +25,7 @@
 #include <tensorpipe/transport/ibv/sockaddr.h>
 #include <tensorpipe/util/ringbuffer/ringbuffer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -187,4 +187,4 @@ class ConnectionImpl final : public ConnectionImplBoilerplate<
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

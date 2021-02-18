@@ -12,7 +12,7 @@
 
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class LogicError final : public BaseError {
  public:
@@ -38,4 +38,4 @@ class PipeClosedError final : public BaseError {
   std::string what() const override;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

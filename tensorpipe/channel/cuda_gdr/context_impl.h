@@ -30,7 +30,7 @@
 #include <tensorpipe/common/optional.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_gdr {
 
@@ -179,4 +179,4 @@ class ContextImpl final
 
 } // namespace cuda_gdr
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

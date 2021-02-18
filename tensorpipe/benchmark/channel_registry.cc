@@ -12,12 +12,12 @@
 
 TP_DEFINE_SHARED_REGISTRY(
     TensorpipeChannelRegistry,
-    tensorpipe::channel::CpuContext);
+    tensorpipe_moorpc::channel::CpuContext);
 
 // BASIC
 
-std::shared_ptr<tensorpipe::channel::CpuContext> makeBasicChannel() {
-  return tensorpipe::channel::basic::create();
+std::shared_ptr<tensorpipe_moorpc::channel::CpuContext> makeBasicChannel() {
+  return tensorpipe_moorpc::channel::basic::create();
 }
 
 TP_REGISTER_CREATOR(TensorpipeChannelRegistry, basic, makeBasicChannel);
@@ -25,8 +25,8 @@ TP_REGISTER_CREATOR(TensorpipeChannelRegistry, basic, makeBasicChannel);
 // CMA
 
 #if TENSORPIPE_HAS_CMA_CHANNEL
-std::shared_ptr<tensorpipe::channel::CpuContext> makeCmaChannel() {
-  return tensorpipe::channel::cma::create();
+std::shared_ptr<tensorpipe_moorpc::channel::CpuContext> makeCmaChannel() {
+  return tensorpipe_moorpc::channel::cma::create();
 }
 
 TP_REGISTER_CREATOR(TensorpipeChannelRegistry, cma, makeCmaChannel);
@@ -34,7 +34,7 @@ TP_REGISTER_CREATOR(TensorpipeChannelRegistry, cma, makeCmaChannel);
 
 // MPT
 
-std::shared_ptr<tensorpipe::channel::CpuContext> makeMptChannel() {
+std::shared_ptr<tensorpipe_moorpc::channel::CpuContext> makeMptChannel() {
   throw std::runtime_error("mtp channel requires arguments");
 }
 
@@ -42,8 +42,8 @@ TP_REGISTER_CREATOR(TensorpipeChannelRegistry, mpt, makeMptChannel);
 
 // XTH
 
-std::shared_ptr<tensorpipe::channel::CpuContext> makeXthChannel() {
-  return tensorpipe::channel::xth::create();
+std::shared_ptr<tensorpipe_moorpc::channel::CpuContext> makeXthChannel() {
+  return tensorpipe_moorpc::channel::xth::create();
 }
 
 TP_REGISTER_CREATOR(TensorpipeChannelRegistry, xth, makeXthChannel);

@@ -20,7 +20,7 @@
 #include <tensorpipe/common/deferred_executor.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -65,4 +65,4 @@ class Loop final : public EventLoopDeferredExecutor {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

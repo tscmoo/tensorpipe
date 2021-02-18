@@ -22,7 +22,7 @@ namespace py = pybind11;
 
 namespace {
 
-using tensorpipe::optional;
+using tensorpipe_moorpc::optional;
 
 // RAII wrapper to reliably release every buffer we get.
 class BufferWrapper {
@@ -100,13 +100,13 @@ class OutgoingMessage {
         tensors(tensors) {}
 };
 
-tensorpipe::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
-  tensorpipe::Message tpMessage{
+tensorpipe_moorpc::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
+  tensorpipe_moorpc::Message tpMessage{
       {reinterpret_cast<char*>(pyMessage->metadata.ptr()),
        pyMessage->metadata.length()}};
   tpMessage.payloads.reserve(pyMessage->payloads.size());
   for (const auto& pyPayload : pyMessage->payloads) {
-    tensorpipe::Message::Payload tpPayload{
+    tensorpipe_moorpc::Message::Payload tpPayload{
         pyPayload->buffer.ptr(),
         pyPayload->buffer.length(),
         {reinterpret_cast<char*>(pyPayload->metadata.ptr()),
@@ -115,8 +115,8 @@ tensorpipe::Message prepareToWrite(std::shared_ptr<OutgoingMessage> pyMessage) {
   }
   tpMessage.tensors.reserve(pyMessage->tensors.size());
   for (const auto& pyTensor : pyMessage->tensors) {
-    tensorpipe::Message::Tensor tpTensor{
-        tensorpipe::CpuBuffer{
+    tensorpipe_moorpc::Message::Tensor tpTensor{
+        tensorpipe_moorpc::CpuBuffer{
             pyTensor->buffer.ptr(), pyTensor->buffer.length()},
         {reinterpret_cast<char*>(pyTensor->metadata.ptr()),
          pyTensor->metadata.length()}};
@@ -177,7 +177,7 @@ class IncomingMessage {
 };
 
 std::shared_ptr<IncomingMessage> prepareToAllocate(
-    const tensorpipe::Message& tpMessage) {
+    const tensorpipe_moorpc::Message& tpMessage) {
   std::vector<std::shared_ptr<IncomingPayload>> pyPayloads;
   pyPayloads.reserve(tpMessage.payloads.size());
   for (const auto& tpPayload : tpMessage.payloads) {
@@ -197,19 +197,19 @@ std::shared_ptr<IncomingMessage> prepareToAllocate(
   return pyMessage;
 }
 
-tensorpipe::Message prepareToRead(std::shared_ptr<IncomingMessage> pyMessage) {
-  tensorpipe::Message tpMessage;
+tensorpipe_moorpc::Message prepareToRead(std::shared_ptr<IncomingMessage> pyMessage) {
+  tensorpipe_moorpc::Message tpMessage;
   tpMessage.payloads.reserve(pyMessage->payloads.size());
   for (const auto& pyPayload : pyMessage->payloads) {
     TP_THROW_ASSERT_IF(!pyPayload->buffer.has_value()) << "No buffer";
-    tensorpipe::Message::Payload tpPayload{
+    tensorpipe_moorpc::Message::Payload tpPayload{
         pyPayload->buffer.value().ptr(), pyPayload->buffer.value().length()};
     tpMessage.payloads.push_back(std::move(tpPayload));
   }
   tpMessage.tensors.reserve(pyMessage->tensors.size());
   for (const auto& pyTensor : pyMessage->tensors) {
     TP_THROW_ASSERT_IF(!pyTensor->buffer.has_value()) << "No buffer";
-    tensorpipe::Message::Tensor tpTensor{tensorpipe::CpuBuffer{
+    tensorpipe_moorpc::Message::Tensor tpTensor{tensorpipe_moorpc::CpuBuffer{
         pyTensor->buffer.value().ptr(), pyTensor->buffer.value().length()}};
     tpMessage.tensors.push_back(std::move(tpTensor));
   }
@@ -226,9 +226,9 @@ PYBIND11_MODULE(pytensorpipe, module) {
       "These bindings are EXPERIMENTAL, intended to give a PREVIEW of the API, "
       "and, as such, may CHANGE AT ANY TIME.");
 
-  shared_ptr_class_<tensorpipe::Context> context(module, "Context");
-  shared_ptr_class_<tensorpipe::Listener> listener(module, "Listener");
-  shared_ptr_class_<tensorpipe::Pipe> pipe(module, "Pipe");
+  shared_ptr_class_<tensorpipe_moorpc::Context> context(module, "Context");
+  shared_ptr_class_<tensorpipe_moorpc::Listener> listener(module, "Listener");
+  shared_ptr_class_<tensorpipe_moorpc::Pipe> pipe(module, "Pipe");
 
   shared_ptr_class_<OutgoingPayload> outgoingPayload(module, "OutgoingPayload");
   outgoingPayload.def(
@@ -283,31 +283,31 @@ PYBIND11_MODULE(pytensorpipe, module) {
   context.def(py::init<>());
   context.def(
       "listen",
-      [](std::shared_ptr<tensorpipe::Context> context,
+      [](std::shared_ptr<tensorpipe_moorpc::Context> context,
          const std::vector<std::string>& urls) {
         return context->listen(urls);
       },
       py::arg("urls"));
   context.def(
       "connect",
-      [](std::shared_ptr<tensorpipe::Context> context, const std::string& url) {
+      [](std::shared_ptr<tensorpipe_moorpc::Context> context, const std::string& url) {
         return context->connect(url);
       },
       py::arg("url"));
 
   context.def(
       "join",
-      &tensorpipe::Context::join,
+      &tensorpipe_moorpc::Context::join,
       py::call_guard<py::gil_scoped_release>());
 
   // Callback registration.
 
   listener.def(
       "listen",
-      [](std::shared_ptr<tensorpipe::Listener> listener, py::object callback) {
+      [](std::shared_ptr<tensorpipe_moorpc::Listener> listener, py::object callback) {
         listener->accept([callback{std::move(callback)}](
-                             const tensorpipe::Error& error,
-                             std::shared_ptr<tensorpipe::Pipe> pipe) mutable {
+                             const tensorpipe_moorpc::Error& error,
+                             std::shared_ptr<tensorpipe_moorpc::Pipe> pipe) mutable {
           if (error) {
             TP_LOG_ERROR() << error.what();
             return;
@@ -329,10 +329,10 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "read_descriptor",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe, py::object callback) {
+      [](std::shared_ptr<tensorpipe_moorpc::Pipe> pipe, py::object callback) {
         pipe->readDescriptor([callback{std::move(callback)}](
-                                 const tensorpipe::Error& error,
-                                 tensorpipe::Message message) mutable {
+                                 const tensorpipe_moorpc::Error& error,
+                                 tensorpipe_moorpc::Message message) mutable {
           if (error) {
             TP_LOG_ERROR() << error.what();
             return;
@@ -353,15 +353,15 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "read",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe,
+      [](std::shared_ptr<tensorpipe_moorpc::Pipe> pipe,
          std::shared_ptr<IncomingMessage> pyMessage,
          py::object callback) {
-        tensorpipe::Message tpMessage = prepareToRead(std::move(pyMessage));
+        tensorpipe_moorpc::Message tpMessage = prepareToRead(std::move(pyMessage));
         pipe->read(
             std::move(tpMessage),
             [callback{std::move(callback)}](
-                const tensorpipe::Error& error,
-                tensorpipe::Message tpMessage) mutable {
+                const tensorpipe_moorpc::Error& error,
+                tensorpipe_moorpc::Message tpMessage) mutable {
               if (error) {
                 TP_LOG_ERROR() << error.what();
                 return;
@@ -382,15 +382,15 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   pipe.def(
       "write",
-      [](std::shared_ptr<tensorpipe::Pipe> pipe,
+      [](std::shared_ptr<tensorpipe_moorpc::Pipe> pipe,
          std::shared_ptr<OutgoingMessage> pyMessage,
          py::object callback) {
-        tensorpipe::Message tpMessage = prepareToWrite(std::move(pyMessage));
+        tensorpipe_moorpc::Message tpMessage = prepareToWrite(std::move(pyMessage));
         pipe->write(
             std::move(tpMessage),
             [callback{std::move(callback)}](
-                const tensorpipe::Error& error,
-                tensorpipe::Message tpMessage) mutable {
+                const tensorpipe_moorpc::Error& error,
+                tensorpipe_moorpc::Message tpMessage) mutable {
               if (error) {
                 TP_LOG_ERROR() << error.what();
                 return;
@@ -411,39 +411,39 @@ PYBIND11_MODULE(pytensorpipe, module) {
 
   // Transports and channels
 
-  shared_ptr_class_<tensorpipe::transport::Context> abstractTransport(
+  shared_ptr_class_<tensorpipe_moorpc::transport::Context> abstractTransport(
       module, "AbstractTransport");
 
-  module.def("create_uv_transport", &tensorpipe::transport::uv::create);
+  module.def("create_uv_transport", &tensorpipe_moorpc::transport::uv::create);
 
 #if TENSORPIPE_HAS_SHM_TRANSPORT
-  module.def("create_shm_transport", &tensorpipe::transport::shm::create);
+  module.def("create_shm_transport", &tensorpipe_moorpc::transport::shm::create);
 #endif // TENSORPIPE_HAS_SHM_TRANSPORT
 
   context.def(
       "register_transport",
-      &tensorpipe::Context::registerTransport,
+      &tensorpipe_moorpc::Context::registerTransport,
       py::arg("priority"),
       py::arg("name"),
       py::arg("transport"));
 
-  shared_ptr_class_<tensorpipe::channel::CpuContext> abstractChannel(
+  shared_ptr_class_<tensorpipe_moorpc::channel::CpuContext> abstractChannel(
       module, "AbstractChannel");
 
-  module.def("create_basic_channel", &tensorpipe::channel::basic::create);
+  module.def("create_basic_channel", &tensorpipe_moorpc::channel::basic::create);
 
 #if TENSORPIPE_HAS_CMA_CHANNEL
-  module.def("create_cma_channel", &tensorpipe::channel::cma::create);
+  module.def("create_cma_channel", &tensorpipe_moorpc::channel::cma::create);
 #endif // TENSORPIPE_HAS_CMA_CHANNEL
 
   context.def(
       "register_channel",
-      &tensorpipe::Context::registerChannel,
+      &tensorpipe_moorpc::Context::registerChannel,
       py::arg("priority"),
       py::arg("name"),
       py::arg("channel"));
 
   // Helpers
 
-  listener.def("get_url", &tensorpipe::Listener::url, py::arg("transport"));
+  listener.def("get_url", &tensorpipe_moorpc::Listener::url, py::arg("transport"));
 }

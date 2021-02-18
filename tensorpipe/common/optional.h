@@ -98,7 +98,7 @@
 #define OPTIONAL_MUTABLE_CONSTEXPR constexpr
 #endif
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // 20.5.4, optional for object types
 template <class T>
@@ -992,13 +992,13 @@ constexpr optional<X&> make_optional(std::reference_wrapper<X> v) {
   return optional<X&>(v.get());
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc
 
 namespace std {
 template <typename T>
-struct hash<tensorpipe::optional<T>> {
+struct hash<tensorpipe_moorpc::optional<T>> {
   typedef typename hash<T>::result_type result_type;
-  typedef tensorpipe::optional<T> argument_type;
+  typedef tensorpipe_moorpc::optional<T> argument_type;
 
   constexpr result_type operator()(argument_type const& arg) const {
     return arg ? std::hash<T>{}(*arg) : result_type{};
@@ -1006,9 +1006,9 @@ struct hash<tensorpipe::optional<T>> {
 };
 
 template <typename T>
-struct hash<tensorpipe::optional<T&>> {
+struct hash<tensorpipe_moorpc::optional<T&>> {
   typedef typename hash<T>::result_type result_type;
-  typedef tensorpipe::optional<T&> argument_type;
+  typedef tensorpipe_moorpc::optional<T&> argument_type;
 
   constexpr result_type operator()(argument_type const& arg) const {
     return arg ? std::hash<T>{}(*arg) : result_type{};

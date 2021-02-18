@@ -28,7 +28,7 @@
 #include <tensorpipe/core/pipe_impl.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 namespace {
 
@@ -310,4 +310,4 @@ void ContextImpl::join() {
   }
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

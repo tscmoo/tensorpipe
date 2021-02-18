@@ -17,10 +17,10 @@
 
 namespace {
 
-tensorpipe::CudaLib getCudaLib() {
-  tensorpipe::Error error;
-  tensorpipe::CudaLib cudaLib;
-  std::tie(error, cudaLib) = tensorpipe::CudaLib::create();
+tensorpipe_moorpc::CudaLib getCudaLib() {
+  tensorpipe_moorpc::Error error;
+  tensorpipe_moorpc::CudaLib cudaLib;
+  std::tie(error, cudaLib) = tensorpipe_moorpc::CudaLib::create();
   EXPECT_FALSE(error) << error.what();
   return cudaLib;
 }
@@ -42,7 +42,7 @@ TEST(Cuda, DeviceForPointer) {
         void* ptr;
         TP_CUDA_CHECK(cudaMalloc(&ptr, 1024));
 
-        EXPECT_EQ(tensorpipe::cudaDeviceForPointer(getCudaLib(), ptr), 1);
+        EXPECT_EQ(tensorpipe_moorpc::cudaDeviceForPointer(getCudaLib(), ptr), 1);
 
         std::string ptrStr(
             reinterpret_cast<char*>(&ptr),
@@ -53,7 +53,7 @@ TEST(Cuda, DeviceForPointer) {
         std::string ptrStr = pg.recv(PeerGroup::kClient);
         void* ptr = *reinterpret_cast<void**>(&ptrStr[0]);
 
-        EXPECT_EQ(tensorpipe::cudaDeviceForPointer(getCudaLib(), ptr), 1);
+        EXPECT_EQ(tensorpipe_moorpc::cudaDeviceForPointer(getCudaLib(), ptr), 1);
       });
 }
 
@@ -75,7 +75,7 @@ TEST(Cuda, DeviceForPointerAfterReset) {
 
         TP_CUDA_CHECK(cudaSetDevice(0));
 
-        EXPECT_EQ(tensorpipe::cudaDeviceForPointer(getCudaLib(), ptr), 1);
+        EXPECT_EQ(tensorpipe_moorpc::cudaDeviceForPointer(getCudaLib(), ptr), 1);
 
         std::string ptrStr(
             reinterpret_cast<char*>(&ptr),
@@ -88,6 +88,6 @@ TEST(Cuda, DeviceForPointerAfterReset) {
 
         TP_CUDA_CHECK(cudaSetDevice(0));
 
-        EXPECT_EQ(tensorpipe::cudaDeviceForPointer(getCudaLib(), ptr), 1);
+        EXPECT_EQ(tensorpipe_moorpc::cudaDeviceForPointer(getCudaLib(), ptr), 1);
       });
 }

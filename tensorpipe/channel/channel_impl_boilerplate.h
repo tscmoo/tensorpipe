@@ -19,7 +19,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/error_macros.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 template <typename TBuffer, typename TCtx, typename TChan>
@@ -125,7 +125,7 @@ class ChannelImplBoilerplate : public std::enable_shared_from_this<TChan> {
 
   // For some odd reason it seems we need to use a qualified name here...
   template <typename T>
-  friend class tensorpipe::CallbackWrapper;
+  friend class tensorpipe_moorpc::CallbackWrapper;
 
   // Contexts do sometimes need to call directly into closeFromLoop, in order to
   // make sure that some of their operations can happen "atomically" on the
@@ -315,4 +315,4 @@ void ChannelImplBoilerplate<TBuffer, TCtx, TChan>::handleError() {
 }
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

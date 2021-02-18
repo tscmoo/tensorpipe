@@ -8,7 +8,7 @@
 
 #include <tensorpipe/transport/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 std::string ListenerClosedError::what() const {
@@ -20,4 +20,4 @@ std::string ConnectionClosedError::what() const {
 }
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

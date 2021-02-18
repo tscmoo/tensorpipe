@@ -19,7 +19,7 @@
 #include <tensorpipe/transport/connection_boilerplate.h>
 #include <tensorpipe/transport/listener_boilerplate.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 template <typename TCtx, typename TList, typename TConn>
@@ -237,4 +237,4 @@ void ContextImplBoilerplate<TCtx, TList, TConn>::join() {
 }
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

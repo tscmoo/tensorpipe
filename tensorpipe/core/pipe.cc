@@ -14,7 +14,7 @@
 
 #include <tensorpipe/core/pipe_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 Pipe::Pipe(
     ConstructorToken /* unused */,
@@ -65,4 +65,4 @@ std::string Pipe::remoteAddr() {
   return impl_->remoteAddr();
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

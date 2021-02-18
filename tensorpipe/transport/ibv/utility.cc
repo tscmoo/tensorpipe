@@ -29,7 +29,7 @@
 #include <tensorpipe/transport/ibv/error.h>
 #include <tensorpipe/transport/ibv/sockaddr.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -175,4 +175,4 @@ std::tuple<Error, std::string> lookupAddrForHostname() {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -12,7 +12,7 @@
 
 #include <tensorpipe/channel/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_gdr {
 
@@ -30,4 +30,4 @@ class IbvError final : public BaseError {
 
 } // namespace cuda_gdr
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

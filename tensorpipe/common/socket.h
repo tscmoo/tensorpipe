@@ -20,7 +20,7 @@
 #include <tensorpipe/common/fd.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 namespace {
 
@@ -253,4 +253,4 @@ class Socket final : public Fd {
   }
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

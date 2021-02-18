@@ -19,7 +19,7 @@ IbvTransportTestHelper helper;
 
 } // namespace
 
-using namespace tensorpipe;
+using namespace tensorpipe_moorpc;
 
 // Linux-only because OSX machines on CircleCI cannot resolve their hostname
 #ifdef __linux__

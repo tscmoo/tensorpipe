@@ -16,7 +16,7 @@
 #include <tensorpipe/benchmark/channel_registry.h>
 #include <tensorpipe/benchmark/transport_registry.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace benchmark {
 
 void validateTransportContext(std::shared_ptr<transport::Context> context) {
@@ -184,4 +184,4 @@ struct Options parseOptions(int argc, char** argv) {
 }
 
 } // namespace benchmark
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

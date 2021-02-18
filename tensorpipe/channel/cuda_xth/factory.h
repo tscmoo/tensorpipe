@@ -12,7 +12,7 @@
 
 #include <tensorpipe/channel/cuda_context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_xth {
 
@@ -20,4 +20,4 @@ std::shared_ptr<CudaContext> create();
 
 } // namespace cuda_xth
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

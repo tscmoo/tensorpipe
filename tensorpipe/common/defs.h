@@ -23,7 +23,7 @@
 
 #include "../../src/function.h"
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 template<typename T>
 using Function = rpc::Function<T>;
 }

@@ -16,8 +16,8 @@
 
 #include <gtest/gtest.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::transport::shm;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::transport::shm;
 
 namespace {
 
@@ -53,7 +53,7 @@ void run(Function<void(int)> fn1, Function<void(int)> fn2) {
 TEST(ShmReactor, Basic) {
   run(
       [](int fd) {
-        tensorpipe::Queue<int> queue;
+        tensorpipe_moorpc::Queue<int> queue;
         auto reactor = std::make_shared<Reactor>();
         auto token1 = reactor->add([&] { queue.push(1); });
         auto token2 = reactor->add([&] { queue.push(2); });
@@ -96,7 +96,7 @@ TEST(ShmReactor, Basic) {
 }
 
 TEST(ShmReactor, TokenReuse) {
-  tensorpipe::Queue<int> queue(3);
+  tensorpipe_moorpc::Queue<int> queue(3);
   auto reactor = std::make_shared<Reactor>();
   auto t1 = reactor->add([&] { queue.push(1); });
   auto t2 = reactor->add([&] { queue.push(2); });

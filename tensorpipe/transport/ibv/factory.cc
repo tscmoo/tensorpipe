@@ -13,7 +13,7 @@
 #include <tensorpipe/transport/ibv/context_impl.h>
 #include <tensorpipe/transport/ibv/listener_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -25,4 +25,4 @@ std::shared_ptr<Context> create() {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

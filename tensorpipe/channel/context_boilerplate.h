@@ -17,7 +17,7 @@
 #include <tensorpipe/channel/context.h>
 #include <tensorpipe/channel/context_impl_boilerplate.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 template <typename TBuffer, typename TCtx, typename TChan>
@@ -120,4 +120,4 @@ ContextBoilerplate<TBuffer, TCtx, TChan>::~ContextBoilerplate() {
 }
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -24,7 +24,7 @@
         << cudaGetErrorString(error) << ")";                            \
   } while (false)
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class CudaError final : public BaseError {
  public:
@@ -152,4 +152,4 @@ inline CudaPinnedBuffer makeCudaPinnedBuffer(size_t length) {
   });
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -14,7 +14,7 @@
 
 #include <tensorpipe/core/buffer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Messages consist of a primary buffer and zero or more separate
 // buffers. The primary buffer is always a host-side memory region that
@@ -50,7 +50,7 @@ class Message final {
   std::vector<Payload> payloads;
 
   struct Tensor {
-    tensorpipe::Buffer buffer;
+    tensorpipe_moorpc::Buffer buffer;
 
     // Users may include arbitrary metadata in the following field.
     // This may contain allocation hints for the receiver, for example.
@@ -61,4 +61,4 @@ class Message final {
   std::vector<Tensor> tensors;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

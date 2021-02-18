@@ -13,7 +13,7 @@
 
 #include <tensorpipe/channel/basic/channel_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace basic {
 
@@ -47,4 +47,4 @@ void ContextImpl::deferToLoop(Function<void()> fn) {
 
 } // namespace basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

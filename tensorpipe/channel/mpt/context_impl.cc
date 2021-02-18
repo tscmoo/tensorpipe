@@ -21,7 +21,7 @@
 #include <tensorpipe/transport/context.h>
 #include <tensorpipe/transport/listener.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace mpt {
 
@@ -280,4 +280,4 @@ void ContextImpl::deferToLoop(Function<void()> fn) {
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

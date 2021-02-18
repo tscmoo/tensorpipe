@@ -24,7 +24,7 @@
 #include <tensorpipe/common/deferred_executor.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace mpt {
 
@@ -109,9 +109,9 @@ class ContextImpl final
 
   // For some odd reason it seems we need to use a qualified name here...
   template <typename T>
-  friend class tensorpipe::CallbackWrapper;
+  friend class tensorpipe_moorpc::CallbackWrapper;
 };
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

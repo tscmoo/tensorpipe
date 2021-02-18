@@ -23,7 +23,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_xth {
 
@@ -150,4 +150,4 @@ void ChannelImpl::handleErrorImpl() {
 
 } // namespace cuda_xth
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

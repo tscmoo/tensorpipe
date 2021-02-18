@@ -12,7 +12,7 @@
 #include <tensorpipe/channel/mpt/channel_impl.h>
 #include <tensorpipe/channel/mpt/context_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace mpt {
 
@@ -28,4 +28,4 @@ std::shared_ptr<CpuContext> create(
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

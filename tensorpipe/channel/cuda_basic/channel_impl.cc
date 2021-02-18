@@ -20,7 +20,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_basic {
 
@@ -175,4 +175,4 @@ void ChannelImpl::handleErrorImpl() {
 
 } // namespace cuda_basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

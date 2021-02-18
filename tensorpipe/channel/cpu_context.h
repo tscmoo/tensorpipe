@@ -11,11 +11,11 @@
 #include <tensorpipe/channel/context.h>
 #include <tensorpipe/common/cpu_buffer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 using CpuChannel = Channel<CpuBuffer>;
 using CpuContext = Context<CpuBuffer>;
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

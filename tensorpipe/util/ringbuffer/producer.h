@@ -10,7 +10,7 @@
 
 #include <tensorpipe/util/ringbuffer/ringbuffer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace util {
 namespace ringbuffer {
 
@@ -216,4 +216,4 @@ class Producer {
 
 } // namespace ringbuffer
 } // namespace util
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -12,7 +12,7 @@
 #include <tensorpipe/channel/basic/context_impl.h>
 #include <tensorpipe/channel/context_boilerplate.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace basic {
 
@@ -24,4 +24,4 @@ std::shared_ptr<CpuContext> create() {
 
 } // namespace basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

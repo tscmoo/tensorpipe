@@ -14,7 +14,7 @@
 #include <tensorpipe/channel/cpu_context.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace mpt {
 
@@ -24,4 +24,4 @@ std::shared_ptr<CpuContext> create(
 
 } // namespace mpt
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

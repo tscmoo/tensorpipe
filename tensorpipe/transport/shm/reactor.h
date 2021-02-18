@@ -25,7 +25,7 @@
 #include <tensorpipe/util/ringbuffer/producer.h>
 #include <tensorpipe/util/shm/segment.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -106,4 +106,4 @@ class Reactor final : public BusyPollingLoop {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

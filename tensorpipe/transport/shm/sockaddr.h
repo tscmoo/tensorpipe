@@ -20,11 +20,11 @@
 #include <tensorpipe/common/socket.h>
 #include <tensorpipe/transport/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
-class Sockaddr final : public tensorpipe::Sockaddr {
+class Sockaddr final : public tensorpipe_moorpc::Sockaddr {
  public:
   static Sockaddr createAbstractUnixAddr(const std::string& name);
 
@@ -47,4 +47,4 @@ class Sockaddr final : public tensorpipe::Sockaddr {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

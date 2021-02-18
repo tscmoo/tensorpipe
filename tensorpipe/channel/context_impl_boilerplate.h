@@ -19,7 +19,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 template <typename TBuffer, typename TCtx, typename TChan>
@@ -218,4 +218,4 @@ void ContextImplBoilerplate<TBuffer, TCtx, TChan>::join() {
 }
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

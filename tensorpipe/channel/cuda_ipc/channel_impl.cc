@@ -25,7 +25,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_ipc {
 
@@ -286,4 +286,4 @@ void ChannelImpl::handleErrorImpl() {
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

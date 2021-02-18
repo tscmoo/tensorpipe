@@ -16,7 +16,7 @@
 #include <tensorpipe/transport/listener.h>
 #include <tensorpipe/transport/listener_impl_boilerplate.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 template <typename TCtx, typename TList, typename TConn>
@@ -101,4 +101,4 @@ ListenerBoilerplate<TCtx, TList, TConn>::~ListenerBoilerplate() {
 }
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

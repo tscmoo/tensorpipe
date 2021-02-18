@@ -12,7 +12,7 @@
 
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 EpollLoop::EpollLoop(DeferredExecutor& deferredExecutor)
     : deferredExecutor_(deferredExecutor) {
@@ -219,4 +219,4 @@ std::string EpollLoop::formatEpollEvents(uint32_t events) {
   return res;
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

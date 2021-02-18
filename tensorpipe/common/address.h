@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 std::tuple<std::string, std::string> splitSchemeOfURL(const std::string& url);
 

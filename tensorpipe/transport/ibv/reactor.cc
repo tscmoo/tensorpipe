@@ -11,7 +11,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/transport/ibv/constants.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -206,4 +206,4 @@ void Reactor::postAck(IbvQueuePair& qp, IbvLib::send_wr& wr) {
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

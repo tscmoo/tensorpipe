@@ -31,7 +31,7 @@
 #include <tensorpipe/common/optional.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_ipc {
 
@@ -373,4 +373,4 @@ void ContextImpl::deferToLoop(Function<void()> fn) {
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

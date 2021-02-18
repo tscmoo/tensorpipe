@@ -18,7 +18,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -123,4 +123,4 @@ std::string Sockaddr::str() const {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

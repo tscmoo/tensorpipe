@@ -22,7 +22,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/common/optional.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 namespace {
 
@@ -148,4 +148,4 @@ class CallbackWrapper {
   }
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

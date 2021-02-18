@@ -12,7 +12,7 @@
 #include <tensorpipe/transport/uv/listener_impl.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -59,4 +59,4 @@ std::unique_ptr<TCPHandle> ContextImpl::createHandle() {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

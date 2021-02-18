@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 std::string ibvWorkCompletionOpcodeToStr(IbvLib::wc_opcode opcode) {
   switch (opcode) {
@@ -188,4 +188,4 @@ void transitionIbvQueuePairToError(const IbvLib& ibvLib, IbvQueuePair& qp) {
   TP_CHECK_IBV_INT(ibvLib.modify_qp(qp.get(), &attr, attrMask));
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

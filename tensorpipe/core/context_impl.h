@@ -27,7 +27,7 @@
 #include <tensorpipe/channel/cuda_context.h>
 #endif // TENSORPIPE_SUPPORTS_CUDA
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class ListenerImpl;
 class PipeImpl;
@@ -166,4 +166,4 @@ class ContextImpl final : public virtual DeferredExecutor,
       const std::string& channel);
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

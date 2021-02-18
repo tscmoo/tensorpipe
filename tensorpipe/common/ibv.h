@@ -13,7 +13,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/ibv_lib.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Error checking macros
 
@@ -259,4 +259,4 @@ void transitionIbvQueuePairToReadyToSend(
 
 void transitionIbvQueuePairToError(const IbvLib& ibvLib, IbvQueuePair& qp);
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

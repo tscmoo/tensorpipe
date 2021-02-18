@@ -12,7 +12,7 @@
 
 #include <tensorpipe/common/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 class ListenerClosedError final : public BaseError {
@@ -30,4 +30,4 @@ class ConnectionClosedError final : public BaseError {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

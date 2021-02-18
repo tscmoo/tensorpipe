@@ -21,7 +21,7 @@
 #include <tensorpipe/common/optional.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_xth {
 
@@ -111,4 +111,4 @@ void ContextImpl::deferToLoop(Function<void()> fn) {
 
 } // namespace cuda_xth
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

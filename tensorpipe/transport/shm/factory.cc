@@ -13,7 +13,7 @@
 #include <tensorpipe/transport/shm/context_impl.h>
 #include <tensorpipe/transport/shm/listener_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -25,4 +25,4 @@ std::shared_ptr<Context> create() {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

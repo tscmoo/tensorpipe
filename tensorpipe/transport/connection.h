@@ -15,7 +15,7 @@
 #include <tensorpipe/common/nop.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 class Connection {
@@ -72,4 +72,4 @@ class Connection {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

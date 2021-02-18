@@ -14,11 +14,11 @@
 namespace {
 
 class CudaXthChannelTestHelper
-    : public ChannelTestHelper<tensorpipe::CudaBuffer> {
+    : public ChannelTestHelper<tensorpipe_moorpc::CudaBuffer> {
  protected:
-  std::shared_ptr<tensorpipe::channel::CudaContext> makeContextInternal(
+  std::shared_ptr<tensorpipe_moorpc::channel::CudaContext> makeContextInternal(
       std::string id) override {
-    auto context = tensorpipe::channel::cuda_xth::create();
+    auto context = tensorpipe_moorpc::channel::cuda_xth::create();
     context->setId(std::move(id));
     return context;
   }

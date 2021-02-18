@@ -15,7 +15,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 class Listener {
@@ -43,4 +43,4 @@ class Listener {
 };
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

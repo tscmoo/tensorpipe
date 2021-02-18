@@ -13,7 +13,7 @@
 #include <tensorpipe/channel/channel.h>
 #include <tensorpipe/common/nop.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 TDescriptor saveDescriptor(const AbstractNopHolder& object);
@@ -21,4 +21,4 @@ TDescriptor saveDescriptor(const AbstractNopHolder& object);
 void loadDescriptor(AbstractNopHolder& object, const TDescriptor& in);
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

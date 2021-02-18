@@ -10,11 +10,11 @@
 
 #include <cstddef>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 struct CpuBuffer {
   void* ptr{nullptr};
   size_t length{0};
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

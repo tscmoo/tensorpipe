@@ -28,7 +28,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/error_macros.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_gdr {
 
@@ -548,4 +548,4 @@ std::shared_ptr<CudaChannel> ContextImpl::createChannel(
 
 } // namespace cuda_gdr
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

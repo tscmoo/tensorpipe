@@ -14,7 +14,7 @@
 
 #include <tensorpipe/channel/cuda_basic/channel_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_basic {
 
@@ -96,4 +96,4 @@ void ContextImpl::setIdImpl() {
 
 } // namespace cuda_basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

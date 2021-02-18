@@ -17,7 +17,7 @@
 #include <tensorpipe/transport/context_impl_boilerplate.h>
 #include <tensorpipe/transport/ibv/reactor.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace ibv {
 
@@ -58,4 +58,4 @@ class ContextImpl final
 
 } // namespace ibv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -13,7 +13,7 @@
 #include <tensorpipe/channel/cpu_context.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace benchmark {
 
 struct Options {
@@ -35,4 +35,4 @@ void validateTransportContext(std::shared_ptr<transport::Context> context);
 void validateChannelContext(std::shared_ptr<channel::CpuContext> context);
 
 } // namespace benchmark
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

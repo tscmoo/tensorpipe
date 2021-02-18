@@ -13,9 +13,9 @@
 
 class IbvTransportTestHelper : public TransportTestHelper {
  protected:
-  std::shared_ptr<tensorpipe::transport::Context> getContextInternal()
+  std::shared_ptr<tensorpipe_moorpc::transport::Context> getContextInternal()
       override {
-    return tensorpipe::transport::ibv::create();
+    return tensorpipe_moorpc::transport::ibv::create();
   }
 
  public:

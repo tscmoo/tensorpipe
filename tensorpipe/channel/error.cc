@@ -11,7 +11,7 @@
 #include <cstring>
 #include <sstream>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 
 std::string ContextClosedError::what() const {
@@ -23,4 +23,4 @@ std::string ChannelClosedError::what() const {
 }
 
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

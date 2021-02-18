@@ -16,7 +16,7 @@
 #include <tensorpipe/transport/uv/sockaddr.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -66,4 +66,4 @@ class ListenerImpl final : public ListenerImplBoilerplate<
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

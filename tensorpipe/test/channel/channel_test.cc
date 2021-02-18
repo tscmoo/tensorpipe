@@ -10,8 +10,8 @@
 
 #include <numeric>
 
-using namespace tensorpipe;
-using namespace tensorpipe::channel;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::channel;
 
 // Implement this as a client-server test, even we then use just the client,
 // because we need this test case to run in a subprocess as in some cases it may

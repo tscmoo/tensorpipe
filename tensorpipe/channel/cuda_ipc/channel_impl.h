@@ -20,7 +20,7 @@
 #include <tensorpipe/common/cuda_lib.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_ipc {
 
@@ -118,4 +118,4 @@ class ChannelImpl final
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

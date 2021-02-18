@@ -14,8 +14,8 @@
 #include <tensorpipe/test/channel/channel_test.h>
 #include <tensorpipe/test/test_environment.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::channel;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::channel;
 
 class SendAcrossDevicesTest : public ClientServerChannelTestCase<CudaBuffer> {
   static constexpr size_t kSize = 1024;
@@ -47,8 +47,8 @@ class SendAcrossDevicesTest : public ClientServerChannelTestCase<CudaBuffer> {
 
     // Perform send and wait for completion.
     auto descriptorPromise = std::make_shared<
-        std::promise<std::tuple<tensorpipe::Error, std::string>>>();
-    auto sendPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+        std::promise<std::tuple<tensorpipe_moorpc::Error, std::string>>>();
+    auto sendPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto descriptorFuture = descriptorPromise->get_future();
     auto sendFuture = sendPromise->get_future();
 
@@ -59,11 +59,11 @@ class SendAcrossDevicesTest : public ClientServerChannelTestCase<CudaBuffer> {
             .stream = sendStream,
         },
         [descriptorPromise{std::move(descriptorPromise)}](
-            const tensorpipe::Error& error, std::string descriptor) {
+            const tensorpipe_moorpc::Error& error, std::string descriptor) {
           descriptorPromise->set_value(
               std::make_tuple(error, std::move(descriptor)));
         },
-        [sendPromise{std::move(sendPromise)}](const tensorpipe::Error& error) {
+        [sendPromise{std::move(sendPromise)}](const tensorpipe_moorpc::Error& error) {
           sendPromise->set_value(error);
         });
 
@@ -98,7 +98,7 @@ class SendAcrossDevicesTest : public ClientServerChannelTestCase<CudaBuffer> {
     auto descriptor = this->peers_->recv(PeerGroup::kClient);
 
     // Perform recv and wait for completion.
-    auto recvPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+    auto recvPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto recvFuture = recvPromise->get_future();
 
     channel->recv(
@@ -108,7 +108,7 @@ class SendAcrossDevicesTest : public ClientServerChannelTestCase<CudaBuffer> {
             .length = kSize,
             .stream = recvStream,
         },
-        [recvPromise{std::move(recvPromise)}](const tensorpipe::Error& error) {
+        [recvPromise{std::move(recvPromise)}](const tensorpipe_moorpc::Error& error) {
           recvPromise->set_value(error);
         });
 
@@ -161,8 +161,8 @@ class SendReverseAcrossDevicesTest
 
     // Perform send and wait for completion.
     auto descriptorPromise = std::make_shared<
-        std::promise<std::tuple<tensorpipe::Error, std::string>>>();
-    auto sendPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+        std::promise<std::tuple<tensorpipe_moorpc::Error, std::string>>>();
+    auto sendPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto descriptorFuture = descriptorPromise->get_future();
     auto sendFuture = sendPromise->get_future();
 
@@ -173,11 +173,11 @@ class SendReverseAcrossDevicesTest
             .stream = sendStream,
         },
         [descriptorPromise{std::move(descriptorPromise)}](
-            const tensorpipe::Error& error, std::string descriptor) {
+            const tensorpipe_moorpc::Error& error, std::string descriptor) {
           descriptorPromise->set_value(
               std::make_tuple(error, std::move(descriptor)));
         },
-        [sendPromise{std::move(sendPromise)}](const tensorpipe::Error& error) {
+        [sendPromise{std::move(sendPromise)}](const tensorpipe_moorpc::Error& error) {
           sendPromise->set_value(error);
         });
 
@@ -212,7 +212,7 @@ class SendReverseAcrossDevicesTest
     auto descriptor = this->peers_->recv(PeerGroup::kClient);
 
     // Perform recv and wait for completion.
-    auto recvPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+    auto recvPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto recvFuture = recvPromise->get_future();
 
     channel->recv(
@@ -222,7 +222,7 @@ class SendReverseAcrossDevicesTest
             .length = kSize,
             .stream = recvStream,
         },
-        [recvPromise{std::move(recvPromise)}](const tensorpipe::Error& error) {
+        [recvPromise{std::move(recvPromise)}](const tensorpipe_moorpc::Error& error) {
           recvPromise->set_value(error);
         });
 
@@ -275,8 +275,8 @@ class SendAcrossNonDefaultDevicesTest
 
     // Perform send and wait for completion.
     auto descriptorPromise = std::make_shared<
-        std::promise<std::tuple<tensorpipe::Error, std::string>>>();
-    auto sendPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+        std::promise<std::tuple<tensorpipe_moorpc::Error, std::string>>>();
+    auto sendPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto descriptorFuture = descriptorPromise->get_future();
     auto sendFuture = sendPromise->get_future();
 
@@ -287,11 +287,11 @@ class SendAcrossNonDefaultDevicesTest
             .stream = sendStream,
         },
         [descriptorPromise{std::move(descriptorPromise)}](
-            const tensorpipe::Error& error, std::string descriptor) {
+            const tensorpipe_moorpc::Error& error, std::string descriptor) {
           descriptorPromise->set_value(
               std::make_tuple(error, std::move(descriptor)));
         },
-        [sendPromise{std::move(sendPromise)}](const tensorpipe::Error& error) {
+        [sendPromise{std::move(sendPromise)}](const tensorpipe_moorpc::Error& error) {
           sendPromise->set_value(error);
         });
 
@@ -326,7 +326,7 @@ class SendAcrossNonDefaultDevicesTest
     auto descriptor = this->peers_->recv(PeerGroup::kClient);
 
     // Perform recv and wait for completion.
-    auto recvPromise = std::make_shared<std::promise<tensorpipe::Error>>();
+    auto recvPromise = std::make_shared<std::promise<tensorpipe_moorpc::Error>>();
     auto recvFuture = recvPromise->get_future();
 
     channel->recv(
@@ -336,7 +336,7 @@ class SendAcrossNonDefaultDevicesTest
             .length = kSize,
             .stream = recvStream,
         },
-        [recvPromise{std::move(recvPromise)}](const tensorpipe::Error& error) {
+        [recvPromise{std::move(recvPromise)}](const tensorpipe_moorpc::Error& error) {
           recvPromise->set_value(error);
         });
 

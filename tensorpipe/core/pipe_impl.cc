@@ -24,7 +24,7 @@
 #include <tensorpipe/core/listener_impl.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 namespace {
 
@@ -1509,4 +1509,4 @@ bool PipeImpl::pendingRegistrations() {
   return ret;
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -19,7 +19,7 @@
 #include <tensorpipe/transport/connection.h>
 #include <tensorpipe/transport/error.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 template <typename TCtx, typename TList, typename TConn>
@@ -456,4 +456,4 @@ void ConnectionImplBoilerplate<TCtx, TList, TConn>::handleError() {
 }
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -11,7 +11,7 @@
 #include <tensorpipe/common/cuda.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 namespace {
 
@@ -123,4 +123,4 @@ void CUDART_CB CudaLoop::runCudaCallback(
   cudaCallback.reset();
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

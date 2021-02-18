@@ -22,7 +22,7 @@
 #include <tensorpipe/transport/shm/context_impl.h>
 #include <tensorpipe/transport/shm/sockaddr.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -141,4 +141,4 @@ void ListenerImpl::handleEventsFromLoop(int events) {
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

@@ -11,7 +11,7 @@
 #include <tensorpipe/common/system.h>
 #include <tensorpipe/transport/uv/uv.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace uv {
 
@@ -82,4 +82,4 @@ void Loop::uvAsyncCb(uv_async_t* handle) {
 
 } // namespace uv
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

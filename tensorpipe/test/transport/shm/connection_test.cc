@@ -12,8 +12,8 @@
 #include <nop/serializer.h>
 #include <nop/structure.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::transport;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::transport;
 
 namespace {
 

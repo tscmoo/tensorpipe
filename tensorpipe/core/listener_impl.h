@@ -25,7 +25,7 @@
 #include <tensorpipe/core/nop_types.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class ContextImpl;
 
@@ -145,4 +145,4 @@ class ListenerImpl final : public std::enable_shared_from_this<ListenerImpl> {
   friend ContextImpl;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

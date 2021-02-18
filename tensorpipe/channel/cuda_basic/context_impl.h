@@ -16,7 +16,7 @@
 #include <tensorpipe/common/cuda_loop.h>
 #include <tensorpipe/common/deferred_executor.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_basic {
 
@@ -62,4 +62,4 @@ class ContextImpl final
 
 } // namespace cuda_basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

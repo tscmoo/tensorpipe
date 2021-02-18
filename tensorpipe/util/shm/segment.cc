@@ -22,7 +22,7 @@
 #include <thread>
 #include <tuple>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace util {
 namespace shm {
 
@@ -175,4 +175,4 @@ std::tuple<Error, Segment> Segment::access(
 
 } // namespace shm
 } // namespace util
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

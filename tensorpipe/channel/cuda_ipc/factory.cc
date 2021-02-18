@@ -12,7 +12,7 @@
 #include <tensorpipe/channel/cuda_ipc/channel_impl.h>
 #include <tensorpipe/channel/cuda_ipc/context_impl.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_ipc {
 
@@ -24,4 +24,4 @@ std::shared_ptr<CudaContext> create() {
 
 } // namespace cuda_ipc
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

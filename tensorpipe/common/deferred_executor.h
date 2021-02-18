@@ -23,7 +23,7 @@
 #include <tensorpipe/common/defs.h>
 #include <tensorpipe/common/system.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Dealing with thread-safety using per-object mutexes is prone to deadlocks
 // because of reentrant calls (both "upward", when invoking a callback that
@@ -277,4 +277,4 @@ class EventLoopDeferredExecutor : public virtual DeferredExecutor {
   std::vector<Function<void()>> fns_;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

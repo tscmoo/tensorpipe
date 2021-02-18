@@ -17,7 +17,7 @@
 #include <tensorpipe/common/error.h>
 #include <tensorpipe/transport/connection.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace basic {
 
@@ -88,4 +88,4 @@ void ChannelImpl::handleErrorImpl() {
 
 } // namespace basic
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

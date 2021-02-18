@@ -12,7 +12,7 @@
 
 #include <cuda_runtime.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 struct CudaBuffer {
   void* ptr{nullptr};
@@ -20,4 +20,4 @@ struct CudaBuffer {
   cudaStream_t stream{cudaStreamDefault};
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

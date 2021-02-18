@@ -17,7 +17,7 @@
 #include <tensorpipe/transport/listener_impl_boilerplate.h>
 #include <tensorpipe/transport/shm/sockaddr.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 namespace shm {
 
@@ -53,4 +53,4 @@ class ListenerImpl final
 
 } // namespace shm
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

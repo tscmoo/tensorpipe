@@ -19,8 +19,8 @@
 #include <tensorpipe/core/listener.h>
 #include <tensorpipe/core/pipe.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::benchmark;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::benchmark;
 
 Measurements measurements;
 

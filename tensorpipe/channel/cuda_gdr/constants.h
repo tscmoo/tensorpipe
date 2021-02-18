@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace channel {
 namespace cuda_gdr {
 
@@ -43,4 +43,4 @@ constexpr int kNumPolledWorkCompletions = 32;
 
 } // namespace cuda_gdr
 } // namespace channel
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

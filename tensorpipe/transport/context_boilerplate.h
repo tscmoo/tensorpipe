@@ -17,7 +17,7 @@
 #include <tensorpipe/transport/context.h>
 #include <tensorpipe/transport/context_impl_boilerplate.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 namespace transport {
 
 template <typename TCtx, typename TList, typename TConn>
@@ -107,4 +107,4 @@ ContextBoilerplate<TCtx, TList, TConn>::~ContextBoilerplate() {
 }
 
 } // namespace transport
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

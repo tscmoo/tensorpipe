@@ -31,7 +31,7 @@
     }                                                                     \
   } while (false)
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Master list of all symbols we care about from libcuda.
 
@@ -120,4 +120,4 @@ class CudaLib {
 
 #undef TP_FORALL_CUDA_SYMBOLS
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

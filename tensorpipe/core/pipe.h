@@ -17,7 +17,7 @@
 #include <tensorpipe/core/message.h>
 #include <tensorpipe/transport/context.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 class ContextImpl;
 class ListenerImpl;
@@ -99,4 +99,4 @@ class Pipe final {
   friend ListenerImpl;
 };
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

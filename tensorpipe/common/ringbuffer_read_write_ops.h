@@ -20,7 +20,7 @@
 #include <tensorpipe/util/ringbuffer/consumer.h>
 #include <tensorpipe/util/ringbuffer/producer.h>
 
-namespace tensorpipe {
+namespace tensorpipe_moorpc {
 
 // Reads happen only if the user supplied a callback (and optionally
 // a destination buffer). The callback is run from the event loop
@@ -301,4 +301,4 @@ void RingbufferWriteOperation::handleError(const Error& error) {
   fn_(error);
 }
 
-} // namespace tensorpipe
+} // namespace tensorpipe_moorpc

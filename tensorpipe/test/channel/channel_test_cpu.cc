@@ -11,8 +11,8 @@
 #include <tensorpipe/channel/cpu_context.h>
 #include <tensorpipe/test/channel/channel_test.h>
 
-using namespace tensorpipe;
-using namespace tensorpipe::channel;
+using namespace tensorpipe_moorpc;
+using namespace tensorpipe_moorpc::channel;
 
 // Call send and recv with a null pointer and a length of 0.
 class NullPointerTest : public ClientServerChannelTestCase<CpuBuffer> {
