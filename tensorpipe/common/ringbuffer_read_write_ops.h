@@ -149,6 +149,7 @@ size_t RingbufferReadOperation::handleRead(util::ringbuffer::Consumer& inbox) {
       bytesReadNow += ret;
       if (nopObject_ != nullptr) {
         len_ = length;
+        printf("length is %d\n", length);
       } else if (ptrProvided_) {
         TP_DCHECK_EQ(length, len_);
       } else {
@@ -163,7 +164,11 @@ size_t RingbufferReadOperation::handleRead(util::ringbuffer::Consumer& inbox) {
 
   if (mode_ == READ_PAYLOAD) {
     if (nopObject_ != nullptr) {
+      printf("calling readNopObject\n");
+      fflush(stdout);
       ret = readNopObject(inbox);
+      printf("readNopObject done\n");
+      fflush(stdout);
     } else {
       ret = inbox.readInTx</*AllowPartial=*/true>(
           reinterpret_cast<uint8_t*>(ptr_) + bytesRead_, len_ - bytesRead_);
@@ -238,6 +243,7 @@ size_t RingbufferWriteOperation::handleWrite(
 
   if (mode_ == WRITE_LENGTH) {
     uint32_t length = len_;
+    printf("write length %d\n", length);
     ret = outbox.writeInTx</*AllowPartial=*/false>(&length, sizeof(length));
     if (likely(ret >= 0)) {
       mode_ = WRITE_PAYLOAD;

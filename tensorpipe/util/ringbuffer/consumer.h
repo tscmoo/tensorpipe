@@ -161,9 +161,12 @@ class Consumer {
       // Nothing to do.
       return 0;
     } else if (likely(numBuffers == 1)) {
+      printf("read one buffer of len %d at %#x\n", buffers[0].len, buffers[0].ptr - data_);
       std::memcpy(buffer, buffers[0].ptr, buffers[0].len);
       return buffers[0].len;
     } else if (likely(numBuffers == 2)) {
+      printf("read buffer1 of len %d at %#x\n", buffers[0].len, buffers[0].ptr - data_);
+      printf("read buffer2 of len %d at %#x\n", buffers[1].len, buffers[1].ptr - data_);
       std::memcpy(buffer, buffers[0].ptr, buffers[0].len);
       std::memcpy(
           reinterpret_cast<uint8_t*>(buffer) + buffers[0].len,
@@ -203,7 +206,7 @@ class Consumer {
     return size;
   }
 
- private:
+ //private:
   RingBufferHeader& header_;
   const uint8_t* const data_;
   unsigned txSize_ = 0;

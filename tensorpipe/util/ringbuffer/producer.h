@@ -165,9 +165,12 @@ class Producer {
       // Nothing to do.
       return 0;
     } else if (likely(numBuffers == 1)) {
+      printf("write one buffer of len %d at %#x\n", buffers[0].len, buffers[0].ptr - data_);
       std::memcpy(buffers[0].ptr, buffer, buffers[0].len);
       return buffers[0].len;
     } else if (likely(numBuffers == 2)) {
+      printf("write buffer1 of len %d at %#x\n", buffers[0].len, buffers[0].ptr - data_);
+      printf("write buffer2 of len %d at %#x\n", buffers[1].len, buffers[1].ptr - data_);
       std::memcpy(buffers[0].ptr, buffer, buffers[0].len);
       std::memcpy(
           buffers[1].ptr,
