@@ -97,8 +97,8 @@ class CallbackWrapper {
  public:
   CallbackWrapper(
       std::enable_shared_from_this<TSubject>& subject,
-      DeferredExecutor& loop)
-      : subject_(subject), loop_(loop) {}
+      DeferredExecutor& loop, bool setError = true)
+      : subject_(subject), loop_(loop), setError_(setError) {}
 
   template <typename TBoundFn>
   auto operator()(TBoundFn fn) {
@@ -115,6 +115,7 @@ class CallbackWrapper {
  private:
   std::enable_shared_from_this<TSubject>& subject_;
   DeferredExecutor& loop_;
+  bool setError_;
 
   template <typename TBoundFn, typename... Args>
   void entryPoint(
@@ -142,7 +143,9 @@ class CallbackWrapper {
       Args&&... args) {
     TP_DCHECK(loop_.inLoop());
 
-    subject.setError(error);
+    if (setError_) {
+      subject.setError(error);
+    }
     // Proceed regardless of any error: this is why it's called "eager".
     fn(subject, std::forward<Args>(args)...);
   }

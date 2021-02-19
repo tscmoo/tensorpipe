@@ -112,7 +112,7 @@ class ListenerImpl final : public std::enable_shared_from_this<ListenerImpl> {
   // Helpers to prepare callbacks from transports
   //
 
-  CallbackWrapper<ListenerImpl> callbackWrapper_{*this, *this->context_};
+  CallbackWrapper<ListenerImpl> callbackWrapper_{*this, *this->context_, false};
 
   //
   // Error handling

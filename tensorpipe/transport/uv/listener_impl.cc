@@ -64,7 +64,7 @@ void ListenerImpl::connectionCallbackFromLoop(int status) {
 
   if (status != 0) {
     //setError(TP_CREATE_ERROR(UVError, status));
-    return;
+    //return;
   }
 
   auto connection = context_->createHandle();
