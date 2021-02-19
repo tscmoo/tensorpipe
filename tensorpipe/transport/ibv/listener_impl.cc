@@ -109,23 +109,23 @@ void ListenerImpl::handleEventsFromLoop(int events) {
              << EpollLoop::formatEpollEvents(events) << ")";
 
   if (events & EPOLLERR) {
-    int error;
-    socklen_t errorlen = sizeof(error);
-    int rv = getsockopt(
-        socket_.fd(),
-        SOL_SOCKET,
-        SO_ERROR,
-        reinterpret_cast<void*>(&error),
-        &errorlen);
-    if (rv == -1) {
-      setError(TP_CREATE_ERROR(SystemError, "getsockopt", rv));
-    } else {
-      setError(TP_CREATE_ERROR(SystemError, "async error on socket", error));
-    }
+//    int error;
+//    socklen_t errorlen = sizeof(error);
+//    int rv = getsockopt(
+//        socket_.fd(),
+//        SOL_SOCKET,
+//        SO_ERROR,
+//        reinterpret_cast<void*>(&error),
+//        &errorlen);
+//    if (rv == -1) {
+//      setError(TP_CREATE_ERROR(SystemError, "getsockopt", rv));
+//    } else {
+//      setError(TP_CREATE_ERROR(SystemError, "async error on socket", error));
+//    }
     return;
   }
   if (events & EPOLLHUP) {
-    setError(TP_CREATE_ERROR(EOFError));
+    //setError(TP_CREATE_ERROR(EOFError));
     return;
   }
   TP_ARG_CHECK_EQ(events, EPOLLIN);
@@ -134,7 +134,7 @@ void ListenerImpl::handleEventsFromLoop(int events) {
   Socket socket;
   std::tie(error, socket) = socket_.accept();
   if (error) {
-    setError(std::move(error));
+    //setError(std::move(error));
     return;
   }
 

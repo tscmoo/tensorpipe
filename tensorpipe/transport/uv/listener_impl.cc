@@ -63,7 +63,7 @@ void ListenerImpl::connectionCallbackFromLoop(int status) {
              << formatUvError(status) << ")";
 
   if (status != 0) {
-    setError(TP_CREATE_ERROR(UVError, status));
+    //setError(TP_CREATE_ERROR(UVError, status));
     return;
   }
 
