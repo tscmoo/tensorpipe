@@ -30,7 +30,8 @@ class BusyPollingLoop : public EventLoopDeferredExecutor {
   }
 
   void eventLoop() override {
-    while (!closed_ || !readyToClose()) {
+    //while (!closed_ || !readyToClose()) {
+    while (!closed_) {
       if (pollOnce()) {
         // continue
       } else if (deferredFunctionCount_ > 0) {
